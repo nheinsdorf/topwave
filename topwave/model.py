@@ -57,8 +57,8 @@ class Model(object):
         Apply an external magnetic field that is stored in self.MF
     set_moments(gs):
         Provide a classical magnetic ground state.
-
-
+    show_moments():
+        Prints the magnetic moments.
 
     """
 
@@ -77,7 +77,7 @@ class Model(object):
         # count the number of magnetic sites and save
         self.N = len(self.STRUC)
 
-        # allocate a list for the couplings and an dataframe for easy access
+        # allocate a list for the couplings and a dataframe for easy access
         self.CPLS = []
         self.CPLS_as_df = pd.DataFrame(columns=['symid', 'symop', 'delta', 'R', 'dist', 'i',
                                                 'at1', 'j', 'at2', 'Heis.', 'DM'])
@@ -176,12 +176,14 @@ class Model(object):
             spin vector for each magnetic site in the unit cell indicating the
             direction of the spin on each site (given in units of the lattice vectors).
             Each vector is normalized, so only the direction matters. The magnitude of
-            magnetic moment is indicated by the 'magnitudes' argument.
+            magnetic moment is indicated by the 'magnitudes' argument. The vector is given in
+            the units of the lattice vectors.
         magnitudes : list
             List of floats specifying the magnitude of magnetic moment of each site.
 
 
         """
+
         directions = np.array(directions, dtype=float)
         for _, (dir, mu) in enumerate(zip(directions, magnitudes)):
             # rotate into cartesian coordinates and normalize it
@@ -197,6 +199,15 @@ class Model(object):
         for cpl in self.CPLS:
             cpl.get_uv()
 
+
+    def show_moments(self):
+        """
+        Prints the magnetic moments
+
+        """
+
+        for _, site in enumerate(self.STRUC):
+            print(f'Magnetic Moment on Site{_}:\t{site.properties["magmom"]}')
 
 class SpinWaveModel(Model):
     """
