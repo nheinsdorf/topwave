@@ -5,7 +5,7 @@ from matplotlib.lines import Line2D
 from mpl_toolkits.mplot3d import Axes3D
 from pymatgen.core.structure import Structure, Lattice
 from pymatgen.io.cif import CifWriter
-from topwave.spinwave import Model, Spec
+from topwave.model import Model, Spec
 from topwave.topology import WCC_evolution
 
 #%%
@@ -28,10 +28,10 @@ model.show_couplings()
 J1 = 1
 J2 = 1
 J3 = -0. # FM interplane coupling
-model.assign_exchange(J1, 0)
-model.assign_exchange(J2, 1)
-model.assign_exchange(J3, 2)
-model.assign_exchange(J3, 3)
+model.set_coupling(J1, 0)
+model.set_coupling(J2, 1)
+model.set_coupling(J3, 2)
+model.set_coupling(J3, 3)
 
 # set ground state
 mu = 3.143
@@ -41,7 +41,7 @@ spin3 = spin2 = [0, 1, 0]
 spin1 = spin0 = [-1, -1, 0]
 dirs = np.vstack((spin0, spin1, spin2, spin3, spin4, spin5))
 
-model.magnetize(dirs, [mu] * 6)
+model.set_moments(dirs, [mu] * 6)
 
 #CifWriter(struc, write_magmoms=True).write_file('test.mcif')
 
@@ -51,7 +51,7 @@ model.magnetize(dirs, [mu] * 6)
 # calculate magnon spectrum
 nk = 100
 delta = 0.0001
-ks = np.linspace([0. + delta, 0. + delta, 0.], [0.5, 0.5, 0.], nk)
+ks = np.linspace([0.5, 0.5, 0.5], [0.5, 0.2, 0.5], nk)
 spec = Spec(model, ks)
 #%%
 # plot it

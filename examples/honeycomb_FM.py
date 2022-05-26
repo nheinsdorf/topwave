@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from mpl_toolkits.mplot3d import Axes3D
 from pymatgen.core.structure import Structure
-from topwave.spinwave import Model, Spec
+from topwave.model import Model, Spec
 from topwave.topology import WCC_evolution
 
 #%%
@@ -21,19 +21,19 @@ hc.generate_couplings(1.1, 1)
 hc.show_couplings()
 
 # set the ground state to Ferromagnetic
-hc.magnetize([[0, 0, 1], [0, 0, 1]])
+hc.set_moments([[0, 0, 1], [0, 0, 1]])
 
 # we also put a weak external magnetic field to make the Hamiltonian positive definite
 h = 0.01
-hc.external_field([0, 0, h])
+hc.set_field([0, 0, h])
 
 # assign a isotropic heisenberg exchange to all nearest- and next-nearest neighbors
 J = -1
 J_NNN = -0#.1
 for _ in range(3):
-    hc.assign_exchange(J, _)
+    hc.set_coupling(J, _)
 for _ in range(3, 9):
-    hc.assign_exchange(J_NNN, _)
+    hc.set_coupling(J_NNN, _)
 
 # generate a k-path
 ks = np.linspace([0., 0., 0.2], [0.5, 0.5, 0.2], 100)
@@ -58,9 +58,9 @@ ax.legend(lines, labels)
 # one plaquette (check the coupling table!)
 D = -0.1
 for _ in [3, 4, 5, 7]:
-    hc.assign_DM([0, 0, D], _)
+    hc.set_DM([0, 0, D], _)
 for _ in [6, 8]:
-    hc.assign_DM([0, 0, -D], _)
+    hc.set_DM([0, 0, -D], _)
 
 hc.show_couplings()
 

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from pymatgen.core.structure import Structure
-from topwave.spinwave import Model, Spec
+from topwave.model import Model, Spec
 from topwave.topology import WCC_evolution
 
 #%%
@@ -19,12 +19,12 @@ model.show_couplings()
 
 # now we assign AFM coupling to the two next-nearest neighbor hoppings
 J = -1 # strength of the Heisenberg Exchange
-model.assign_exchange(J, 0)
-model.assign_exchange(J, 1)
+model.set_coupling(J, 0)
+model.set_coupling(J, 1)
 
 # put the model in an AFM ground state
 ground_state = [[0, 0, 1], [0, 0, 1]]
-model.magnetize(ground_state)
+model.set_moments(ground_state)
 
 # calculate its dispersion relation
 ks = np.linspace([0, 0, 0], [1., 0, 0], 101)

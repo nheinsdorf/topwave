@@ -75,7 +75,7 @@ class Coupling(object):
         Returns attributes of self as a pandas dataframe.
     get_uv():
         Constructs the u and v vectors when the system was magnetized.
-    get_matrix_elements(k):
+    get_sw_matrix_elements(k):
         Generates matrix elements of the coupling at a given k-point.
 
         
@@ -117,8 +117,35 @@ class Coupling(object):
 
         self.u1, self.u2, self.v1, self.v2 = u1, u2, v1, v2
 
-    def get_matrix_elements(self, k):
-        """ Constructs the matrix elements corresponding to the coupling.
+    def get_fourier_coefficients(self, k):
+        """
+        Given a k-point this returns the Fourier coefficients for this bond,
+        as well as the coefficients differentiated w.r.t. to all components of k.
+
+        Parameters
+        ----------
+        k : numpy.ndarray
+            Three-dimensional array corresponding to some k-point.
+        Returns
+        -------
+        c_k : complex
+            Fourier coefficient of the coupling at given k-point.
+        inner : numpy.ndarray
+            Derivatives of c_k w.r.t. to all components of the given k-point.
+        """
+
+        # two different choices of FT
+        # c_k = np.exp(-1j * ((self.DELTA + self.R) @ k) * 2 * np.pi)
+        c_k = np.exp(-1j * (self.R @ k) * 2 * np.pi)
+
+        # inner derivative w.r.t. to k
+        # inner = -1j * (self.DELTA + self.R) * 2 * np.pi
+        inner = -1j * self.R * 2 * np.pi
+
+        return c_k, inner
+
+    def get_sw_matrix_elements(self, k):
+        """ Constructs the matrix elements for the spin wave Hamiltonian.
         
         Parameters
         ----------
@@ -136,14 +163,7 @@ class Coupling(object):
         mu2 = norm(self.SITE2.properties['magmom'])
         c = np.sqrt(mu1 * mu2) / 2.
 
-        # two different choices of FT
-        #c_k = np.exp(-1j * ((self.DELTA + self.R) @ k) * 2 * np.pi)
-        c_k = np.exp(-1j * (self.R @ k) * 2 * np.pi)
-
-        # inner derivative w.r.t. to k
-        #inner = -1j * (self.DELTA + self.R) * 2 * np.pi
-        inner = -1j * self.R * 2 * np.pi
-
+        c_k, inner = self.get_fourier_coefficients(k)
 
         # constructs the exchange matrix
         Jhat = np.array([[self.JH, self.DM[2], -self.DM[1]],
@@ -152,6 +172,35 @@ class Coupling(object):
 
         # construct the matrix elements
         A = c * c_k * (self.u1 @ Jhat @ np.conj(self.u2))
+        Abar = c * np.conj(c_k) * (self.u1 @ Jhat @ np.conj(self.u2))
+
+        CI = mu1 * (self.v1 @ Jhat @ self.v2)
+        CJ = mu2 * (self.v1 @ Jhat @ self.v2)
+
+        # spurious
+        B = c * c_k * (self.u1 @ Jhat @ self.u2)
+        Bbar = c * np.conj(c_k) * np.conj(self.u2 @ Jhat @ self.u1)
+
+        return A, Abar, CI, CJ, B, Bbar, inner
+
+    def get_tb_matrix_elements(self, k):
+        """ Constructs the matrix elements for the tight-binding Hamiltonian.
+
+        Parameters
+        ----------
+        k : numpy.ndarray
+            Three-dimensional array corresponding to some k-point.
+
+        Returns
+        -------
+        Matrix elements.
+
+        """
+
+        c_k, inner = self.get_fourier_coefficients(k)
+
+        # construct the matrix elements
+        A = c_k * (self.u1 @ Jhat @ np.conj(self.u2))
         Abar = c * np.conj(c_k) * (self.u1 @ Jhat @ np.conj(self.u2))
 
         CI = mu1 * (self.v1 @ Jhat @ self.v2)
@@ -194,7 +243,7 @@ class Coupling(object):
     @staticmethod
     def align_unit_vectors(v1, v2=None):
         """ Creates a 3x3 rotation matrix R with R v1 = v2
-
+        # SPURIOUS!!!!
 
         Parameters
         ----------

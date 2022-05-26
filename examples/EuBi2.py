@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from mpl_toolkits.mplot3d import Axes3D
 from pymatgen.core.structure import Structure, Lattice
-from topwave.spinwave import Model, Spec
+from topwave.model import Model, Spec
 from topwave.topology import WCC_evolution
 
 #%%
@@ -28,18 +28,18 @@ model.show_couplings()
 J0 = -1
 J1 = -0.4
 
-model.assign_exchange(J0, 0)
-model.assign_exchange(J1, 1)
+model.set_coupling(J0, 0)
+model.set_coupling(J1, 1)
 
 # put small magnetic field
 h = 0.001
 B = np.array([0, 0, 1], dtype=float)
-model.external_field(h * B)
+model.set_field(h * B)
 
 # put a FM ground state
 magmom = 1
 gs = magmom * np.tile(B, (8,1))
-model.magnetize(gs)
+model.set_moments(gs)
 
 #%%
 # calculate spin wave spectrum

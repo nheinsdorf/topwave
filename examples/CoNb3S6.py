@@ -6,7 +6,7 @@ import matplotlib as mpl
 from pymatgen.core.structure import Structure
 from pymatgen.symmetry.kpath import KPathBase
 from pymatgen.symmetry.bandstructure import HighSymmKpath
-from topwave.spinwave import Model, Spec
+from topwave.model import Model, Spec
 from topwave.topology import WCC_evolution
 
 #%%
@@ -31,18 +31,18 @@ model.show_couplings()
 J1 = 1
 J2 = 0.4
 J3 = -0.4
-model.assign_exchange(J2, 0)
-model.assign_exchange(J2, 1)
-model.assign_exchange(J1, 2)
-model.assign_exchange(J1, 3)
-model.assign_exchange(J3, 4)
-model.assign_exchange(J3, 5)
+model.set_coupling(J2, 0)
+model.set_coupling(J2, 1)
+model.set_coupling(J1, 2)
+model.set_coupling(J1, 3)
+model.set_coupling(J3, 4)
+model.set_coupling(J3, 5)
 
-model.external_field([1, 2, 1])
+model.set_field([1, 2, 1])
 
 # put the stripy ground state
 gs = [[0, -1, 0], [0, -1, 0], [0, 1, 0], [0, 1, 0]]
-model.magnetize(gs)
+model.set_moments(gs)
 
 
 # %%

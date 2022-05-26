@@ -39,7 +39,7 @@ class Model(object):
         Attributes of CPLS are stored here for printing and selecting.
     MF : numpy.ndarray
         This is variable holds the external magnetic field. It is set via
-        'external_field'. Default is [0, 0, 0].
+        'set_field'. Default is [0, 0, 0].
 
 
     Methods
@@ -49,15 +49,12 @@ class Model(object):
         generated and grouped by symmetry based on the provided sg.
     show_couplings():
         Prints the couplings.
-    assign_exchange(J, symid):
+    set_coupling(J, symid):
         Assign Heisenberg Exchange terms to a collection of couplings based
         on their symmetry index.
-    assign_DM(D, symid):
-        Assign anti-symmetric exchange to a selection of couplings based on
-        their symmetry index.
-    external_field(B):
+    set_field(B):
         Apply an external magnetic field that is stored in self.MF
-    magnetize(gs):
+    set_moments(gs):
         Provide a classical magnetic ground state.
 
 
@@ -124,19 +121,22 @@ class Model(object):
         print(tabulate(self.CPLS_as_df, headers='keys', tablefmt='github',
                        showindex=True))
 
-    def assign_exchange(self, JH, symid):
+    def set_coupling(self, strength, index, by_symmetry = True):
         """
-        Assigns Heisenberg Exchange to a selection of couplings based on
-        their symmetry index.
+        Assigns Heisenberg interaction or hopping amplitude to a selection
+        of couplings based on their (symmetry) index.
 
 
         Parameters
         ----------
-        JH : float
+        strength : float
             Strength of the Heisenberg exchange.
-        symid : int
+        index : int
             Integer that corresponds to the symmetry index of a selection of
-            couplings.
+            couplings, or to the index if by_symmetry = False.
+        by_symmetry : bool
+            If true, index corresponds to the symmetry index of a selection of couplings.
+            If false, it corresponds to the index.
 
 
         """
@@ -144,10 +144,71 @@ class Model(object):
         indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == symid].tolist()
 
         for _ in indices:
-            self.CPLS[_].JH = JH
-            self.CPLS_as_df.loc[_, 'Heis.'] = JH
+            self.CPLS[_].JH = strength
+            self.CPLS_as_df.loc[_, 'Heis.'] = strength
 
-    def assign_DM(self, D, symid):
+
+    def set_field(self, direction, magnitude):
+        """
+        Setter for self.MF an external magnetic field to the model. This will
+        be translated to a Zeeman term mu_B B dot S
+
+        Parameters
+        ----------
+        direction : list
+            Three-dimensional vector that gives direction of an external magnetic field.
+        magnitude : float
+            Strength of the external magnetic field.
+
+        """
+
+        self.MF = np.array(direction * magnitude, dtype=float)
+
+    def set_moments(self, directions, magnitudes):
+        """ Assigns a magnetic ground state to the model
+
+
+        Parameters
+        ----------
+        directions : list
+            List of lists (or numpy.ndarray) that contains a three-dimensional
+            spin vector for each magnetic site in the unit cell indicating the
+            direction of the spin on each site (given in units of the lattice vectors).
+            Each vector is normalized, so only the direction matters. The magnitude of
+            magnetic moment is indicated by the 'magnitudes' argument.
+        magnitudes : list
+            List of floats specifying the magnitude of magnetic moment of each site.
+
+
+        """
+        directions = np.array(directions, dtype=float)
+        for _, (dir, mu) in enumerate(zip(directions, magnitudes)):
+            # rotate into cartesian coordinates and normalize it
+            S = self.STRUC.lattice.matrix.T @ dir
+            S = S / np.round(norm(S), 6)
+
+            # calculate the rotation matrix that rotates the spin to the quantization axis
+            self.STRUC[_].properties['Rot'] = Coupling.rotate_vector_to_ez(S)
+            # stretch it to match the right magnetic moment and save it
+            self.STRUC[_].properties['magmom'] = S * mu
+
+        # extract the u- and v-vectors from the rotation matrix
+        for cpl in self.CPLS:
+            cpl.get_uv()
+
+
+class SpinWaveModel(Model):
+    """
+    Class for a Spin Wave Model.
+
+    Methods
+    -------
+    set_DM(D, symid):
+        Assign anti-symmetric exchange to a selection of couplings based on
+        their symmetry index.
+    """
+
+    def set_DM(self, D, index, by_symmetry = True):
         """
         Assigns asymmetric exchange terms to a selection of couplings based
         on their symmetry. The vector that is passed is rotated according to
@@ -158,9 +219,9 @@ class Model(object):
         D : list
             Three-dimensional vector that gives the anti-symmetric part of
             the exchange.
-        symid : int
+        index : int
             Integer that corresponds to the symmetry index of a selection of
-            couplings.
+            couplings, or to the index of a single index if by_symmetry is false.
 
 
         """
@@ -180,52 +241,12 @@ class Model(object):
             self.CPLS_as_df.loc[_, 'DM'][1] = Drot[1]
             self.CPLS_as_df.loc[_, 'DM'][2] = Drot[2]
 
-    def external_field(self, B):
-        """
-        Setter for self.MF an external magnetic field to the model.
 
-        Parameters
-        ----------
-        B : list
-            Three-dimensional vector that gives direction and strength of
-            an external magnetic field.
+class TightBindingModel(Model):
+    """
+    Class for a tight-binding model.
+    """
 
-
-        """
-
-        self.MF = np.array(B, dtype=float)
-
-    def magnetize(self, dirs, moments):
-        """ Assigns a magnetic ground state to the model
-
-
-        Parameters
-        ----------
-        dirs : list
-            List of lists (or numpy.ndarray) that contains a three-dimensional
-            spin vector for each magnetic site in the unit cell indicating the
-            direction of the spin on each site (given in units of the lattice vectors).
-            Each vector is normalized, so only the direction matters. The magnitude of
-            magnetic moment is indicated by the 'moments' argument.
-        moments : list
-            List of floats specifying the magnitude of magnetic moment of each site.
-
-
-        """
-        dirs = np.array(dirs, dtype=float)
-        for _, (dir, mu) in enumerate(zip(dirs, moments)):
-            # rotate into cartesian coordinates and normalize it
-            S = self.STRUC.lattice.matrix.T @ dir
-            S = S / np.round(norm(S), 6)
-
-            # calculate the rotation matrix that rotates the spin to the quantization axis
-            self.STRUC[_].properties['Rot'] = Coupling.rotate_vector_to_ez(S)
-            # stretch it to match the right magnetic moment and save it
-            self.STRUC[_].properties['magmom'] = S * mu
-
-        # extract the u- and v-vectors from the rotation matrix
-        for cpl in self.CPLS:
-            cpl.get_uv()
 
 class Spec(object):
     """
@@ -233,7 +254,7 @@ class Spec(object):
 
     Parameters
     ----------
-    model : topwave.Model
+    model : model.Model
         The model of which the Hamiltonian is built.
     ks : numpy.ndarray
         Array of three-dimensional vectors in k-space at which the
@@ -318,7 +339,7 @@ class Spec(object):
         for _, k in enumerate(self.KS):
             for cpl in model.CPLS:
                 # get the matrix elements from the couplings
-                (A, Abar, CI, CJ, B12, B21, inner) = cpl.get_matrix_elements(k)
+                (A, Abar, CI, CJ, B12, B21, inner) = cpl.get_sw_matrix_elements(k)
 
                 MAT[_, cpl.I, cpl.J] += A
                 MAT[_, cpl.J, cpl.I] += np.conj(A)
@@ -362,7 +383,7 @@ class Spec(object):
         for _, k in enumerate(self.KS):
             for cpl in model.CPLS:
                 # get the matrix elements from the couplings
-                (A, Abar, CI, CJ, B12, B21, inner) = cpl.get_matrix_elements(k)
+                (A, Abar, CI, CJ, B12, B21, inner) = cpl.get_sw_matrix_elements(k)
 
                 DHDK[_, :, cpl.I, cpl.J] += A * inner
                 DHDK[_, :, cpl.J, cpl.I] += np.conj(A) * np.conj(inner)

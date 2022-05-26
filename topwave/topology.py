@@ -1,4 +1,5 @@
-from topwave.spinwave import Spec
+from topwave.model import Spec
+
 import numpy as np
 
 
