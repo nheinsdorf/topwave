@@ -56,7 +56,7 @@ class Coupling(object):
     DELTA : numpy.ndarray
         Distance between two sites (in the same unit cell) in fractional
         coordinates. 
-    JH : float
+    strength : float
         Heisenberg exchange of the coupling
     u : numpy.ndarray
         Three-dimensional vector related to the site1/site2 property 'Rot'
@@ -95,11 +95,11 @@ class Coupling(object):
         self.D = site1.distance(site2, R)
         self.R = R
         self.DELTA = site2.frac_coords - site1.frac_coords
-        self.JH = 0.
+        self.strength = 0.
         self.DM = np.array([0., 0., 0.], dtype=float)
         self.u1, self.u2, self.v1, self.v2 = [None]*4
         self.DF = pd.DataFrame([[self.SYMID, self.SYMOP.as_xyz_string(), self.DELTA, self.R, self.D, self.I,
-                                 str(self.SITE1.species), self.J, str(self.SITE2.species), self.JH, self.DM]],
+                                 str(self.SITE1.species), self.J, str(self.SITE2.species), self.strength, self.DM]],
                                columns=['symid', 'symop', 'delta', 'R', 'dist', 'i', 'at1', 'j', 'at2', 'Heis.', 'DM'])
 
     def get_uv(self):
@@ -166,9 +166,9 @@ class Coupling(object):
         c_k, inner = self.get_fourier_coefficients(k)
 
         # constructs the exchange matrix
-        Jhat = np.array([[self.JH, self.DM[2], -self.DM[1]],
-                         [-self.DM[2], self.JH, self.DM[0]],
-                         [self.DM[1], -self.DM[0], self.JH]], dtype=complex)
+        Jhat = np.array([[self.strength, self.DM[2], -self.DM[1]],
+                         [-self.DM[2], self.strength, self.DM[0]],
+                         [self.DM[1], -self.DM[0], self.strength]], dtype=complex)
 
         # construct the matrix elements
         A = c * c_k * (self.u1 @ Jhat @ np.conj(self.u2))
@@ -200,98 +200,10 @@ class Coupling(object):
         c_k, inner = self.get_fourier_coefficients(k)
 
         # construct the matrix elements
-        A = c_k * (self.u1 @ Jhat @ np.conj(self.u2))
-        Abar = c * np.conj(c_k) * (self.u1 @ Jhat @ np.conj(self.u2))
+        A = c_k * self.strength
+        Abar = np.conj(c_k) * self.strength
 
-        CI = mu1 * (self.v1 @ Jhat @ self.v2)
-        CJ = mu2 * (self.v1 @ Jhat @ self.v2)
-
-        # spurious
-        B = c * c_k * (self.u1 @ Jhat @ self.u2)
-        Bbar = c * np.conj(c_k) * np.conj(self.u2 @ Jhat @ self.u1)
-
-        return A, Abar, CI, CJ, B, Bbar, inner
-
-    @staticmethod
-    def rotate_vector_to_ez(v):
-        """ Creates a 3x3 rotation matrix R with R v = [0, 0, 1]
-
-
-                Parameters
-                ----------
-                v : numpy.ndarray
-                    Three-dimensional vector.
-
-                Returns
-                -------
-                numpy.ndarray
-                    3x3 rotation matrix R with R v = [0, 0, 1].
-
-                """
-
-        v = np.array(v, dtype=float) / norm(v)
-        e3 = v
-        if np.isclose(np.abs(v), [1, 0, 0], atol=0.00001).all():
-            e2 = np.array([0, 0, 1])
-        else:
-            e2 = np.cross(v, [1, 0, 0])
-        e2 = e2 / norm(e2)
-        e1 = np.cross(e2, e3)
-
-        return np.array([e1, e2, e3]).T
-
-    @staticmethod
-    def align_unit_vectors(v1, v2=None):
-        """ Creates a 3x3 rotation matrix R with R v1 = v2
-        # SPURIOUS!!!!
-
-        Parameters
-        ----------
-        v1 : numpy.ndarray
-            Three-dimensional vector.
-        v2 : numpy.ndarray
-            Three-dimensional vector. If None v2 = [0, 0, 1]. Default is None.
-
-        Returns
-        -------
-        numpy.ndarray
-            3x3 rotation matrix R with Rv1 = v2.
-
-        """
-
-        v1 = np.array(v1, dtype=float)
-        if v2 is None:
-            v2 = np.array([0, 0, 1], dtype=float)
-        else:
-            v2 = np.array(v2)
-
-        # make them unit vectors
-        v1 = v1 / norm(v1)
-        v2 = v2 / norm(v2)
-
-        # and calculate their dot product
-        dot = v1 @ v2
-
-        # check whether v1 and v2 are (anti-)parallel
-        if np.isclose(dot, 1., atol=0.00001):
-            return np.eye(3, dtype=float)
-
-        elif np.isclose(dot, -1., atol=0.00001):
-            # get the first non-zero element of v2
-            idx = np.argmin(v2 == 0)
-            # construct v_orth which is orthogonal to ez using the scalar product
-            v_orth = np.ones(3)
-            v_orth[idx] = -v2[np.delete(np.arange(3), idx)].sum()
-            v_orth = v_orth / norm(v_orth)
-            # calculate rotational matrix
-            return -np.eye(3) + 2 * np.outer(v_orth, v_orth)
-
-        else:
-            angle = np.arccos(v1 @ v2) / 2 / np.pi * 360
-            print(angle)
-            cross = np.cross(v1, v2)
-            skew_mat = np.array([[0., -cross[2], cross[1]], [cross[2], 0., -cross[0]], [-cross[1], cross[0], 0.]])
-            return np.eye(3) + skew_mat + matrix_power(skew_mat, 2) * (1 / (1 + dot))
+        return A, Abar, inner
 
     def __repr__(self):
         return repr(self.DF)
