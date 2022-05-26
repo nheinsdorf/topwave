@@ -5,15 +5,17 @@ Created on Wed Jan  5 14:07:56 2022
 
 @author: niclas
 """
+from itertools import product
 
 from topwave import solvers
 from topwave.coupling import Coupling
+
 import numpy as np
-import pandas as pd
-from tabulate import tabulate
-from scipy.linalg import norm, block_diag
 from numpy.linalg import eigvals, multi_dot, eig
-from itertools import product
+import pandas as pd
+from scipy.linalg import norm, block_diag
+from tabulate import tabulate
+
 
 
 class Model(object):
