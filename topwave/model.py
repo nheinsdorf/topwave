@@ -6,6 +6,7 @@ Created on Wed Jan  5 14:07:56 2022
 @author: niclas
 """
 from itertools import product
+from pathlib import Path
 
 from topwave import solvers
 from topwave.coupling import Coupling
@@ -14,6 +15,7 @@ from topwave.util import rotate_vector_to_ez
 import numpy as np
 from numpy.linalg import eigvals, multi_dot, eig
 import pandas as pd
+from pymatgen.io.cif import CifWriter
 from scipy.linalg import norm, block_diag
 from tabulate import tabulate
 
@@ -59,6 +61,9 @@ class Model(object):
         Provide a classical magnetic ground state.
     show_moments():
         Prints the magnetic moments.
+    write_cif():
+        A function that uses pymatgen functionality to save Model.STRUC
+        as a mcif file to be visualized in e.g. VESTA
 
     """
 
@@ -208,6 +213,24 @@ class Model(object):
 
         for _, site in enumerate(self.STRUC):
             print(f'Magnetic Moment on Site{_}:\t{site.properties["magmom"]}')
+
+    def write_cif(self, path=None):
+        """
+        Function that writes the pymatgen structure to a mcif file for visualization in e.g. VESTA
+
+        Parameters
+        ----------
+        path : str
+            Absolute path to the directory where the mcif file should be saved, e.g.
+            '/home/user/material/material.mcif'
+        """
+
+        # get user's home directory
+        home = str(Path.home())
+        path = home + '/topwave_model.mcif' if path is None else path
+
+        CifWriter(self.STRUC, write_magmoms=True).write_file(path)
+
 
 class SpinWaveModel(Model):
     """
