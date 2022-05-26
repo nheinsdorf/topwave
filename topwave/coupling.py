@@ -57,7 +57,7 @@ class Coupling(object):
         Distance between two sites (in the same unit cell) in fractional
         coordinates. 
     strength : float
-        Heisenberg exchange of the coupling
+        Exchange/Hopping strength of the coupling
     u : numpy.ndarray
         Three-dimensional vector related to the site1/site2 property 'Rot'
         that is used to construct the matrix elements in rotated local spin

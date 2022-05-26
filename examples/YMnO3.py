@@ -5,7 +5,7 @@ from matplotlib.lines import Line2D
 from mpl_toolkits.mplot3d import Axes3D
 from pymatgen.core.structure import Structure, Lattice
 from pymatgen.io.cif import CifWriter
-from topwave.model import Model, Spec
+from topwave.model import SpinWaveModel, Spec
 from topwave.topology import WCC_evolution
 
 #%%
@@ -19,11 +19,11 @@ struc = Structure.from_spacegroup(SG, lat, ['Mn'],
                                   [[1/3., 0, 0]])
 
 # Construct a Model instance
-model = Model(struc)
+model = SpinWaveModel(struc)
 
 model.generate_couplings(6.1, SG)
 model.show_couplings()
-
+#%%
 # assign exchange couplings
 J1 = 1
 J2 = 1
@@ -51,7 +51,7 @@ model.set_moments(dirs, [mu] * 6)
 # calculate magnon spectrum
 nk = 100
 delta = 0.0001
-ks = np.linspace([0.5, 0.5, 0.5], [0.5, 0.2, 0.5], nk)
+ks = np.linspace([0 + delta, 0 + delta, 0], [0.5, 0.5, 0.0], nk)
 spec = Spec(model, ks)
 #%%
 # plot it

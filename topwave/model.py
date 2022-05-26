@@ -9,6 +9,7 @@ from itertools import product
 
 from topwave import solvers
 from topwave.coupling import Coupling
+from topwave.util import rotate_vector_to_ez
 
 import numpy as np
 from numpy.linalg import eigvals, multi_dot, eig
@@ -121,7 +122,7 @@ class Model(object):
         print(tabulate(self.CPLS_as_df, headers='keys', tablefmt='github',
                        showindex=True))
 
-    def set_coupling(self, strength, index, by_symmetry = True):
+    def set_coupling(self, strength, index, by_symmetry=True):
         """
         Assigns Heisenberg interaction or hopping amplitude to a selection
         of couplings based on their (symmetry) index.
@@ -130,7 +131,7 @@ class Model(object):
         Parameters
         ----------
         strength : float
-            Strength of the Heisenberg exchange.
+            Strength of the Exchange/Hopping.
         index : int
             Integer that corresponds to the symmetry index of a selection of
             couplings, or to the index if by_symmetry = False.
@@ -141,10 +142,10 @@ class Model(object):
 
         """
 
-        indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == symid].tolist()
+        indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
 
         for _ in indices:
-            self.CPLS[_].JH = strength
+            self.CPLS[_].strength = strength
             self.CPLS_as_df.loc[_, 'Heis.'] = strength
 
 
@@ -188,7 +189,7 @@ class Model(object):
             S = S / np.round(norm(S), 6)
 
             # calculate the rotation matrix that rotates the spin to the quantization axis
-            self.STRUC[_].properties['Rot'] = Coupling.rotate_vector_to_ez(S)
+            self.STRUC[_].properties['Rot'] = rotate_vector_to_ez(S)
             # stretch it to match the right magnetic moment and save it
             self.STRUC[_].properties['magmom'] = S * mu
 
