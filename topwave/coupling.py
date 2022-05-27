@@ -97,7 +97,10 @@ class Coupling(object):
         self.DELTA = site2.frac_coords - site1.frac_coords
         self.strength = 0.
         self.DM = np.array([0., 0., 0.], dtype=float)
-        self.u1, self.u2, self.v1, self.v2 = [None]*4
+        try:
+            self.get_uv()
+        except KeyError:
+            self.u1, self.u2, self.v1, self.v2 = [None] * 4
         self.DF = pd.DataFrame([[self.SYMID, self.SYMOP.as_xyz_string(), self.DELTA, self.R, self.D, self.I,
                                  str(self.SITE1.species), self.J, str(self.SITE2.species), self.strength, self.DM]],
                                columns=['symid', 'symop', 'delta', 'R', 'dist', 'i', 'at1', 'j', 'at2', 'strength', 'DM'])

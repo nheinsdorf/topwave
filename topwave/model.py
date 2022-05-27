@@ -179,7 +179,8 @@ class Model(object):
 
         """
 
-        self.MF = np.array(direction * magnitude, dtype=float)
+        field = np.real(magnitude) * np.array(direction, dtype=float) / norm(direction)
+        self.MF[0], self.MF[1], self.MF[2] = tuple(field.tolist())
 
     def set_moments(self, directions, magnitudes):
         """ Assigns a magnetic ground state to the model
@@ -200,21 +201,21 @@ class Model(object):
 
         """
 
-        directions = np.array(directions, dtype=float)
-        for _, (dir, mu) in enumerate(zip(directions, magnitudes)):
+        directions = np.array(directions, dtype=float).reshape((self.N, 3))
+        magnitudes = np.array(magnitudes, dtype=float).reshape((self.N,))
+        for _, (direction, magnitude) in enumerate(zip(directions, magnitudes)):
             # rotate into cartesian coordinates and normalize it
-            S = self.STRUC.lattice.matrix.T @ dir
-            S = S / np.round(norm(S), 6)
+            moment = self.STRUC.lattice.matrix.T @ direction
+            moment = moment / norm(moment)
 
             # calculate the rotation matrix that rotates the spin to the quantization axis
-            self.STRUC[_].properties['Rot'] = rotate_vector_to_ez(S)
+            self.STRUC[_].properties['Rot'] = rotate_vector_to_ez(moment)
             # stretch it to match the right magnetic moment and save it
-            self.STRUC[_].properties['magmom'] = S * mu
+            self.STRUC[_].properties['magmom'] = moment * magnitude
 
         # extract the u- and v-vectors from the rotation matrix
         for cpl in self.CPLS:
             cpl.get_uv()
-
 
     def show_moments(self):
         """
