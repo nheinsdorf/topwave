@@ -82,13 +82,24 @@ class Model(object):
         # count the number of magnetic sites and save
         self.N = len(self.STRUC)
 
-        # allocate a list for the couplings and a dataframe for easy access
+        # allocate an empty list for the couplings and a dataframe (for easy access and printing)
+        self.CPLS = None
+        self.CPLS_as_df = None
+        self.reset_all_couplings()
+
+        # put zero magnetic field
+        self.MF = np.zeros(3, dtype=float)
+
+    def reset_all_couplings(self):
+        """
+        Deletes all couplings from self.CPLS and self.CPLS_as_df and allocates the
+        name space to an empty list/df.
+
+        """
         self.CPLS = []
         self.CPLS_as_df = pd.DataFrame(columns=['symid', 'symop', 'delta', 'R', 'dist', 'i',
                                                 'at1', 'j', 'at2', 'Heis.', 'DM'])
 
-        # put zero magnetic field
-        self.MF = np.zeros(3, dtype=float)
 
     def generate_couplings(self, maxdist, sg=None):
         """
@@ -109,7 +120,7 @@ class Model(object):
         cpls = self.STRUC.get_symmetric_neighbor_list(maxdist, sg=sg, unique=True)
 
         # save the generated couplings (overriding any old ones)
-        self.CPLS = []
+        self.reset_all_couplings()
         for cplid, (i, j, R, d, symid, symop) in enumerate(zip(*cpls)):
             site1 = self.STRUC[i]
             site2 = self.STRUC[j]
@@ -152,7 +163,6 @@ class Model(object):
         for _ in indices:
             self.CPLS[_].strength = strength
             self.CPLS_as_df.loc[_, 'Heis.'] = strength
-
 
     def set_field(self, direction, magnitude):
         """
