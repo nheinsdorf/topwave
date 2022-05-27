@@ -268,25 +268,33 @@ class SpinWaveModel(Model):
             the exchange.
         index : int
             Integer that corresponds to the symmetry index of a selection of
-            couplings, or to the index of a single index if by_symmetry is false.
+            couplings, or to the index if by_symmetry = False.
+        by_symmetry : bool
+            If true, index corresponds to the symmetry index of a selection of couplings.
+            If false, it corresponds to the index.
 
 
         """
 
+        if by_symmetry:
+            indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
+        else:
+            indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
+
         D = np.array(D, dtype=float)
-        indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == symid].tolist()
         _ = indices[0]
+        self.CPLS[_].DM = D
         self.CPLS_as_df.loc[_, 'DM'][0] = D[0]
         self.CPLS_as_df.loc[_, 'DM'][1] = D[1]
         self.CPLS_as_df.loc[_, 'DM'][2] = D[2]
 
-        self.CPLS[indices[0]].DM = D
-        for _ in indices[1:]:
-            Drot = self.CPLS[_].SYMOP.apply_rotation_only(D)
-            self.CPLS[_].DM = Drot
-            self.CPLS_as_df.loc[_, 'DM'][0] = Drot[0]
-            self.CPLS_as_df.loc[_, 'DM'][1] = Drot[1]
-            self.CPLS_as_df.loc[_, 'DM'][2] = Drot[2]
+        if by_symmetry:
+            for _ in indices[1:]:
+                Drot = self.CPLS[_].SYMOP.apply_rotation_only(D)
+                self.CPLS[_].DM = Drot
+                self.CPLS_as_df.loc[_, 'DM'][0] = Drot[0]
+                self.CPLS_as_df.loc[_, 'DM'][1] = Drot[1]
+                self.CPLS_as_df.loc[_, 'DM'][2] = Drot[2]
 
 
 class TightBindingModel(Model):

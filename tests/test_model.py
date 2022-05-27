@@ -153,5 +153,25 @@ class ModelTest(unittest.TestCase):
                                      coupling.v2, uv[3])
 
 
+class SpinWaveModelTest(unittest.TestCase):
+    def setUp(self):
+        """ We will use the non-chiral space group 198 with four ferromagnetic Spin=1 sites."""
+        sg = 198
+        struc = Structure.from_spacegroup(sg, 8.908 * np.eye(3), ['Cu'], [[0., 0., 0.]])
+        self.model = model.SpinWaveModel(struc)
+        self.max_dist = 7
+        self.model.generate_couplings(7, sg)
+        self.model.set_moments(self.model.N * [[0, 0, 1]], self.model.N * [1])
+
+    def test_set_DM_case1(self):
+        """ Check that applying the inverse rotation yields the original vector."""
+        D = [0.1, 0.2, 0.3]
+        symmetry_indices = np.unique(self.model.CPLS_as_df['symid'].to_list())
+        for symmetry_index in symmetry_indices:
+            self.model.set_DM(D, symmetry_index)
+        for coupling in self.model.CPLS:
+            np.testing.assert_almost_equal(coupling.SYMOP.inverse.apply_rotation_only(coupling.DM), D)
+
+
 if __name__ == '__main__':
     unittest.main()
