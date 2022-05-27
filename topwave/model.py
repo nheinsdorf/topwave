@@ -100,7 +100,7 @@ class Model(object):
         self.CPLS_as_df = pd.DataFrame(columns=['symid', 'symop', 'delta', 'R', 'dist', 'i',
                                                 'at1', 'j', 'at2', 'strength', 'DM'])
 
-    def generate_couplings(self, maxdist, sg=None):
+    def generate_couplings(self, maxdist, sg):
         """
         Generates couplings up to a distance maxdist and stores them
 
@@ -110,8 +110,7 @@ class Model(object):
         maxdist : float
             Distance (in Angstrom) up to which couplings are generated.
         sg : int, optional
-            International Space Group number. If None is provided, the
-            space group of self.STRUC will be used. The default is None.
+            International Space Group number.
 
 
         """
@@ -157,7 +156,10 @@ class Model(object):
 
         """
 
-        indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
+        if by_symmetry:
+            indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
+        else:
+            indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
 
         for _ in indices:
             self.CPLS[_].strength = strength
