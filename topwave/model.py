@@ -98,8 +98,7 @@ class Model(object):
         """
         self.CPLS = []
         self.CPLS_as_df = pd.DataFrame(columns=['symid', 'symop', 'delta', 'R', 'dist', 'i',
-                                                'at1', 'j', 'at2', 'Heis.', 'DM'])
-
+                                                'at1', 'j', 'at2', 'strength', 'DM'])
 
     def generate_couplings(self, maxdist, sg=None):
         """
@@ -112,7 +111,7 @@ class Model(object):
             Distance (in Angstrom) up to which couplings are generated.
         sg : int, optional
             International Space Group number. If None is provided, the
-            spacegroup of self.STRUC will be used. The default is None.
+            space group of self.STRUC will be used. The default is None.
 
 
         """
@@ -162,7 +161,7 @@ class Model(object):
 
         for _ in indices:
             self.CPLS[_].strength = strength
-            self.CPLS_as_df.loc[_, 'Heis.'] = strength
+            self.CPLS_as_df.loc[_, 'strength'] = strength
 
     def set_field(self, direction, magnitude):
         """

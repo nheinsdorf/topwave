@@ -100,7 +100,7 @@ class Coupling(object):
         self.u1, self.u2, self.v1, self.v2 = [None]*4
         self.DF = pd.DataFrame([[self.SYMID, self.SYMOP.as_xyz_string(), self.DELTA, self.R, self.D, self.I,
                                  str(self.SITE1.species), self.J, str(self.SITE2.species), self.strength, self.DM]],
-                               columns=['symid', 'symop', 'delta', 'R', 'dist', 'i', 'at1', 'j', 'at2', 'Heis.', 'DM'])
+                               columns=['symid', 'symop', 'delta', 'R', 'dist', 'i', 'at1', 'j', 'at2', 'strength', 'DM'])
 
     def get_uv(self):
         """ Constructs the u and v vector when the system was magnetized.
