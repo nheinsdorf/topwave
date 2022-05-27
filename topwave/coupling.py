@@ -174,13 +174,13 @@ class Coupling(object):
                          [self.DM[1], -self.DM[0], self.strength]], dtype=complex)
 
         # construct the matrix elements
+        # NOTE: Check redundancy for the a (and possibly b)-type matrix elements.
         A = c * c_k * (self.u1 @ Jhat @ np.conj(self.u2))
         Abar = c * np.conj(c_k) * (self.u1 @ Jhat @ np.conj(self.u2))
 
         CI = mu1 * (self.v1 @ Jhat @ self.v2)
         CJ = mu2 * (self.v1 @ Jhat @ self.v2)
 
-        # spurious
         B = c * c_k * (self.u1 @ Jhat @ self.u2)
         Bbar = c * np.conj(c_k) * np.conj(self.u2 @ Jhat @ self.u1)
 

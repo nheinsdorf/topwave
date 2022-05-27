@@ -173,5 +173,10 @@ class SpinWaveModelTest(unittest.TestCase):
             np.testing.assert_almost_equal(coupling.SYMOP.inverse.apply_rotation_only(coupling.DM), D)
 
 
+class SpecTest(unittest.TestCase):
+    """ Waiting to find the best model system.... """
+
+
+
 if __name__ == '__main__':
     unittest.main()
