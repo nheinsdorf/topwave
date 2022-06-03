@@ -31,6 +31,7 @@ model.set_coupling(J1, 0)
 model.set_coupling(J2, 1)
 model.set_coupling(J3, 2)
 model.set_coupling(J3, 3)
+
 #model.set_DM([0, 0, 0.1], 0)
 #model.set_DM([0, 0, 0.1], 0)
 
@@ -51,7 +52,7 @@ model.set_moments(dirs, [mu] * 6)
 
 # calculate magnon spectrum
 nk = 100
-delta = 0.1
+delta = 0.01
 ks = np.linspace([0 + delta, 0 + delta, 0.5], [0.5, 0.5, 0.5], nk)
 spec = Spec(model, ks)
 #%%

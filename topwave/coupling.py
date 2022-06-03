@@ -204,9 +204,8 @@ class Coupling(object):
 
         # construct the matrix elements
         A = c_k * self.strength
-        Abar = np.conj(c_k) * self.strength
 
-        return A, Abar, inner
+        return A, inner
 
     def __repr__(self):
         return repr(self.DF)

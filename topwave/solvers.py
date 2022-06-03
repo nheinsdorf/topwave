@@ -42,3 +42,4 @@ def colpa(H):
     T = inv(K) @ U @ sqrtm(np.diag(E))
     
     return E, T
+

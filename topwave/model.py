@@ -13,7 +13,7 @@ from topwave.coupling import Coupling
 from topwave.util import rotate_vector_to_ez
 
 import numpy as np
-from numpy.linalg import eigvals, multi_dot, eig
+from numpy.linalg import eigvals, multi_dot, eig, eigh
 import pandas as pd
 from pymatgen.io.cif import CifWriter
 from scipy.linalg import norm, block_diag
@@ -53,7 +53,7 @@ class Model(object):
     show_couplings():
         Prints the couplings.
     set_coupling(J, symid):
-        Assign Heisenberg Exchange terms to a collection of couplings based
+        Assign Heisenberg Exchange or hopping amplitude terms to a collection of couplings based
         on their symmetry index.
     set_field(B):
         Apply an external magnetic field that is stored in self.MF
@@ -357,21 +357,54 @@ class Spec(object):
         self.N = len(model.STRUC)
         self.NK = len(ks)
 
+        # NOTE: think about the real implementation. Maybe two child classes of spec?
+        if isinstance(model, TightBindingModel):
+            self.H = self.get_tb_hamiltonian(model)
+            print(self.H.shape)
+            self.solve(eigh)
         # build Hamiltonian and diagonalize it
-        self.H = self.get_hamiltonian(model)
-        self.solve()
+        else:
+            self.H = self.get_sw_hamiltonian(model)
+            self.solve(solvers.colpa)
 
         # TODO: make switches for these so they aren't calculated all the time
         # compute the local spin-spin correlation functions
         #self.get_correlation_functions(model)
 
         # compute the tangent matrices of the hamiltonian and the Berry Curvature
-        self.DHDK = self.get_tangent_matrices(model)
+        #self.DHDK = self.get_tangent_matrices(model)
 
         # compute the Berry curvature
         # self.get_berry_curvature()
 
-    def get_hamiltonian(self, model):
+    def get_tb_hamiltonian(self, model):
+        """ Function that builds the Hamiltonian for a tight-binding model.
+
+        Parameters
+        ----------
+        model : topwave.model.Model
+            The spin wave model that is used to construct the Hamiltonian.
+
+        Returns
+        -------
+        The Hamiltonian of the model at the provided k-points.
+
+        """
+
+        MAT = np.zeros((self.NK, self.N, self.N), dtype=complex)
+
+        # construct matrix elements at each k-point
+        for _, k in enumerate(self.KS):
+            for cpl in model.CPLS:
+                # get the matrix elements from the couplings
+                (A, inner) = cpl.get_tb_matrix_elements(k)
+
+                MAT[_, cpl.I, cpl.J] += A
+                MAT[_, cpl.J, cpl.I] += np.conj(A)
+
+        return MAT
+
+    def get_sw_hamiltonian(self, model):
         """
         Function that builds the Hamiltonian for the model at a set of
         given k-points.
@@ -380,7 +413,6 @@ class Spec(object):
         ----------
         model : topwave.model.Model
             The spin wave model that is used to construct the Hamiltonian.
-        dHdk : str
 
         Returns
         -------
@@ -577,10 +609,14 @@ class Spec(object):
         for _, (k, psi_k) in enumerate(zip(self.KS, self.psi)):
             self.SS[_] = self.get_spin_spin_expectation_val(model, k, psi_k)
 
-    def solve(self):
+    def solve(self, solver):
         """
-        Diagonalizes the bosonic Hamiltonian
+        Diagonalizes the bosonic Hamiltonian.
 
+        Parameters
+        ----------
+        solver : function
+            A function that takes a Hamiltonian, and returns its eigenvalues and vectors.
 
         Returns
         -------
@@ -595,7 +631,7 @@ class Spec(object):
         # diagonalize the Hamiltonian at each k-point
         for _, k in enumerate(self.KS):
             try:
-                E[_], psi[_] = solvers.colpa(self.H[_])
+                E[_], psi[_] = solver(self.H[_])
             except:
                 s = 'Hamiltonian is not positive-definite at k = (%.3f, %.3f' \
                     ', %.3f). Adding small epsilon and trying again.' % tuple(k)
@@ -604,7 +640,7 @@ class Spec(object):
                     epsilon = np.sort(np.real(eigvals(self.H[_]))) + 0.0000001
                     # epsilon = 0.1
                     H_shftd = self.H[_] + np.eye(self.H.shape[1]) * epsilon
-                    E[_], psi[_] = solvers.colpa(H_shftd)
+                    E[_], psi[_] = solver(H_shftd)
                 except:
                     s = 'Diagonalization failed! Check classical ground state' \
                         ' or try different method for approximate' \
