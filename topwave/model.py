@@ -17,6 +17,7 @@ from numpy.linalg import eigvals, multi_dot, eig, eigh
 import pandas as pd
 from pymatgen.io.cif import CifWriter
 from scipy.linalg import norm, block_diag
+import sympy as sp
 from tabulate import tabulate
 
 
@@ -307,10 +308,43 @@ class SpinWaveModel(Model):
                 self.CPLS_as_df.loc[_, 'DM'][2] = Drot[2]
 
 
+
 class TightBindingModel(Model):
     """
     Class for a tight-binding model.
+
+    Methods
+    -------
+    get_symbolic_hamiltonian():
+        Returns a symbolic representation of the Hamiltonian
     """
+
+    def get_symbolic_hamiltonian(self):
+        """ Uses sympy to construct and return a symbolic representation of
+        the Hamiltonian.
+
+        Returns
+        -------
+        symbolic_hamiltonian : sympy.matrices.dense.Matrix
+            Symbolic Hamiltonian
+        """
+
+        symbolic_hamiltonian = sp.Matrix(np.zeros((self.N, self.N)))
+        kx, ky, kz = sp.symbols('k_x k_y k_z')
+        labels = []
+        symbols = []
+        for cpl in self.CPLS:
+            if cpl.label in labels:
+                index = labels.index(cpl.label)
+                symbol = symbols[index]
+            else:
+                labels.append(cpl.label)
+                symbol = sp.Symbol(cpl.label)
+                symbols.append(symbol)
+            fourier_coefficient = cpl.R[0] * kx + cpl.R[1] * ky + cpl.R[2] * kz
+            symbolic_hamiltonian[cpl.I, cpl.J] += symbol * fourier_coefficient
+
+        return symbolic_hamiltonian
 
 
 class Spec(object):
