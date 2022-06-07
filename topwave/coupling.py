@@ -67,7 +67,9 @@ class Coupling(object):
         that is used to construct the matrix elements in rotated local spin
         reference frames.
     label : str
-        Label that is used for the symbolic representation of the Hamiltonian.
+        Label that is used for the coupling part of the symbolic representation of the Hamiltonian.
+    label_DM : str
+        String that is used for the DM part of the symbolic representation of the Hamiltonian.
         
     Methods
     -------
@@ -75,10 +77,13 @@ class Coupling(object):
         Returns an empty dataframe with the right column labels for printing.
     get_df():
         Returns attributes of self as a pandas dataframe.
+    get_label(label=None, by_symmetry=True):
+        Generates labels for the symbolic representation of the Hamiltonian.
     get_uv():
         Constructs the u and v vectors when the system was magnetized.
     get_sw_matrix_elements(k):
         Generates matrix elements of the coupling at a given k-point.
+
 
         
 
@@ -100,6 +105,7 @@ class Coupling(object):
         self.strength = 0.
         self.DM = np.array([0., 0., 0.], dtype=float)
         self.label = None
+        self.label_DM = None
         try:
             self.get_uv()
         except KeyError:
@@ -127,6 +133,26 @@ class Coupling(object):
             self.label = 'v_' + str(int(self.SYMID)) + str(int(self.ID))
         else:
             self.label = label
+
+    def get_label_DM(self, label=None, by_symmetry=True):
+        """ Generates labels for the DM interaction strengths.
+
+        label : str
+            Label that is assigned to the coupling. If None, a label is assigned based on the
+            (symmetry)-index of the coupling. Default is None.
+        by_symmetry : bool
+            If true the symmetry index will be used to assign a label. If false, the symmetry index
+            and the index will be used. Default is True.
+        """
+
+        if label is None and by_symmetry is True:
+            self.label_DM = 'D_' + str(int(self.SYMID))
+        elif label is None and by_symmetry is False:
+            self.label_DM = 'D_' + str(int(self.SYMID)) + str(int(self.ID))
+        else:
+            self.label_DM = label
+
+
 
     def get_uv(self):
         """ Constructs the u and v vector when the system was magnetized.

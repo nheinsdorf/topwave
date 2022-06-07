@@ -254,13 +254,14 @@ class Model(object):
         Returns
         -------
         set_couplings : list
-            Couplings from self.CPLS that have been set and assigned a label.
+            Couplings from self.CPLS that have been set and assigned a label via
+            'set_coupling' or 'set_DM'.
 
         """
 
         set_couplings = []
         for cpl in self.CPLS:
-            if cpl.label is not None:
+            if cpl.label is not None or cpl.label_DM is not None:
                 set_couplings.append(cpl)
 
         return set_couplings
