@@ -254,6 +254,23 @@ class Model(object):
 
         CifWriter(self.STRUC, write_magmoms=True).write_file(path)
 
+    def get_set_couplings(self):
+        """ Function that returns list of couplings that have been set and assigned a label.
+
+        Returns
+        -------
+        set_couplings : list
+            Couplings from self.CPLS that have been set and assigned a label.
+
+        """
+
+        set_couplings = []
+        for cpl in self.CPLS:
+            if cpl.label is not None:
+                set_couplings.append(cpl)
+
+        return set_couplings
+
 
 class SpinWaveModel(Model):
     """
