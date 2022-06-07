@@ -359,7 +359,7 @@ class TightBindingModel(Model):
             symbolic_hamiltonian[cpl.I, cpl.J] += symbol * fourier_coefficient
             symbolic_hamiltonian[cpl.J, cpl.I] += (symbol * fourier_coefficient).conjugate()
 
-        return symbolic_hamiltonian
+        return sp.nsimplify(symbolic_hamiltonian)
 
 
 class Spec(object):
