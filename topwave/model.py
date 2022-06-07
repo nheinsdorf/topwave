@@ -341,7 +341,7 @@ class TightBindingModel(Model):
         """
 
         symbolic_hamiltonian = sp.Matrix(np.zeros((self.N, self.N)))
-        kx, ky, kz = sp.symbols('k_x k_y k_z')
+        kx, ky, kz = sp.symbols('k_x k_y k_z', real=True)
         labels = []
         symbols = []
         for cpl in self.get_set_couplings():
@@ -350,10 +350,14 @@ class TightBindingModel(Model):
                 symbol = symbols[index]
             else:
                 labels.append(cpl.label)
-                symbol = sp.Symbol(cpl.label)
+                if np.imag(cpl.strength) == 0:
+                    symbol = sp.Symbol(cpl.label, real=True)
+                else:
+                    symbol = sp.Symbol(cpl.label)
                 symbols.append(symbol)
-            fourier_coefficient = cpl.R[0] * kx + cpl.R[1] * ky + cpl.R[2] * kz
+            fourier_coefficient = sp.exp(-sp.I * (cpl.R[0] * kx + cpl.R[1] * ky + cpl.R[2] * kz))
             symbolic_hamiltonian[cpl.I, cpl.J] += symbol * fourier_coefficient
+            symbolic_hamiltonian[cpl.J, cpl.I] += (symbol * fourier_coefficient).conjugate()
 
         return symbolic_hamiltonian
 
