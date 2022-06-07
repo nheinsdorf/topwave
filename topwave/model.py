@@ -277,7 +277,7 @@ class SpinWaveModel(Model):
         their symmetry index.
     """
 
-    def set_DM(self, D, index, by_symmetry = True):
+    def set_DM(self, D, index, by_symmetry=True):
         """
         Assigns asymmetric exchange terms to a selection of couplings based
         on their symmetry. The vector that is passed is rotated according to
@@ -317,7 +317,6 @@ class SpinWaveModel(Model):
                 self.CPLS_as_df.loc[_, 'DM'][0] = Drot[0]
                 self.CPLS_as_df.loc[_, 'DM'][1] = Drot[1]
                 self.CPLS_as_df.loc[_, 'DM'][2] = Drot[2]
-
 
 
 class TightBindingModel(Model):

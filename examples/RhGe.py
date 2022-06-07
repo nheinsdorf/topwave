@@ -27,8 +27,8 @@ v3 = 0.5
 v4 = -0.4
 
 model.set_coupling(v0, 0)
-#model.set_coupling(v1, 1)
-#model.set_coupling(v2, 2)
+model.set_coupling(v1, 1, by_symmetry=False)
+model.set_coupling(v2, 2)
 #model.set_coupling(v3, 3)
 #model.set_coupling(v4, 4)
 
