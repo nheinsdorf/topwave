@@ -165,16 +165,10 @@ class Model(object):
         else:
             indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
 
-        if label is None:
-            label = 'v_'
-            label += str(int(self.CPLS[indices[0]].SYMID)) if indices else ''
-        if not by_symmetry:
-            label += str(int(index))
-
         for _ in indices:
             self.CPLS[_].strength = strength
             self.CPLS_as_df.loc[_, 'strength'] = strength
-            self.CPLS[_].label = label
+            self.CPLS[_].get_label(label, by_symmetry)
 
     def set_field(self, direction, magnitude):
         """
@@ -350,7 +344,7 @@ class TightBindingModel(Model):
         kx, ky, kz = sp.symbols('k_x k_y k_z')
         labels = []
         symbols = []
-        for cpl in self.CPLS:
+        for cpl in self.get_set_couplings():
             if cpl.label in labels:
                 index = labels.index(cpl.label)
                 symbol = symbols[index]
@@ -455,7 +449,7 @@ class Spec(object):
 
         # construct matrix elements at each k-point
         for _, k in enumerate(self.KS):
-            for cpl in model.CPLS:
+            for cpl in model.get_set_couplings():
                 # get the matrix elements from the couplings
                 (A, inner) = cpl.get_tb_matrix_elements(k)
 
@@ -484,7 +478,7 @@ class Spec(object):
 
         # construct matrix elements at each k-point
         for _, k in enumerate(self.KS):
-            for cpl in model.CPLS:
+            for cpl in model.get_set_couplings():
                 # get the matrix elements from the couplings
                 (A, Abar, CI, CJ, B12, B21, inner) = cpl.get_sw_matrix_elements(k)
 

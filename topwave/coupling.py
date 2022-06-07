@@ -108,6 +108,26 @@ class Coupling(object):
                                  str(self.SITE1.species), self.J, str(self.SITE2.species), self.strength, self.DM]],
                                columns=['symid', 'symop', 'delta', 'R', 'dist', 'i', 'at1', 'j', 'at2', 'strength', 'DM'])
 
+    def get_label(self, label=None, by_symmetry=True):
+        """ Generates a label to the coupling to represent Hamiltonian symbolically.
+
+        Parameters
+        ----------
+        label : str
+            Label that is assigned to the coupling. If None, a label is assigned based on the
+            (symmetry)-index of the coupling. Default is None.
+        by_symmetry : bool
+            If true the symmetry index will be used to assign a label. If false, the symmetry index
+            and the index will be used. Default is True.
+        """
+
+        if label is None and by_symmetry is True:
+            self.label = 'v_' + str(int(self.SYMID))
+        elif label is None and by_symmetry is False:
+            self.label = 'v_' + str(int(self.SYMID)) + str(int(self.ID))
+        else:
+            self.label = label
+
     def get_uv(self):
         """ Constructs the u and v vector when the system was magnetized.
         
