@@ -136,7 +136,7 @@ class Model(object):
         print(tabulate(self.CPLS_as_df, headers='keys', tablefmt='github',
                        showindex=True))
 
-    def set_coupling(self, strength, index, by_symmetry=True):
+    def set_coupling(self, strength, index, by_symmetry=True, label=None):
         """
         Assigns Heisenberg interaction or hopping amplitude to a selection
         of couplings based on their (symmetry) index.
@@ -152,7 +152,10 @@ class Model(object):
         by_symmetry : bool
             If true, index corresponds to the symmetry index of a selection of couplings.
             If false, it corresponds to the index.
-
+        label : str
+            Label for the exchange/hopping parameter that is used for the symbolic
+            representation of the Hamiltonian. If None, a label is generated based
+            on the index.
 
         """
 
@@ -161,9 +164,16 @@ class Model(object):
         else:
             indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
 
+        if label is None:
+            label = 'v_'
+            label += str(int(self.CPLS[indices[0]].SYMID)) if indices else ''
+        if not by_symmetry:
+            label += str(int(index))
+
         for _ in indices:
             self.CPLS[_].strength = strength
             self.CPLS_as_df.loc[_, 'strength'] = strength
+            self.CPLS[_].label = label
 
     def set_field(self, direction, magnitude):
         """
@@ -360,7 +370,6 @@ class Spec(object):
         # NOTE: think about the real implementation. Maybe two child classes of spec?
         if isinstance(model, TightBindingModel):
             self.H = self.get_tb_hamiltonian(model)
-            print(self.H.shape)
             self.solve(eigh)
         # build Hamiltonian and diagonalize it
         else:

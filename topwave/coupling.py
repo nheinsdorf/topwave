@@ -66,6 +66,8 @@ class Coupling(object):
         Three-dimensional vector related to the site1/site2 property 'Rot'
         that is used to construct the matrix elements in rotated local spin
         reference frames.
+    label : str
+        Label that is used for the symbolic representation of the Hamiltonian.
         
     Methods
     -------
@@ -97,6 +99,7 @@ class Coupling(object):
         self.DELTA = site2.frac_coords - site1.frac_coords
         self.strength = 0.
         self.DM = np.array([0., 0., 0.], dtype=float)
+        self.label = None
         try:
             self.get_uv()
         except KeyError:

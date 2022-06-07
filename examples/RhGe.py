@@ -17,23 +17,31 @@ struc = Structure.from_spacegroup(sg, [[a, 0, 0], [0, a, 0], [0, 0, a]], ['Rh'],
 # Construct a Model instance
 model = TightBindingModel(struc)
 
-model.generate_couplings(5, sg=sg)
+model.generate_couplings(6, sg=sg)
 model.show_couplings()
 
-v1 = 0.78
-vp = -0.76
-v2 = 0.16
-model.set_coupling(v1, 0)
-model.set_coupling(vp, 1)
-model.set_coupling(v2, 3)
-#%%
+v0 = 0.8
+v1 = -0.1
+v2 = 0.4
+v3 = 0.5
+v4 = -0.4
+
+model.set_coupling(v0, 2, by_symmetry=False)
+model.set_coupling(v1, 1)
+model.set_coupling(v2, 2)
+model.set_coupling(v3, 3)
+model.set_coupling(v4, 4)
+
+
+
 
 nk = 100
-hsp_labels = ['X', 'G', 'R', 'M', 'G']
-ks = np.concatenate((np.linspace([0.5, 0, 0], [0, 0, 0], nk, endpoint=False),
+hsp_labels = ['M', 'G', 'R', 'M', 'X', 'G']
+ks = np.concatenate((np.linspace([0.5, 0.5, 0], [0, 0, 0], int(np.round(np.sqrt(2) * nk)), endpoint=False),
                      np.linspace([0, 0, 0], [0.5, 0.5, 0.5], int(np.round(np.sqrt(3) * nk)), endpoint=False),
                      np.linspace([0.5, 0.5, 0.5], [0.5, 0.5, 0], nk, endpoint=False),
-                     np.linspace([0.5, 0.5, 0], [0, 0, 0], int(np.round(np.sqrt(2) * nk)), endpoint=True)))
+                     np.linspace([0.5, 0.5, 0], [0.5, 0, 0], nk, endpoint=False),
+                     np.linspace([0.5, 0, 0], [0, 0, 0], nk, endpoint=True)))
 
 spec = Spec(model, ks)
 
@@ -43,3 +51,5 @@ for band in spec.E.T:
 plt.show()
 
 #%%
+
+print(np.round(spec.H[0], 3))
