@@ -26,7 +26,7 @@ model.show_couplings()
 # assign exchange couplings
 J1 = 1
 J2 = 1
-J3 = -0.1 # FM interplane coupling
+J3 = -0. # FM interplane coupling
 model.set_coupling(J1, 0)
 model.set_coupling(J2, 1)
 model.set_coupling(J3, 2)
@@ -34,6 +34,8 @@ model.set_coupling(J3, 3)
 
 #model.set_DM([0, 0, 0.1], 0)
 #model.set_DM([0, 0, 0.1], 0)
+
+
 
 # set ground state
 mu = 3.143
@@ -52,8 +54,8 @@ model.set_moments(dirs, [mu] * 6)
 
 # calculate magnon spectrum
 nk = 100
-delta = 0.01
-ks = np.linspace([0 + delta, 0 + delta, 0.5], [0.5, 0.5, 0.5], nk)
+delta = 0.0
+ks = np.linspace([0 + delta, 0 + delta, 0.], [0.5, 0.5, 0.], nk)
 spec = Spec(model, ks)
 #%%
 # plot it

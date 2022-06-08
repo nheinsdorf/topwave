@@ -298,7 +298,9 @@ class SpinWaveModel(Model):
 
 
         """
-
+        # IDEA for the problem with implementation of future symbolic representation and labels
+        # there's a problem when DM is initialized first on a bond. Maybe just check when DM is
+        # set whether theres a J bond, and if not create one with 0 strength.
         if by_symmetry:
             indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
         else:
@@ -326,9 +328,31 @@ class TightBindingModel(Model):
 
     Methods
     -------
+    set_onsite_energy(onsite_energy, site_indices, label):
+        Adds onsite energy terms to the given sites.
     get_symbolic_hamiltonian():
         Returns a symbolic representation of the Hamiltonian
     """
+
+    def set_onsite_energy(self, onsite_energy, site_indices=None, label=None):
+        """ Adds onsite term to the specified diagonal matrix element of the Hamiltonian.
+
+        Parameters
+        ----------
+        onsite_energy : float
+            Magnitude of the onsite term.
+        site_indices : list
+            List of site indices (ordered as in self.STRUC) that the term will be added to.
+            If None, the term will be added to all sites. Default is None.
+        label : str
+            A label that is used for the symbolic representation of the Hamiltonian
+        """
+
+        if site_indices is None:
+            site_indices = np.arange(self.N)
+
+        for site_index in site_indices:
+            self.STRUC[site_index].properties['onsite_energy'] = onsite_energy
 
     def get_symbolic_hamiltonian(self):
         """ Uses sympy to construct and return a symbolic representation of
@@ -358,6 +382,7 @@ class TightBindingModel(Model):
             fourier_coefficient = sp.exp(-sp.I * (cpl.R[0] * kx + cpl.R[1] * ky + cpl.R[2] * kz))
             symbolic_hamiltonian[cpl.I, cpl.J] += symbol * fourier_coefficient
             symbolic_hamiltonian[cpl.J, cpl.I] += (symbol * fourier_coefficient).conjugate()
+
 
         return sp.nsimplify(symbolic_hamiltonian)
 
