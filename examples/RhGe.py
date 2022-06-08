@@ -32,6 +32,7 @@ model.set_coupling(v0, 0)
 #model.set_coupling(v3, 3)
 #model.set_coupling(v4, 4)
 
+model.set_onsite_energy(-0.2)
 
 
 
@@ -52,4 +53,6 @@ plt.show()
 
 #%%
 
-print(np.round(spec.H[0], 3))
+h = model.get_symbolic_hamiltonian()
+display(h)
+

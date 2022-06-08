@@ -79,6 +79,8 @@ class Model(object):
         # and label the sites within struc by an index
         for _, site in enumerate(self.STRUC):
             site.properties['id'] = _
+            site.properties['onsite_energy_label'] = None
+            site.properties['onsite_energy'] = 0
 
         # count the number of magnetic sites and save
         self.N = len(self.STRUC)
@@ -328,33 +330,37 @@ class TightBindingModel(Model):
 
     Methods
     -------
-    set_onsite_energy(onsite_energy, site_indices, label):
+    set_onsite_energy(onsite_energy, site_index, label):
         Adds onsite energy terms to the given sites.
     get_symbolic_hamiltonian():
         Returns a symbolic representation of the Hamiltonian
     """
 
-    def set_onsite_energy(self, onsite_energy, site_indices=None, label=None):
+    def set_onsite_energy(self, onsite_energy, site_index=None, label=None):
         """ Adds onsite term to the specified diagonal matrix element of the Hamiltonian.
 
         Parameters
         ----------
         onsite_energy : float
             Magnitude of the onsite term.
-        site_indices : list
-            List of site indices (ordered as in self.STRUC) that the term will be added to.
+        site_index : int
+            Site index (ordered as in self.STRUC) that the term will be added to.
             If None, the term will be added to all sites. Default is None.
         label : str
             A label that is used for the symbolic representation of the Hamiltonian. If None,
             an automatic label is generated. Default is None.
         """
 
-        if site_indices is None:
+        if site_index is None:
             site_indices = np.arange(self.N)
+            auto_label = 'E_0'
+        else:
+            site_indices = [site_index]
+            auto_label = f'E_{site_index}'
 
-        for site_index in site_indices:
-            self.STRUC[site_index].properties['onsite_energy'] = onsite_energy
-            self.STRUC[site_index].properties['onsite_energy_label'] = label
+        for _ in site_indices:
+            self.STRUC[_].properties['onsite_energy'] = onsite_energy
+            self.STRUC[_].properties['onsite_energy_label'] = label if label is not None else auto_label
 
     def get_symbolic_hamiltonian(self):
         """ Uses sympy to construct and return a symbolic representation of
@@ -385,6 +391,15 @@ class TightBindingModel(Model):
             symbolic_hamiltonian[cpl.I, cpl.J] += symbol * fourier_coefficient
             symbolic_hamiltonian[cpl.J, cpl.I] += (symbol * fourier_coefficient).conjugate()
 
+        labels = [site.properties['onsite_energy_label'] for site in self.STRUC]
+        unique_labels = [None]
+        for _, label in enumerate(labels):
+            if label not in unique_labels:
+                unique_labels.append(label)
+                symbol = sp.Symbol(label, real=True)
+                indices = [index for index in range(self.N) if labels[index] == label]
+                for index in indices:
+                    symbolic_hamiltonian[index, index] += symbol
 
         return sp.nsimplify(symbolic_hamiltonian)
 
