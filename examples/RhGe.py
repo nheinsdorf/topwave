@@ -32,7 +32,7 @@ model.set_coupling(v0, 0)
 #model.set_coupling(v3, 3)
 #model.set_coupling(v4, 4)
 
-model.set_onsite_energy(-0.2)
+#model.set_onsite_energy(-100)
 
 
 

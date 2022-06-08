@@ -502,6 +502,10 @@ class Spec(object):
                 MAT[_, cpl.I, cpl.J] += A
                 MAT[_, cpl.J, cpl.I] += np.conj(A)
 
+        # add onsite energy terms
+        for _, site in enumerate(model.STRUC):
+            MAT[:, _, _] += site.properties['onsite_energy']
+
         return MAT
 
     def get_sw_hamiltonian(self, model):
