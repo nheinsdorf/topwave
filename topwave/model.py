@@ -345,7 +345,8 @@ class TightBindingModel(Model):
             List of site indices (ordered as in self.STRUC) that the term will be added to.
             If None, the term will be added to all sites. Default is None.
         label : str
-            A label that is used for the symbolic representation of the Hamiltonian
+            A label that is used for the symbolic representation of the Hamiltonian. If None,
+            an automatic label is generated. Default is None.
         """
 
         if site_indices is None:
@@ -353,6 +354,7 @@ class TightBindingModel(Model):
 
         for site_index in site_indices:
             self.STRUC[site_index].properties['onsite_energy'] = onsite_energy
+            self.STRUC[site_index].properties['onsite_energy_label'] = label
 
     def get_symbolic_hamiltonian(self):
         """ Uses sympy to construct and return a symbolic representation of
