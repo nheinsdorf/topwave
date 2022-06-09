@@ -397,11 +397,13 @@ class TightBindingModel(Model):
             if label not in unique_labels:
                 unique_labels.append(label)
                 symbol = sp.Symbol(label, real=True)
+                symbols.append(symbol)
                 indices = [index for index in range(self.N) if labels[index] == label]
                 for index in indices:
                     symbolic_hamiltonian[index, index] += symbol
 
-        return sp.nsimplify(symbolic_hamiltonian)
+        symbols = [kx, ky, kz] + symbols
+        return sp.nsimplify(symbolic_hamiltonian), symbols
 
 
 class Spec(object):
