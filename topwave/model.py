@@ -442,7 +442,7 @@ class Spec(object):
     Methods
     -------
     solve():
-        Diagonalizes the bosonic Hamiltonian.
+        Diagonalizes the Hamiltonian.
     """
 
     def __init__(self, model, ks):
@@ -462,7 +462,7 @@ class Spec(object):
 
         # NOTE: think about the real implementation. Maybe two child classes of spec?
         if isinstance(model, TightBindingModel):
-            self.H = self.get_tb_hamiltonian(model)
+            self.H = self.get_tb_hamiltonian(model, self.KS)
             self.solve(eigh)
         # build Hamiltonian and diagonalize it
         else:
@@ -479,13 +479,17 @@ class Spec(object):
         # compute the Berry curvature
         # self.get_berry_curvature()
 
-    def get_tb_hamiltonian(self, model):
+    @staticmethod
+    def get_tb_hamiltonian(model, ks):
         """ Function that builds the Hamiltonian for a tight-binding model.
 
         Parameters
         ----------
         model : topwave.model.Model
             The spin wave model that is used to construct the Hamiltonian.
+        ks : numpy.ndarray
+            Array of three-dimensional vectors in k-space at which the
+            Hamiltonian is constructed.
 
         Returns
         -------
@@ -493,10 +497,12 @@ class Spec(object):
 
         """
 
-        MAT = np.zeros((self.NK, self.N, self.N), dtype=complex)
+        N = len(model.STRUC)
+        NK = len(ks)
+        MAT = np.zeros((NK, N, N), dtype=complex)
 
         # construct matrix elements at each k-point
-        for _, k in enumerate(self.KS):
+        for _, k in enumerate(ks):
             for cpl in model.get_set_couplings():
                 # get the matrix elements from the couplings
                 (A, inner) = cpl.get_tb_matrix_elements(k)
