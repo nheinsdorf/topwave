@@ -1,4 +1,4 @@
-from topwave.model import Spec
+from topwave.spec import Spec
 
 import numpy as np
 
