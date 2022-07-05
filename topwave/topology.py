@@ -3,7 +3,7 @@ from topwave.spec import Spec
 import numpy as np
 
 
-class WCC_evolution(object):
+class WCC_evolution():
     """Class for the evolution of Wannier Charge Centers on some path.
 
     Parameters

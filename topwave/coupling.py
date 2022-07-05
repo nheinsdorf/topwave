@@ -11,7 +11,7 @@ from numpy.linalg import norm
 import pandas as pd
 
 
-class Coupling(object):
+class Coupling():
     """ Base class that holds information about a coupling between two sites
     
     Parameters

@@ -18,7 +18,7 @@ from tabulate import tabulate
 from topwave.coupling import Coupling
 from topwave.util import rotate_vector_to_ez
 
-class Model(object):
+class Model():
     """Base class that contains the physical model.
 
     Parameters
