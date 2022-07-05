@@ -1,9 +1,9 @@
 import unittest
 
-from topwave import util
-
 import numpy as np
 from numpy.linalg import norm
+
+from topwave import util
 
 class UtilTest(unittest.TestCase):
 

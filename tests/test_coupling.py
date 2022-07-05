@@ -1,8 +1,5 @@
 import unittest
 
-from topwave.coupling import Coupling
-from topwave.util import rotate_vector_to_ez
-
 import numpy as np
 from numpy.linalg import norm
 from pymatgen.core.operations import SymmOp
@@ -10,6 +7,8 @@ from pymatgen.core.sites import PeriodicSite
 from pymatgen.core.structure import Lattice
 from scipy.spatial.transform import Rotation
 
+from topwave.coupling import Coupling
+from topwave.util import rotate_vector_to_ez
 
 class ModelTest(unittest.TestCase):
     def setUp(self):

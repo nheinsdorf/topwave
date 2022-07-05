@@ -8,19 +8,17 @@ Created on Wed Jan  5 14:07:56 2022
 from itertools import product
 from pathlib import Path
 
-from topwave import solvers
-from topwave.coupling import Coupling
-from topwave.util import rotate_vector_to_ez
-
 import numpy as np
-from numpy.linalg import eigvals, multi_dot, eig, eigh
+from numpy.linalg import eig, eigh, eigvals, multi_dot
 import pandas as pd
 from pymatgen.io.cif import CifWriter
-from scipy.linalg import norm, block_diag
+from scipy.linalg import block_diag, norm
 import sympy as sp
 from tabulate import tabulate
 
-
+from topwave import solvers
+from topwave.coupling import Coupling
+from topwave.util import rotate_vector_to_ez
 
 class Model(object):
     """

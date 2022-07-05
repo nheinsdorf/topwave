@@ -6,7 +6,7 @@ Created on Fri Jan  7 15:44:41 2022
 @author: niclas
 """
 import numpy as np
-from numpy.linalg import eigh, eig, inv
+from numpy.linalg import eig, eigh, inv
 from scipy.linalg import block_diag, cholesky, sqrtm
 
 def colpa(H):

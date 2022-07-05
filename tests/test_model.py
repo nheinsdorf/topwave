@@ -1,11 +1,10 @@
 import unittest
 
-from topwave import model
-
 import numpy as np
 from numpy.linalg import norm
 from pymatgen.core.structure import Structure
 
+from topwave import model
 
 class ModelTest(unittest.TestCase):
     def setUp(self):

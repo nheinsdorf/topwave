@@ -7,7 +7,7 @@ Created on Wed Jan  5 14:32:35 2022
 """
 
 import numpy as np
-from numpy.linalg import norm, matrix_power
+from numpy.linalg import matrix_power, norm
 import pandas as pd
 
 
