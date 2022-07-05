@@ -4,8 +4,7 @@ import numpy as np
 
 
 class WCC_evolution(object):
-    """
-    Class for the evolution of Wannier Charge Centers on some path
+    """Class for the evolution of Wannier Charge Centers on some path.
 
     Parameters
     ----------

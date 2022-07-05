@@ -10,7 +10,7 @@ from numpy.linalg import eig, eigh, inv
 from scipy.linalg import block_diag, cholesky, sqrtm
 
 def colpa(H):
-    """ Diagonalizes the Hamiltonian using the algorithm by Colpa
+    """Diagonalizes the Hamiltonian using the algorithm by Colpa.
     
 
     Parameters
