@@ -5,7 +5,7 @@ from numpy.linalg import eig, eigh, eigvals, multi_dot, norm
 from scipy.linalg import block_diag
 
 from topwave import solvers
-from topwave.model import TightBindingModel
+from topwave.model import Model, TightBindingModel
 
 class Spec(object):
     """Class that contains the Hamiltonian, its spectrum and other quantities derived thereof.
