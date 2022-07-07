@@ -106,10 +106,8 @@ class Coupling():
         self.DM = np.array([0., 0., 0.], dtype=float)
         self.label = None
         self.label_DM = None
-        try:
-            self.get_uv()
-        except KeyError:
-            self.u1, self.u2, self.v1, self.v2 = [None] * 4
+        self.get_uv()
+
         self.DF = pd.DataFrame([[self.SYMID, self.SYMOP.as_xyz_string(), self.DELTA, self.R, self.D, self.I,
                                  str(self.SITE1.species), self.J, str(self.SITE2.species), self.strength, self.DM]],
                                columns=['symid', 'symop', 'delta', 'R', 'dist', 'i', 'at1', 'j', 'at2', 'strength', 'DM'])
@@ -160,14 +158,17 @@ class Coupling():
 
         """
 
-        R1 = self.SITE1.properties['Rot']
-        R2 = self.SITE2.properties['Rot']
-        u1 = R1[:, 0] + 1j * R1[:, 1]
-        u2 = R2[:, 0] + 1j * R2[:, 1]
-        v1 = R1[:, 2]
-        v2 = R2[:, 2]
-
-        self.u1, self.u2, self.v1, self.v2 = u1, u2, v1, v2
+        self.u1, self.u2, self.v1, self.v2 = [None] * 4
+        try:
+            R1 = self.SITE1.properties['Rot']
+            R2 = self.SITE2.properties['Rot']
+            u1 = R1[:, 0] + 1j * R1[:, 1]
+            u2 = R2[:, 0] + 1j * R2[:, 1]
+            v1 = R1[:, 2]
+            v2 = R2[:, 2]
+            self.u1, self.u2, self.v1, self.v2 = u1, u2, v1, v2
+        except KeyError:
+            pass
 
     def get_fourier_coefficients(self, k):
         """
