@@ -56,7 +56,6 @@ class WCC_evolution():
             spec = Spec(model, loop)
             if test:
                 spec.wilson_loop_test(occ)
-                print('testing')
             else:
                 spec.wilson_loop(occ)
             self.WCCs[:, _] = spec.wannier_center
