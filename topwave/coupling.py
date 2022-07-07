@@ -107,10 +107,10 @@ class Coupling():
         self.label = None
         self.label_DM = None
         self.get_uv()
-
-        self.DF = pd.DataFrame([[self.SYMID, self.SYMOP.as_xyz_string(), self.DELTA, self.R, self.D, self.I,
-                                 str(self.SITE1.species), self.J, str(self.SITE2.species), self.strength, self.DM]],
-                               columns=['symid', 'symop', 'delta', 'R', 'dist', 'i', 'at1', 'j', 'at2', 'strength', 'DM'])
+        df_data = [[self.SYMID, self.SYMOP.as_xyz_string(), self.DELTA, self.R, self.D, self.I,
+                    str(self.SITE1.species), self.J, str(self.SITE2.species), self.strength, self.DM]]
+        df_labels = ['symid', 'symop', 'delta', 'R', 'dist', 'i', 'at1', 'j', 'at2', 'strength', 'DM']
+        self.DF = pd.DataFrame(df_data, columns=df_labels)
 
     def get_label(self, label=None, by_symmetry=True):
         """ Generates a label to the coupling to represent Hamiltonian symbolically.

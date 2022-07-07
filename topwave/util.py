@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.linalg import norm
 
+
 def rotate_vector_to_ez(v):
     """Creates a 3x3 rotation matrix R with R v = [0, 0, 1]
 
