@@ -17,6 +17,8 @@ class Spec():
     ks : numpy.ndarray
         Array of three-dimensional vectors in k-space at which the
         Hamiltonian is constructed.
+    parallel : bool
+        Whether to use multiprocessing or not. Default is False.
 
     Attributes
     ----------
@@ -38,6 +40,8 @@ class Spec():
         Number of magnetic sites in the model
     NK : int
         Number of k-points in ks
+    parallel : bool
+        This is where parallel is stored.
 
     Methods
     -------
@@ -45,7 +49,7 @@ class Spec():
         Diagonalizes the Hamiltonian.
     """
 
-    def __init__(self, model, ks):
+    def __init__(self, model, ks, parallel=False):
 
         # store k-points
         self.KS = ks
@@ -59,6 +63,7 @@ class Spec():
         self.SS = None
         self.N = len(model.STRUC)
         self.NK = len(ks)
+        self.parallel = parallel
 
         # NOTE: think about the real implementation. Maybe two child classes of spec?
         if isinstance(model, TightBindingModel):
@@ -68,6 +73,7 @@ class Spec():
         else:
             self.H = self.get_sw_hamiltonian(model)
             self.solve(solvers.colpa)
+            self.get_correlation_functions(model, parallel=self.parallel)
 
         # TODO: make switches for these so they aren't calculated all the time
         # compute the local spin-spin correlation functions
@@ -260,49 +266,84 @@ class Spec():
                 s = f'Spectrum is degenerate at {k}{E_k}. Berry Curvature is not well-defined at that point.'
                 print(s)
 
-    def get_spin_spin_expectation_val(self, model, k, psi_k):
+    def get_spin_spin_expectation_val(self, model, ks, psi_k):
         """
-        Calculates the local spin-spin expectation values at one k-point.
+        Calculates the local spin-spin expectation values for a given set of kpoints.
+
+        Parameters
+        ----------
+        model : topwave.Model
+            The model that is used to calculate the spectrum.
+        ks : numpy.ndarray
+            List of k-points. Shape is (NK, 3).
+        psi_k : numpy.ndarray
+            Wave functions used to calculate the spin-spin expectation values at the provided k-points.
+            Shape is (NK, 2N, 2N).
 
         Returns
         -------
-        SS_k
+        SS_k : numpy.ndarray
 
         """
 
-        # allocate memory for the output
-        SS_k = np.zeros((2 * self.N, 3, 3), dtype=complex)
-        # iterate over all possible combinations of spin-operator-pairs
-        for a, b in product(range(3), range(3)):
-            # allocate memory for the two-operator matrices
-            SS = np.zeros((2 * self.N, 2 * self.N), dtype=complex)
-            # iterate over all the combinations of sites
-            for i, j in product(range(self.N), range(self.N)):
-                # construct the prefactor
-                mu_i = norm(model.STRUC[i].properties['magmom'])
-                mu_j = norm(model.STRUC[j].properties['magmom'])
-                c = np.sqrt(mu_i * mu_j)
+        # read out the number of k-points
+        nk = len(ks)
+        N = self.N
 
-                # construct the phase factor
-                delta = model.STRUC[j].frac_coords - model.STRUC[i].frac_coords
-                c_k = np.exp(-1j * (delta @ k) * 2 * np.pi)
+        # calculate the phase factors for all sites
+        phases = np.zeros((nk, N), dtype=complex)
+        us = np.zeros((N, 3), dtype=complex)
+        for _, site in enumerate(model.STRUC.sites):
+            mu = np.sqrt(norm(site.properties['magmom'] / 2))
+            phases[:, _] = mu * np.exp(-1j * np.einsum('ki, i -> k', ks, site.frac_coords) * 2 * np.pi)
+            us[_, :] = site.properties['Rot'][:, 0] + 1j * site.properties['Rot'][:, 1]
 
-                # get the u-vectors
-                u_i = model.STRUC[i].properties['Rot'][:, 0] + 1j * model.STRUC[i].properties['Rot'][:, 1]
-                u_j = model.STRUC[j].properties['Rot'][:, 0] + 1j * model.STRUC[j].properties['Rot'][:, 1]
+        phasesL = np.transpose(np.tile(np.concatenate((phases, phases), axis=1), (3, 3, 8, 1, 1)), (3, 2, 4, 0, 1))
+        phasesR = np.conj(phasesL.swapaxes(1, 2))
 
-                # calculate the two-operator matrix elements
-                SS[i, j] = c * c_k * np.conj(u_i[a]) * np.conj(u_j[b])
-                SS[i + self.N, j + self.N] = c * c_k * np.conj(u_i[a]) * u_j[b]
-                SS[i, j + self.N] = c * c_k * u_i[a] * u_j[b]
-                SS[i + self.N, j] = c * c_k * np.conj(u_i[a]) * np.conj(u_j[b])
+        usL = np.transpose(np.tile(np.concatenate((us, np.conj(us)), axis=0), (2 * N, 3, 1, 1)), (0, 2, 3, 1))
+        usL = np.tile(usL, (nk, 1, 1, 1, 1))
+        usR = np.conj(np.transpose(usL, (0, 2, 1, 4, 3)))
 
-                # calculate the local spin-spin expectation values and save them
-                SS_k[:, a, b] = np.diag(np.conj(psi_k.T) @ SS @ psi_k)
+        psiR = np.transpose(np.tile(psi_k, (3, 3, 1, 1, 1)), (2, 3, 4, 0, 1))
+        psiL = np.conj(psiR.swapaxes(1, 2))
 
-        return SS_k
+        S_k = np.sum(usL * phasesL * psiL, axis=2) * np.sum(usR * phasesR * psiR, axis=1)
 
-    def get_correlation_functions(self, model):
+        return S_k
+
+
+        # # iterate over all possible combinations of spin-operator-pairs
+        # for a, b in product(range(3), range(3)):
+        #     # allocate memory for the two-operator matrices
+        #     SS = np.zeros((2 * self.N, 2 * self.N), dtype=complex)
+        #     # iterate over all the combinations of sites
+        #     for i, j in product(range(self.N), range(self.N)):
+        #         # construct the prefactor
+        #         mu_i = norm(model.STRUC[i].properties['magmom'])
+        #         mu_j = norm(model.STRUC[j].properties['magmom'])
+        #         c = np.sqrt(mu_i * mu_j)
+        #
+        #         # construct the phase factor
+        #         delta = model.STRUC[j].frac_coords - model.STRUC[i].frac_coords
+        #         c_k = np.exp(-1j * (delta @ k) * 2 * np.pi)
+        #
+        #         # get the u-vectors
+        #         u_i = model.STRUC[i].properties['Rot'][:, 0] + 1j * model.STRUC[i].properties['Rot'][:, 1]
+        #         u_j = model.STRUC[j].properties['Rot'][:, 0] + 1j * model.STRUC[j].properties['Rot'][:, 1]
+        #
+        #         # calculate the two-operator matrix elements
+        #         SS[i, j] = c * c_k * np.conj(u_i[a]) * np.conj(u_j[b])
+        #         SS[i + self.N, j + self.N] = c * c_k * np.conj(u_i[a]) * u_j[b]
+        #         SS[i, j + self.N] = c * c_k * u_i[a] * u_j[b]
+        #         SS[i + self.N, j] = c * c_k * np.conj(u_i[a]) * np.conj(u_j[b])
+        #
+        #         # calculate the local spin-spin expectation values and save them
+        #         SS_k[:, a, b] = np.diag(np.conj(psi_k.T) @ SS @ psi_k)
+        #
+        # return SS_k
+
+    def get_correlation_functions(self, model, parallel=False):
         """
         Calculates the spin-spin correlation function for all k-points
 
@@ -317,9 +358,13 @@ class Spec():
 
         """
 
-        self.SS = np.zeros((self.NK, 2 * self.N, 3, 3), dtype=complex)
-        for _, (k, psi_k) in enumerate(zip(self.KS, self.psi)):
-            self.SS[_] = self.get_spin_spin_expectation_val(model, k, psi_k)
+        # don't use parallel (yet)
+        if parallel:
+            self.SS = np.zeros((self.NK, 2 * self.N, 3, 3), dtype=complex)
+            for _, (k, psi_k) in enumerate(zip(self.KS, self.psi)):
+                self.SS[_] = self.get_spin_spin_expectation_val(model, [k], [psi_k])
+        else:
+            self.SS = self.get_spin_spin_expectation_val(model, self.KS, self.psi)
 
     def solve(self, solver):
         """
