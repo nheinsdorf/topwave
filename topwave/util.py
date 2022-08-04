@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.linalg import norm
 
+from topwave.model import Model
 
 def rotate_vector_to_ez(v):
     """Creates a 3x3 rotation matrix R with R v = [0, 0, 1]
@@ -27,3 +28,27 @@ def rotate_vector_to_ez(v):
     e1 = np.cross(e2, e3)
 
     return np.array([e1, e2, e3]).T
+
+def bose_distribution(energies, temperature):
+    """Calculates the Bose-Einstein distribution for a given set of energies and a temperature.
+
+    Parameters
+    ----------
+    energies : float or numpy.ndarray
+        Energies for which the distribution is evaluated.
+    temperature : float
+        The temperature given in Kelvin.
+
+    Returns
+    -------
+    A numpy.ndarray with the Bose-Einstein distribution for each energy.
+
+    """
+
+    energies = np.array([energies], dtype=float).flatten()
+    # NOTE: build in a check for zero energy?!
+    if temperature == 0:
+        return np.zeros(energies.shape, dtype=float)
+    else:
+        return np.reciprocal(np.exp(energies / (Model.kB * temperature)) - 1)
+
