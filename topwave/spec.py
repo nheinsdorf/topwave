@@ -1,7 +1,7 @@
 from itertools import product
 
 import numpy as np
-from numpy.linalg import eig, eigh, eigvals, multi_dot, norm
+from numpy.linalg import eig, eigh, eigvals, inv, multi_dot, norm
 from scipy.linalg import block_diag
 
 from topwave import solvers
@@ -24,6 +24,8 @@ class Spec():
     ----------
     KS : numpy.ndarray
         This is where ks is stored.
+    KS_xyz : numpy.ndarray
+        Same as KS, but in cartesian coordinates in units of 1/Angstrom.
     H : numpy.ndarray
         This is where the matrix representation of the Hamiltonian is stored.
     DHDK : numpy.ndarray
@@ -42,17 +44,21 @@ class Spec():
         Number of k-points in ks
     parallel : bool
         This is where parallel is stored.
+    S_perp : numpy.ndarray
+        The neutron scattering cross section.
 
     Methods
     -------
     solve():
         Diagonalizes the Hamiltonian.
+
     """
 
     def __init__(self, model, ks, parallel=False):
 
         # store k-points
         self.KS = ks
+        self.KS_xyz = 2 * np.pi * np.einsum('ka, ab -> kb', ks, inv(model.STRUC.lattice.matrix))
 
         # allocate memory for the Hamiltonian and its spectrum
         self.H = None
@@ -64,6 +70,7 @@ class Spec():
         self.N = len(model.STRUC)
         self.NK = len(ks)
         self.parallel = parallel
+        self.S_perp = None
 
         # NOTE: think about the real implementation. Maybe two child classes of spec?
         if isinstance(model, TightBindingModel):
@@ -300,14 +307,17 @@ class Spec():
 
         phasesL = np.transpose(np.tile(np.concatenate((phases, phases), axis=1), (3, 3, 8, 1, 1)), (3, 2, 4, 0, 1))
         phasesR = np.conj(phasesL.swapaxes(1, 2))
-
+        self.phasesL = phasesL
+        self.phasesR = phasesR
         usL = np.transpose(np.tile(np.concatenate((us, np.conj(us)), axis=0), (2 * N, 3, 1, 1)), (0, 2, 3, 1))
         usL = np.tile(usL, (nk, 1, 1, 1, 1))
         usR = np.conj(np.transpose(usL, (0, 2, 1, 4, 3)))
-
+        self.usL = usL
+        self.usR = usR
         psiR = np.transpose(np.tile(psi_k, (3, 3, 1, 1, 1)), (2, 3, 4, 0, 1))
         psiL = np.conj(psiR.swapaxes(1, 2))
-
+        self.psiL = psiL
+        self.psiR = psiR
         S_k = np.sum(usL * phasesL * psiL, axis=2) * np.sum(usR * phasesR * psiR, axis=1)
 
         return S_k
