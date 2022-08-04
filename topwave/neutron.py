@@ -1,6 +1,8 @@
 import numpy as np
 from numpy.linalg import norm
 
+from topwave.util import bose_distribution
+
 class NeutronScattering:
     """Base class to calculate observables that are measured in neutron scattering experiments.
 
@@ -11,11 +13,21 @@ class NeutronScattering:
     energy_bins : list
         List of floats that define energy bins that are used to create an intensity map using the cross section.
         If None, 501 bins from 0 to 1.1 * max(spec) are used. Default is None.
+    temperature : float
+        Temperature given in Kelvin that is used to calculate the Bose-Einstein distribution at the provided energy bins.
 
     Attributes
     ----------
     spec : topwave.spec.Spec
         This is where spec is stored.
+    cross_section : numpy.ndarray
+        This is where the computed cross section of the spectrum is stored. The shape is (NK, N).
+    intensity_map : numpy.ndarray
+        This is where the intensity map of the cross section is stored. The shape is (NK, nbins - 1)
+    energy_bins : numpy.ndarray
+        This is where energy_bins is stored.
+    temperature : float
+        This is where temperature is stored.
 
     Methods
     -------
@@ -26,16 +38,18 @@ class NeutronScattering:
 
     """
 
-    def __init__(self, spec, energy_bins=None):
+    def __init__(self, spec, energy_bins=None, temperature=0):
         self.spec = spec
         self.cross_section = self.get_cross_section(spec)
-        self.intensity_map, self.energy_bins = self.get_intensity_map(energy_bins)
+        self.intensity_map, self.energy_bins = self.get_intensity_map(energy_bins, temperature)
+        self.temperature = temperature
 
         # save everything in spec's 'neutron'-dict
         spec.neutron['component'] = 'S_perp'
         spec.neutron['cross_section'] = self.cross_section
         spec.neutron['energy_bins'] = self.energy_bins
         spec.neutron['intensity_map'] = self.intensity_map
+        spec.neutron['temperature'] = self.temperature
 
     def __getattr__(self, item):
         try:
@@ -68,7 +82,7 @@ class NeutronScattering:
         # Calculate the perpendicular component of the (symmetric part of the) dynamical structure factor.
         return np.real(np.einsum('kab, knab -> kn', q_perp, 0.5 * (spec.SS + spec.SS.swapaxes(2, 3))))
 
-    def get_intensity_map(self, energy_bins=None):
+    def get_intensity_map(self, energy_bins=None, temperature=0):
         """Converts a correlation function to an intensity map on a provided set of energy bins.
 
         Parameters
@@ -76,10 +90,13 @@ class NeutronScattering:
         energy_bins : list
             List of monotonically increasing floats that define energy bins that are used to create an intensity map
             using the cross section. If None, 501 bins from 0 to 1.1 * max(spec) are used. Default is None.
+        temperature : float
+            Temperature given in Kelvin. It is used to construct the Bose factor. Default is 0.
 
         Returns
-        The cumulated cross_section w.r.t. to the provided bins at each points and the energy bins.
-         """
+        -------
+        The cumulated cross_section w.r.t. to the provided bins at each point and the energy bins.
+        """
 
         if energy_bins is None:
             energy_bins = np.linspace(0, 1.1 * np.max(self.E), 501)
@@ -90,6 +107,10 @@ class NeutronScattering:
         for _, (E_k, S_k) in enumerate(zip(self.E[:, :self.N], self.cross_section[:, :self.N])):
             hist, bin_edges = np.histogram(E_k, energy_bins, weights=S_k)
             intensity_map[_, :] = hist
+
+        # multiply with Bose factor
+        bose_factors = bose_distribution(energy_bins[1:], temperature=temperature) + 1
+        intensity_map = intensity_map * bose_factors
 
         return intensity_map, bin_edges
 
