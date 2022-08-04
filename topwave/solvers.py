@@ -38,9 +38,10 @@ def colpa(H):
     
     # sort the eigenvalues to decreasing order
     E = E[::-1]
-    U = U[:, ::-1]
-    
-    T = inv(K) @ U @ sqrtm(np.diag(E))
+    # NOTE: Check the sorting of the modes. It seems to be consistent with the correlation function like this though.
+    U = U[:, :]
+
+    T = inv(K) @ U @ sqrtm(bos * np.diag(E))
     
     return E, T
 
