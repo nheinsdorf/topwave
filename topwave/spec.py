@@ -44,8 +44,9 @@ class Spec():
         Number of k-points in ks
     parallel : bool
         This is where parallel is stored.
-    S_perp : numpy.ndarray
-        The neutron scattering cross section.
+    neutron : dict
+        In this dictionary all the data for calculations of quanitites related to
+        neutron scattering experiments are stored.
 
     Methods
     -------
@@ -70,7 +71,7 @@ class Spec():
         self.N = len(model.STRUC)
         self.NK = len(ks)
         self.parallel = parallel
-        self.S_perp = None
+        self.neutron = {}
 
         # NOTE: think about the real implementation. Maybe two child classes of spec?
         if isinstance(model, TightBindingModel):
