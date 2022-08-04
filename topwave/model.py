@@ -66,6 +66,7 @@ class Model():
     # maybe i should save these in topwave itself
     muB = 0.057883818066000  # given in meV/Tesla
     g = 2  # for now let's fix the g-tensor to 2 (as a number)
+    kB = 0.086173324 # given in meV/K
 
     def __init__(self, struc):
 
