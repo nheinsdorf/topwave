@@ -307,17 +307,14 @@ class Spec():
 
         phasesL = np.transpose(np.tile(np.concatenate((phases, phases), axis=1), (3, 3, 8, 1, 1)), (3, 2, 4, 0, 1))
         phasesR = np.conj(phasesL.swapaxes(1, 2))
-        self.phasesL = phasesL
-        self.phasesR = phasesR
+
         usL = np.transpose(np.tile(np.concatenate((us, np.conj(us)), axis=0), (2 * N, 3, 1, 1)), (0, 2, 3, 1))
         usL = np.tile(usL, (nk, 1, 1, 1, 1))
         usR = np.conj(np.transpose(usL, (0, 2, 1, 4, 3)))
-        self.usL = usL
-        self.usR = usR
+
         psiR = np.transpose(np.tile(psi_k, (3, 3, 1, 1, 1)), (2, 3, 4, 0, 1))
         psiL = np.conj(psiR.swapaxes(1, 2))
-        self.psiL = psiL
-        self.psiR = psiR
+
         S_k = np.sum(usL * phasesL * psiL, axis=2) * np.sum(usR * phasesR * psiR, axis=1)
 
         return S_k
