@@ -26,8 +26,8 @@ def bose_distribution(energies, temperature):
     else:
         return np.reciprocal(np.exp(energies / (Model.kB * temperature)) - 1)
 
-def gaussian(x, mean, std):
-    """Evaluates the Gauss distribution at x.
+def gaussian(x, mean, std, normalize=True):
+    """Evaluates the normal distribution at x.
 
     Parameters
     ----------
@@ -37,11 +37,15 @@ def gaussian(x, mean, std):
         The mean value of the distribution.
     std : float
         The standard deviation of the distribution.
+    normalize : bool
+        If true, the integral over the distribution will be normalized to one. If false, the pre-factor
+        1 / (sqrt(2pi) * sigma) is omitted. Default is true.
 
     """
 
     x = np.array([x], dtype=float).flatten()
-    return np.exp(-0.5 * np.square((x - mean) / std)) / (std * np.sqrt(2 * np.pi))
+    pre_factor = 1 / (std * np.sqrt(2 * np.pi)) if normalize else 1
+    return pre_factor * np.exp(-0.5 * np.square((x - mean) / std))
 
 
 def rotate_vector_to_ez(v):
