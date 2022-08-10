@@ -1,3 +1,6 @@
 examples/
 .idea/
 tests/__pycache__/
+topwave/__pycache__/
+topwave/neutron_backup_bins.py
+
