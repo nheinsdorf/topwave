@@ -1,7 +1,8 @@
 import numpy as np
 from numpy.linalg import norm
 
-from topwave.model import Model
+kB = 0.086173324  # given in meV/K
+
 
 def bose_distribution(energies, temperature):
     """Calculates the Bose-Einstein distribution for a given set of energies and a temperature.
@@ -24,7 +25,8 @@ def bose_distribution(energies, temperature):
     if temperature == 0:
         return np.zeros(energies.shape, dtype=float)
     else:
-        return np.reciprocal(np.exp(energies / (Model.kB * temperature)) - 1)
+        return np.reciprocal(np.exp(energies / (kB * temperature)) - 1)
+
 
 def gaussian(x, mean, std, normalize=True):
     """Evaluates the normal distribution at x.
@@ -73,6 +75,3 @@ def rotate_vector_to_ez(v):
     e1 = np.cross(e2, e3)
 
     return np.array([e1, e2, e3]).T
-
-
-
