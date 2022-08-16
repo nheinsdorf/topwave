@@ -11,7 +11,7 @@ from numpy.linalg import norm
 import pandas as pd
 
 
-class Coupling():
+class Coupling:
     """ Base class that holds information about a coupling between two sites
     
     Parameters
@@ -104,12 +104,13 @@ class Coupling():
         self.DELTA = site2.frac_coords - site1.frac_coords
         self.strength = 0.
         self.DM = np.array([0., 0., 0.], dtype=float)
+        self.K = np.array([0, 0, 0], dtype=float)
         self.label = None
         self.label_DM = None
         self.get_uv()
         df_data = [[self.SYMID, self.SYMOP.as_xyz_string(), self.DELTA, self.R, self.D, self.I,
-                    str(self.SITE1.species), self.J, str(self.SITE2.species), self.strength, self.DM]]
-        df_labels = ['symid', 'symop', 'delta', 'R', 'dist', 'i', 'at1', 'j', 'at2', 'strength', 'DM']
+                    str(self.SITE1.species), self.J, str(self.SITE2.species), self.strength, self.DM, self.K]]
+        df_labels = ['symid', 'symop', 'delta', 'R', 'dist', 'i', 'at1', 'j', 'at2', 'strength', 'DM', 'K']
         self.DF = pd.DataFrame(df_data, columns=df_labels)
 
     def get_label(self, label=None, by_symmetry=True):
