@@ -7,6 +7,7 @@ from scipy.linalg import block_diag
 from topwave import solvers
 from topwave.model import Model, TightBindingModel
 
+
 class Spec():
     """Class that contains the Hamiltonian, its spectrum and other quantities derived thereof.
 
@@ -164,11 +165,19 @@ class Spec():
                 MAT[_, cpl.I + self.N, cpl.I + self.N] -= np.conj(CI)
                 MAT[_, cpl.J + self.N, cpl.J + self.N] -= np.conj(CJ)
 
-                # spurious
                 MAT[_, cpl.I, cpl.J + self.N] += B12
                 MAT[_, cpl.J, cpl.I + self.N] += B21
                 MAT[_, cpl.J + self.N, cpl.I] += np.conj(B12)
                 MAT[_, cpl.I + self.N, cpl.J] += np.conj(B21)
+
+        # add single ion anisotropies
+        for _ in range(self.N):
+            u = model.STRUC[_].properties['Rot'][:, 0] + 1j * model.STRUC[_].properties['Rot'][:, 1]
+            K = np.diag(model.STRUC[_].properties['single_ion_anisotropy'])
+            MAT[:, _, _] += u @ K @ np.conj(u)
+            MAT[:, _ + self.N, _ + self.N] += np.conj(u @ K @ np.conj(u))
+            MAT[:, _, _ + self.N] += u @ K @ u
+            MAT[:, _ + self.N, _] += np.conj(u @ K @ u)
 
         # add the external magnetic field
         for _ in range(self.N):
