@@ -60,6 +60,8 @@ class Model:
         Provide a classical magnetic ground state.
     show_moments():
         Prints the magnetic moments.
+    show_anisotropies():
+        Prints the single ion anisotropies.
     write_cif():
         A function that uses pymatgen functionality to save Model.STRUC
         as a mcif file to be visualized in e.g. VESTA
@@ -232,6 +234,14 @@ class Model:
 
         for _, site in enumerate(self.STRUC):
             print(f'Magnetic Moment on Site{_}:\t{site.properties["magmom"]}')
+    def show_anisotropies(self):
+        """
+        Prints the single ion anisotropies.
+
+        """
+
+        for _, site in enumerate(self.STRUC):
+            print(f'Single ion anisotropy on Site{_}:\t{site.properties["single_ion_anisotropy"]}')
 
     def write_cif(self, path=None):
         """
