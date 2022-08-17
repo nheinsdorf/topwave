@@ -83,6 +83,7 @@ class Model:
             site.properties['magmom'] = None
             site.properties['onsite_energy_label'] = None
             site.properties['onsite_energy'] = 0
+            site.properties['onsite_energy_spin'] = None
             site.properties['single_ion_anisotropy'] = None
 
         # count the number of magnetic sites and save
@@ -239,6 +240,7 @@ class Model:
 
         for _, site in enumerate(self.STRUC):
             print(f'Magnetic Moment on Site{_}:\t{site.properties["magmom"]}')
+
     def show_anisotropies(self):
         """
         Prints the single ion anisotropies.
@@ -447,7 +449,7 @@ class TightBindingModel(Model):
 
         self.spinful = True
 
-    def set_onsite_energy(self, onsite_energy, site_index=None, label=None):
+    def set_onsite_energy(self, onsite_energy, site_index=None, label=None, spin='both'):
         """Adds onsite term to the specified diagonal matrix element of the Hamiltonian.
 
         Parameters
@@ -460,6 +462,10 @@ class TightBindingModel(Model):
         label : str
             A label that is used for the symbolic representation of the Hamiltonian. If None,
             an automatic label is generated. Default is None.
+        spin : str
+            Either 'both', 'up' or 'down' with the onsite term being added to both, or only the up or
+            down spin part respectively. 'up' or 'down' will make the model spinful automatically.
+            Default is 'both'.
         """
 
         if site_index is None:
@@ -472,5 +478,9 @@ class TightBindingModel(Model):
         for _ in site_indices:
             self.STRUC[_].properties['onsite_energy'] = onsite_energy
             self.STRUC[_].properties['onsite_energy_label'] = label if label is not None else auto_label
+            self.STRUC[_].properties['onsite_energy_spin'] = spin
+
+        if spin == 'up' or spin == 'down':
+            self.make_spinful()
 
 
