@@ -356,6 +356,8 @@ class SpinWaveModel(Model):
             Default is None.
         """
 
+        K = np.array(K, dtype=float).reshape(3,)
+
         if space_group is not None:
             space_group = SpaceGroup.from_int_number(space_group)
             coords, ops = space_group.get_orbit_and_generators(self.STRUC[site_index].frac_coords)
@@ -369,6 +371,8 @@ class SpinWaveModel(Model):
 
         for site, op in zip(sites, ops):
             site.properties['single_ion_anisotropy'] = op.apply_rotation_only(K)
+
+
 
 
 class TightBindingModel(Model):
