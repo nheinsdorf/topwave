@@ -27,7 +27,7 @@ class Model:
     Parameters
     ----------
     struc : pymatgen.core.Structure
-        pymatgen Structure that contains all the magnetic sites of the model
+        pymatgen Structure that contains all the sites of the model.
 
     Attributes
     ----------
@@ -369,39 +369,30 @@ class TightBindingModel(Model):
     """
     Class for a tight-binding model.
 
+    Parameters
+    ----------
+    struc : pymatgen.core.Structure
+        pymatgen Structure that contains all the sites of the model.
+
+    Attributes
+    ----------
+    spinful : bool
+        Flag that specifies whether the model is spinless (fully spin polarized) or spinful.
+        Setting an external magnetic field will automatically set it True. Default is False.
+
     Methods
     -------
+    get_symbolic_hamiltonian():
+        Returns a symbolic representation of the Hamiltonian.
+    make_spinful():
+        Adds spin degree of freedom to the Hamiltonian.
     set_onsite_energy(onsite_energy, site_index, label):
         Adds onsite energy terms to the given sites.
-    get_symbolic_hamiltonian():
-        Returns a symbolic representation of the Hamiltonian
     """
 
-    def set_onsite_energy(self, onsite_energy, site_index=None, label=None):
-        """ Adds onsite term to the specified diagonal matrix element of the Hamiltonian.
-
-        Parameters
-        ----------
-        onsite_energy : float
-            Magnitude of the onsite term.
-        site_index : int
-            Site index (ordered as in self.STRUC) that the term will be added to.
-            If None, the term will be added to all sites. Default is None.
-        label : str
-            A label that is used for the symbolic representation of the Hamiltonian. If None,
-            an automatic label is generated. Default is None.
-        """
-
-        if site_index is None:
-            site_indices = np.arange(self.N)
-            auto_label = 'E_0'
-        else:
-            site_indices = [site_index]
-            auto_label = f'E_{site_index}'
-
-        for _ in site_indices:
-            self.STRUC[_].properties['onsite_energy'] = onsite_energy
-            self.STRUC[_].properties['onsite_energy_label'] = label if label is not None else auto_label
+    def __init__(self, struc):
+        super().__init__(struc)
+        self.spinful = False
 
     def get_symbolic_hamiltonian(self):
         """ Uses sympy to construct and return a symbolic representation of
@@ -445,5 +436,37 @@ class TightBindingModel(Model):
 
         symbols = [kx, ky, kz] + symbols
         return sp.nsimplify(symbolic_hamiltonian), symbols
+
+    def make_spinful(self):
+        """Sets the spinful flag to True adding spin degree of freedom to the Hilbert space.
+        """
+
+        self.spinful = True
+
+    def set_onsite_energy(self, onsite_energy, site_index=None, label=None):
+        """Adds onsite term to the specified diagonal matrix element of the Hamiltonian.
+
+        Parameters
+        ----------
+        onsite_energy : float
+            Magnitude of the onsite term.
+        site_index : int
+            Site index (ordered as in self.STRUC) that the term will be added to.
+            If None, the term will be added to all sites. Default is None.
+        label : str
+            A label that is used for the symbolic representation of the Hamiltonian. If None,
+            an automatic label is generated. Default is None.
+        """
+
+        if site_index is None:
+            site_indices = np.arange(self.N)
+            auto_label = 'E_0'
+        else:
+            site_indices = [site_index]
+            auto_label = f'E_{site_index}'
+
+        for _ in site_indices:
+            self.STRUC[_].properties['onsite_energy'] = onsite_energy
+            self.STRUC[_].properties['onsite_energy_label'] = label if label is not None else auto_label
 
 
