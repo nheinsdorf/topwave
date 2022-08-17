@@ -10,7 +10,9 @@ from pathlib import Path
 import numpy as np
 from numpy.linalg import eig, eigh, eigvals, multi_dot
 import pandas as pd
+from pymatgen.core.operations import SymmOp
 from pymatgen.io.cif import CifWriter
+from pymatgen.symmetry.groups import SpaceGroup
 from scipy.linalg import block_diag, norm
 import sympy as sp
 from tabulate import tabulate
@@ -18,7 +20,8 @@ from tabulate import tabulate
 from topwave.coupling import Coupling
 from topwave.util import rotate_vector_to_ez
 
-class Model():
+
+class Model:
     """Base class that contains the physical model.
 
     Parameters
@@ -77,6 +80,7 @@ class Model():
             site.properties['id'] = _
             site.properties['onsite_energy_label'] = None
             site.properties['onsite_energy'] = 0
+            site.properties['single_ion_anisotropy'] = None
 
         # count the number of magnetic sites and save
         self.N = len(self.STRUC)
@@ -271,8 +275,11 @@ class SpinWaveModel(Model):
 
     Methods
     -------
-    set_DM(D, symid):
+    set_DM(D, symid, by_symmetry):
         Assign anti-symmetric exchange to a selection of couplings based on
+        their symmetry index.
+    set_single_ion_anisotropy(K, site_index, space_group):
+        Assign single-ion anisotropy to site or selection thereof based on
         their symmetry index.
     """
 
@@ -293,12 +300,10 @@ class SpinWaveModel(Model):
         by_symmetry : bool
             If true, index corresponds to the symmetry index of a selection of couplings.
             If false, it corresponds to the index.
-
-
         """
         # IDEA for the problem with implementation of future symbolic representation and labels
         # there's a problem when DM is initialized first on a bond. Maybe just check when DM is
-        # set whether theres a J bond, and if not create one with 0 strength.
+        # set whether there's a J bond, and if not create one with 0 strength.
         if by_symmetry:
             indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
         else:
@@ -318,6 +323,35 @@ class SpinWaveModel(Model):
                 self.CPLS_as_df.loc[_, 'DM'][0] = Drot[0]
                 self.CPLS_as_df.loc[_, 'DM'][1] = Drot[1]
                 self.CPLS_as_df.loc[_, 'DM'][2] = Drot[2]
+
+    def set_single_ion_anisotropy(self, K, site_index, space_group=None):
+        """Assigns single-ion anisotropies to a selection of bonds based on their symmetry.
+
+        Parameters
+        ----------
+        K : list
+            Three-dimensional list for the three possible components of the single-ion anisotropy term.
+        site_index : int
+            Integer that corresponds to the index of a site. If space_group is not None, the term is added
+            to all sites in the orbit of the provided site and transformed accordingly.
+        space_group : int
+            International number corresponding to a space group by which the orbit of the site is generated.
+            Default is None.
+        """
+
+        if space_group is not None:
+            space_group = SpaceGroup.from_int_number(space_group)
+            coords, ops = space_group.get_orbit_and_generators(self.STRUC[site_index].frac_coords)
+            sites = []
+            for coord in coords:
+                cartesian_coord = self.STRUC.lattice.get_cartesian_coords(coord)
+                sites.append(self.STRUC.get_sites_in_sphere(cartesian_coord, 1e-06)[0])
+        else:
+            sites = [self.STRUC[site_index]]
+            ops = [SymmOp.from_rotation_and_translation(np.eye(3), np.zeros(3))]
+
+        for site, op in zip(sites, ops):
+            site.properties['single_ion_anisotropy'] = op.apply_rotation_only(K)
 
 
 class TightBindingModel(Model):
