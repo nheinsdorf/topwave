@@ -483,4 +483,15 @@ class TightBindingModel(Model):
         if spin == 'up' or spin == 'down':
             self.make_spinful()
 
+    def show_onsite_energies(self):
+        """
+        Prints the single ion anisotropies.
+
+        """
+
+        for _, site in enumerate(self.STRUC):
+            energy = site.properties['onsite_energy']
+            spin = site.properties['onsite_energy_spin']
+            print(f'Onsite energy on Site{_}:\t{energy}\tSpin:{spin}')
+
 
