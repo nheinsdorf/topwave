@@ -80,6 +80,7 @@ class Model:
         # and label the sites within struc by an index
         for _, site in enumerate(self.STRUC):
             site.properties['id'] = _
+            site.properties['magmom'] = None
             site.properties['onsite_energy_label'] = None
             site.properties['onsite_energy'] = 0
             site.properties['single_ion_anisotropy'] = None
