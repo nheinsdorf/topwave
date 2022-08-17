@@ -178,7 +178,8 @@ class Model:
     def set_field(self, direction, magnitude):
         """
         Setter for self.MF an external magnetic field to the model. This will
-        be translated to a Zeeman term mu_B B dot S
+        be translated to a Zeeman term mu_B B dot S. If the model is an instance of TightBindingModel,
+        this method will call its 'make_spinful'-method.
 
         Parameters
         ----------
@@ -191,6 +192,9 @@ class Model:
 
         field = np.real(magnitude) * np.array(direction, dtype=float) / norm(direction)
         self.MF[0], self.MF[1], self.MF[2] = tuple(field.tolist())
+
+        if isinstance(self, TightBindingModel):
+            self.make_spinful()
 
     def set_moments(self, directions, magnitudes):
         """ Assigns a magnetic ground state to the model
