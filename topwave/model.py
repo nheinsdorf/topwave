@@ -81,9 +81,9 @@ class Model:
         for _, site in enumerate(self.STRUC):
             site.properties['id'] = _
             site.properties['magmom'] = None
-            site.properties['onsite_energy_label'] = None
-            site.properties['onsite_energy'] = 0
-            site.properties['onsite_energy_spin'] = np.eye(2)
+            site.properties['onsite_label'] = None
+            site.properties['onsite_strength'] = 0
+            site.properties['onsite_spin_matrix'] = np.eye(2)
             site.properties['single_ion_anisotropy'] = None
 
         # count the number of magnetic sites and save
@@ -396,7 +396,7 @@ class TightBindingModel(Model):
         Returns a symbolic representation of the Hamiltonian.
     make_spinful():
         Adds spin degree of freedom to the Hamiltonian.
-    set_onsite_energy(onsite_energy, site_index, label, spin_matrix):
+    set_onsite_term(strength, site_index, label, spin_matrix):
         Adds onsite energy terms to the given sites.
     set_spin_orbit(strength, matrix, index, by_symmetry, label):
         Adds a (generally) complex hopping term that couples spin-up
@@ -436,7 +436,7 @@ class TightBindingModel(Model):
             symbolic_hamiltonian[cpl.I, cpl.J] += symbol * fourier_coefficient
             symbolic_hamiltonian[cpl.J, cpl.I] += (symbol * fourier_coefficient).conjugate()
 
-        labels = [site.properties['onsite_energy_label'] for site in self.STRUC]
+        labels = [site.properties['onsite_label'] for site in self.STRUC]
         unique_labels = [None]
         for _, label in enumerate(labels):
             if label not in unique_labels:
@@ -456,12 +456,12 @@ class TightBindingModel(Model):
 
         self.spinful = True
 
-    def set_onsite_energy(self, onsite_energy, site_index=None, label=None, spin_matrix=None):
+    def set_onsite_term(self, strength, site_index=None, label=None, spin_matrix=None):
         """Adds onsite term to the specified diagonal matrix element of the Hamiltonian.
 
         Parameters
         ----------
-        onsite_energy : float
+        strength : float
             Magnitude of the onsite term.
         site_index : int
             Site index (ordered as in self.STRUC) that the term will be added to.
@@ -482,22 +482,22 @@ class TightBindingModel(Model):
             auto_label = f'E_{site_index}'
 
         for _ in site_indices:
-            self.STRUC[_].properties['onsite_energy'] = onsite_energy
-            self.STRUC[_].properties['onsite_energy_label'] = label if label is not None else auto_label
+            self.STRUC[_].properties['onsite_strength'] = strength
+            self.STRUC[_].properties['onsite_label'] = label if label is not None else auto_label
             self.STRUC[_].properties['onsite_spin_matrix'] = spin_matrix
 
         if spin_matrix is not None:
             self.make_spinful()
 
-    def show_onsite_energies(self):
+    def show_onsite_terms(self):
         """
         Prints the single ion anisotropies.
 
         """
 
         for _, site in enumerate(self.STRUC):
-            energy = site.properties['onsite_energy']
-            spin = site.properties['onsite_energy_spin']
+            energy = site.properties['onsite_strength']
+            spin = site.properties['onsite_spin_matrix']
             print(f'Onsite energy on Site{_}:\t{energy}\tSpin:{spin}')
 
     def set_spin_orbit(self, strength, matrix, index, by_symmetry=True, label=None):
