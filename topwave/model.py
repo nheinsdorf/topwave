@@ -51,7 +51,7 @@ class Model:
         generated and grouped by symmetry based on the provided sg.
     show_couplings():
         Prints the couplings.
-    set_coupling(J, symid):
+    set_coupling(strength, index, by_symmetry, label):
         Assign Heisenberg Exchange or hopping amplitude terms to a collection of couplings based
         on their symmetry index.
     set_field(B):
@@ -398,6 +398,9 @@ class TightBindingModel(Model):
         Adds spin degree of freedom to the Hamiltonian.
     set_onsite_energy(onsite_energy, site_index, label):
         Adds onsite energy terms to the given sites.
+    set_spin_orbit(strength, matrix, index, by_symmetry, label):
+        Adds a (generally) complex hopping term that couples spin-up
+        and -down degrees of freedom.
     """
 
     def __init__(self, struc):
@@ -498,4 +501,40 @@ class TightBindingModel(Model):
             spin = site.properties['onsite_energy_spin']
             print(f'Onsite energy on Site{_}:\t{energy}\tSpin:{spin}')
 
+    def set_spin_orbit(self, strength, matrix, index, by_symmetry=True, label=None):
+        """
+        Sets a spin-orbit (hopping) term that couples the spin degrees of freedom.
+        Automatically calls the 'make_spinful'-method.
+
+        Parameters
+        ----------
+        strength : complex
+            Strength of the spin-orbit interaction.
+        matrix : numpy.ndarray
+            2x2-matrix specifying how the spin-orbit terms mixes the spin degrees of freedom.
+        index : int
+            Integer that corresponds to the symmetry index of a selection of
+            couplings, or to the index if by_symmetry = False.
+        by_symmetry : bool
+            If true, index corresponds to the symmetry index of a selection of couplings.
+            If false, it corresponds to the index.
+        label : str
+            Label for the exchange/hopping parameter that is used for the symbolic
+            representation of the Hamiltonian. If None, a label is generated based
+            on the index.
+
+        """
+
+        self.make_spinful()
+
+        if by_symmetry:
+            indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
+        else:
+            indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
+
+        matrix = np.array(matrix, dtype=complex).reshape((2, 2))
+        for _ in indices:
+            self.CPLS[_].spin_orbit = strength * matrix
+            #self.CPLS_as_df.loc[_, 'strength'] = strength
+            self.CPLS[_].get_label_soc(label, by_symmetry)
 
