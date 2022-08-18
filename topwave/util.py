@@ -57,7 +57,7 @@ class Pauli:
     x = np.array([[0, 1], [1, 0]], dtype=complex)
     y = np.array([[0, -1j], [1j, 0]], dtype=complex)
     z = np.array([[1, 0], [0, -1]], dtype=complex)
-
+    vec = np.array([x, y, z], dtype=complex)
 
 def rotate_vector_to_ez(v):
     """Creates a 3x3 rotation matrix R with R v = [0, 0, 1]
