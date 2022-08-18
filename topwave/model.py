@@ -46,7 +46,7 @@ class Model:
 
     Methods
     -------
-    generate_couplings(maxdist, sg=None):
+    generate_couplings(maxdist, sg):
         Given a maximal distance (in Angstrom) all periodic bonds are
         generated and grouped by symmetry based on the provided sg.
     show_couplings():

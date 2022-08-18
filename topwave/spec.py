@@ -8,7 +8,7 @@ from topwave import solvers
 from topwave.model import Model, TightBindingModel
 
 
-class Spec():
+class Spec:
     """Class that contains the Hamiltonian, its spectrum and other quantities derived thereof.
 
     Parameters
