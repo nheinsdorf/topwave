@@ -83,7 +83,7 @@ class Model:
             site.properties['magmom'] = None
             site.properties['onsite_energy_label'] = None
             site.properties['onsite_energy'] = 0
-            site.properties['onsite_energy_spin'] = None
+            site.properties['onsite_energy_spin'] = np.eye(2)
             site.properties['single_ion_anisotropy'] = None
 
         # count the number of magnetic sites and save
@@ -396,7 +396,7 @@ class TightBindingModel(Model):
         Returns a symbolic representation of the Hamiltonian.
     make_spinful():
         Adds spin degree of freedom to the Hamiltonian.
-    set_onsite_energy(onsite_energy, site_index, label):
+    set_onsite_energy(onsite_energy, site_index, label, spin_matrix):
         Adds onsite energy terms to the given sites.
     set_spin_orbit(strength, matrix, index, by_symmetry, label):
         Adds a (generally) complex hopping term that couples spin-up
@@ -456,7 +456,7 @@ class TightBindingModel(Model):
 
         self.spinful = True
 
-    def set_onsite_energy(self, onsite_energy, site_index=None, label=None, spin='both'):
+    def set_onsite_energy(self, onsite_energy, site_index=None, label=None, spin_matrix=None):
         """Adds onsite term to the specified diagonal matrix element of the Hamiltonian.
 
         Parameters
@@ -469,10 +469,9 @@ class TightBindingModel(Model):
         label : str
             A label that is used for the symbolic representation of the Hamiltonian. If None,
             an automatic label is generated. Default is None.
-        spin : str
-            Either 'both', 'up' or 'down' with the onsite term being added to both, or only the up or
-            down spin part respectively. 'up' or 'down' will make the model spinful automatically.
-            Default is 'both'.
+        spin_matrix : numpy.ndarray
+            Two-by-two array in spin space for spin-dependant onsite terms, e.g. a spin-dependent
+            staggered flux or a AFM Zeeman field. If not None, the model is made 'spinful'. Default is None.
         """
 
         if site_index is None:
@@ -485,9 +484,9 @@ class TightBindingModel(Model):
         for _ in site_indices:
             self.STRUC[_].properties['onsite_energy'] = onsite_energy
             self.STRUC[_].properties['onsite_energy_label'] = label if label is not None else auto_label
-            self.STRUC[_].properties['onsite_energy_spin'] = spin
+            self.STRUC[_].properties['onsite_spin_matrix'] = spin_matrix
 
-        if spin == 'up' or spin == 'down':
+        if spin_matrix is not None:
             self.make_spinful()
 
     def show_onsite_energies(self):
