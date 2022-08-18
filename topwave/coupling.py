@@ -58,6 +58,10 @@ class Coupling:
         coordinates. 
     strength : float
         Exchange/Hopping strength of the coupling
+    DM : list
+        Three dimensional vector specifying the anisotropic exchange of the coupling.
+    spin_orbit : numpy.ndarray
+        Complex two-by-two matrix specifying the mixing of the spin degrees of freedom.
     u : numpy.ndarray
         Three-dimensional vector related to the site1/site2 property 'Rot'
         that is used to construct the matrix elements in rotated local spin
@@ -104,6 +108,7 @@ class Coupling:
         self.DELTA = site2.frac_coords - site1.frac_coords
         self.strength = 0.
         self.DM = np.array([0., 0., 0.], dtype=float)
+        self.spin_orbit = np.eye(2)
         self.label = None
         self.label_DM = None
         self.get_uv()
