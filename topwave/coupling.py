@@ -132,6 +132,26 @@ class Coupling:
         else:
             self.label = label
 
+    def get_label_soc(self, label=None, by_symmetry=True):
+        """ Generates a label to the coupling to represent Hamiltonian symbolically.
+
+        Parameters
+        ----------
+        label : str
+            Label that is assigned to the coupling for a given spin-orbit interaction.
+            If None, a label is assigned based on the (symmetry)-index of the coupling. Default is None.
+        by_symmetry : bool
+            If true the symmetry index will be used to assign a label. If false, the symmetry index
+            and the index will be used. Default is True.
+        """
+
+        if label is None and by_symmetry is True:
+            self.label = 'l_' + str(int(self.SYMID))
+        elif label is None and by_symmetry is False:
+            self.label = 'l_' + str(int(self.SYMID)) + str(int(self.ID))
+        else:
+            self.label = label
+
     def get_label_DM(self, label=None, by_symmetry=True):
         """ Generates labels for the DM interaction strengths.
 
