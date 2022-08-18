@@ -50,6 +50,15 @@ def gaussian(x, mean, std, normalize=True):
     return pre_factor * np.exp(-0.5 * np.square((x - mean) / std))
 
 
+class Pauli:
+    """Class that holds the Pauli matrices.
+    """
+    id = np.eye(2, dtype=complex)
+    x = np.array([[0, 1], [1, 0]], dtype=complex)
+    y = np.array([[0, -1j], [1j, 0]], dtype=complex)
+    z = np.array([[1, 0], [0, -1]], dtype=complex)
+
+
 def rotate_vector_to_ez(v):
     """Creates a 3x3 rotation matrix R with R v = [0, 0, 1]
 
