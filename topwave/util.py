@@ -52,12 +52,34 @@ def gaussian(x, mean, std, normalize=True):
 
 class Pauli:
     """Class that holds the Pauli matrices.
+
+    Parameters
+    ----------
+    d : list
+        Three-dimensional list that is used to create linear combination of the Pauli matrices
+        with d as coefficients.
+    normalize : bool
+        If true, d is normalized. Default is true.
+
+    Returns
+    -------
+    Returns the (normalized) linear combination of Pauli matrices. It does NOT return a class instance.
+
     """
     id = np.eye(2, dtype=complex)
     x = np.array([[0, 1], [1, 0]], dtype=complex)
     y = np.array([[0, -1j], [1j, 0]], dtype=complex)
     z = np.array([[1, 0], [0, -1]], dtype=complex)
     vec = np.array([x, y, z], dtype=complex)
+
+    def __init__(self):
+        pass
+    def __new__(cls, d, normalize=True):
+        d = np.array(d).reshape((3,))
+        if normalize:
+            d = d / norm(d)
+        return np.einsum('i, inm -> nm', d, cls.vec)
+
 
 def rotate_vector_to_ez(v):
     """Creates a 3x3 rotation matrix R with R v = [0, 0, 1]
