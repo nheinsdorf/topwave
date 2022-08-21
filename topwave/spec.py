@@ -6,6 +6,7 @@ from scipy.linalg import block_diag
 
 from topwave import solvers
 from topwave.model import Model, TightBindingModel
+from topwave.util import Pauli
 
 
 class Spec:
@@ -125,9 +126,26 @@ class Spec:
                 MAT[_, cpl.I, cpl.J] += A
                 MAT[_, cpl.J, cpl.I] += np.conj(A)
 
+        # add spin degrees of freedom
+        if model.spinful:
+            MAT = np.kron(MAT, np.eye(2))
+
+            # add Zeeman term
+            for _, site in enumerate(model.STRUC):
+                print(Pauli(model.MF, normalize=False))
+                MAT[:, _: _ + 2, _:_ + 2] += Model.muB * Model.g * Pauli(model.MF, normalize=False)
+
         # add onsite energy terms
         for _, site in enumerate(model.STRUC):
-            MAT[:, _, _] += site.properties['onsite_energy']
+            print(site.properties['onsite_strength'])
+            if model.spinful:
+                onsite_term = site.properties['onsite_strength'] * site.properties['onsite_spin_matrix']
+                MAT[:, _:_ + 2, _:_ + 2] += onsite_term
+            else:
+                onsite_term = site.properties['onsite_strength']
+                MAT[:, _, _] += onsite_term
+
+
 
         return MAT
 
