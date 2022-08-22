@@ -132,20 +132,15 @@ class Spec:
 
             # add Zeeman term
             for _, site in enumerate(model.STRUC):
-                print(Pauli(model.MF, normalize=False))
-                MAT[:, _: _ + 2, _:_ + 2] += Model.muB * Model.g * Pauli(model.MF, normalize=False)
+                MAT[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += Model.muB * Model.g * Pauli(model.MF, normalize=False)
 
-        # add onsite energy terms
-        for _, site in enumerate(model.STRUC):
-            print(site.properties['onsite_strength'])
-            if model.spinful:
+                # add onsite term
                 onsite_term = site.properties['onsite_strength'] * site.properties['onsite_spin_matrix']
-                MAT[:, _:_ + 2, _:_ + 2] += onsite_term
-            else:
-                onsite_term = site.properties['onsite_strength']
-                MAT[:, _, _] += onsite_term
+                MAT[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += onsite_term
 
-
+        else:
+            for _, site in enumerate(model.STRUC):
+                MAT[:, _, _] += site.properties['onsite_strength']
 
         return MAT
 

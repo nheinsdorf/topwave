@@ -498,7 +498,7 @@ class TightBindingModel(Model):
         for _, site in enumerate(self.STRUC):
             energy = site.properties['onsite_strength']
             spin = site.properties['onsite_spin_matrix']
-            print(f'Onsite energy on Site{_}:\t{energy}\tSpin:{spin}')
+            print(f'Onsite energy on Site{_}:\t{energy}\nSpin:\n{spin}')
 
     def set_spin_orbit(self, strength, matrix, index, by_symmetry=True, label=None):
         """
