@@ -285,7 +285,28 @@ class Coupling:
         # construct the spin-orbit coupling hoppings
         spin_orbit_term = 1j * Pauli(self.DM, normalize=False)
 
-        return A, inner, spin_orbit_term
+        return A, inner
+
+    def get_spin_orbit_matrix_elements(self, k):
+        """Creates the matrix elements of the tight-binding Hamiltonian that come from spin-orbit interation.
+
+        Parameters
+        ----------
+        k : numpy.ndarray
+            Three-dimensional array corresponding to some k-point.
+
+        Returns
+        -------
+        Matrix elements.
+
+        """
+
+        c_k, inner = self.get_fourier_coefficients(k)
+
+        # construct the spin-orbit coupling hoppings
+        spin_orbit_term = 1j * c_k *  Pauli(self.DM, normalize=False)
+
+        return spin_orbit_term, inner
 
     def __repr__(self):
         return repr(self.DF)

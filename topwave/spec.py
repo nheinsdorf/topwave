@@ -138,6 +138,13 @@ class Spec:
                 onsite_term = site.properties['onsite_strength'] * site.properties['onsite_spin_matrix']
                 MAT[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += onsite_term
 
+            # add spin-orbit term
+            for _, k in enumerate(ks):
+                for cpl in model.get_set_couplings():
+                    (spin_orbit_term, inner) = cpl.get_spin_orbit_matrix_elements(k)
+                    MAT[_, 2 * cpl.I:2 * cpl.I + 2, 2 * cpl.J:2 * cpl.J + 2] += spin_orbit_term
+                    MAT[_, 2 * cpl.J:2 * cpl.J + 2, 2 * cpl.I:2 * cpl.I + 2] += np.conj(spin_orbit_term.T)
+
         else:
             for _, site in enumerate(model.STRUC):
                 MAT[:, _, _] += site.properties['onsite_strength']

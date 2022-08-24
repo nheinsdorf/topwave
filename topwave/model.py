@@ -500,7 +500,7 @@ class TightBindingModel(Model):
             spin = site.properties['onsite_spin_matrix']
             print(f'Onsite energy on Site{_}:\t{energy}\nSpin:\n{spin}')
 
-    def set_spin_orbit(self, strength, matrix, index, by_symmetry=True, label=None):
+    def set_spin_orbit(self, strength, vector, index, by_symmetry=True, label=None):
         """
         Sets a spin-orbit (hopping) term that couples the spin degrees of freedom.
         Automatically calls the 'make_spinful'-method.
@@ -509,8 +509,9 @@ class TightBindingModel(Model):
         ----------
         strength : complex
             Strength of the spin-orbit interaction.
-        matrix : numpy.ndarray
-            2x2-matrix specifying how the spin-orbit terms mixes the spin degrees of freedom.
+        vector : numpy.ndarray
+            A vector the components of which corresponds to the coeffecients of a linear combination
+            of Pauli matrices. The vector will be normalized.
         index : int
             Integer that corresponds to the symmetry index of a selection of
             couplings, or to the index if by_symmetry = False.
@@ -531,9 +532,18 @@ class TightBindingModel(Model):
         else:
             indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
 
-        matrix = np.array(matrix, dtype=complex).reshape((2, 2))
-        for _ in indices:
-            self.CPLS[_].spin_orbit = strength * matrix
-            #self.CPLS_as_df.loc[_, 'strength'] = strength
-            self.CPLS[_].get_label_soc(label, by_symmetry)
+        vector = strength * np.array(vector, dtype=float)
+        _ = indices[0]
+        self.CPLS[_].DM = vector
+        self.CPLS_as_df.loc[_, 'DM'][0] = vector[0]
+        self.CPLS_as_df.loc[_, 'DM'][1] = vector[1]
+        self.CPLS_as_df.loc[_, 'DM'][2] = vector[2]
+
+        if by_symmetry:
+            for _ in indices[1:]:
+                Drot = self.CPLS[_].SYMOP.apply_rotation_only(vector)
+                self.CPLS[_].DM = Drot
+                self.CPLS_as_df.loc[_, 'DM'][0] = Drot[0]
+                self.CPLS_as_df.loc[_, 'DM'][1] = Drot[1]
+                self.CPLS_as_df.loc[_, 'DM'][2] = Drot[2]
 
