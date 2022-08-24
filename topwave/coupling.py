@@ -10,6 +10,8 @@ import numpy as np
 from numpy.linalg import norm
 import pandas as pd
 
+from topwave.util import Pauli
+
 
 class Coupling:
     """ Base class that holds information about a coupling between two sites
@@ -280,7 +282,10 @@ class Coupling:
         # construct the matrix elements
         A = c_k * self.strength
 
-        return A, inner
+        # construct the spin-orbit coupling hoppings
+        spin_orbit_term = 1j * Pauli(self.DM, normalize=False)
+        print(spin_orbit_term)
+        return A, inner, spin_orbit_term
 
     def __repr__(self):
         return repr(self.DF)
