@@ -284,7 +284,7 @@ class Coupling:
 
         # construct the spin-orbit coupling hoppings
         spin_orbit_term = 1j * Pauli(self.DM, normalize=False)
-        print(spin_orbit_term)
+
         return A, inner, spin_orbit_term
 
     def __repr__(self):
