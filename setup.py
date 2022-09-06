@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='topwave',
     version='0.1.0',
-    packages=['tests', 'topwave'],
+    packages=['topwave'],
     url='',
     license='',
     author='Niclas Heinsdorf',
