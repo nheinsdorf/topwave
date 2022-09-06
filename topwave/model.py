@@ -21,7 +21,7 @@ from topwave.coupling import Coupling
 from topwave.util import rotate_vector_to_ez
 
 
-class Model:
+class ModelMixin:
     """Base class that contains the physical model.
 
     Parameters
@@ -49,6 +49,8 @@ class Model:
     generate_couplings(maxdist, sg):
         Given a maximal distance (in Angstrom) all periodic bonds are
         generated and grouped by symmetry based on the provided sg.
+    invert_coupling(index):
+        Invert the order of a given coupling.
     show_couplings():
         Prints the couplings.
     set_coupling(strength, index, by_symmetry, label):
@@ -63,7 +65,7 @@ class Model:
     show_anisotropies():
         Prints the single ion anisotropies.
     write_cif():
-        A function that uses pymatgen functionality to save Model.STRUC
+        A function that uses pymatgen functionality to save ModelMixin.STRUC
         as a mcif file to be visualized in e.g. VESTA
 
     """
@@ -131,6 +133,20 @@ class Model:
             site2 = self.STRUC[j]
             cpl = Coupling(site1, site2, cplid, symid, symop, R)
             self.CPLS.append(cpl)
+            self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
+        self.CPLS_as_df.reset_index(drop=True, inplace=True)
+
+    def invert_coupling(self, index):
+        """Inverts the order of a coupling.
+        """
+
+        cpl = self.CPLS[index]
+        site1, site2, R, symid, symop = cpl.SITE1, cpl.SITE2, cpl.R, cpl.SYMID, cpl.SYMOP
+        inverted_coupling = Coupling(site2, site1, index, symid, symop, -R)
+        self.CPLS[index] = inverted_coupling
+        self.CPLS_as_df = pd.DataFrame(columns=['symid', 'symop', 'delta', 'R', 'dist', 'i',
+                                                'at1', 'j', 'at2', 'strength', 'DM'])
+        for cpl in self.CPLS:
             self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
         self.CPLS_as_df.reset_index(drop=True, inplace=True)
 
@@ -286,7 +302,7 @@ class Model:
         return set_couplings
 
 
-class SpinWaveModel(Model):
+class SpinWaveModel(ModelMixin):
     """
     Class for a Spin Wave Model.
 
@@ -375,7 +391,7 @@ class SpinWaveModel(Model):
 
 
 
-class TightBindingModel(Model):
+class TightBindingModel(ModelMixin):
     """
     Class for a tight-binding model.
 
@@ -532,7 +548,8 @@ class TightBindingModel(Model):
         else:
             indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
 
-        vector = strength * np.array(vector, dtype=float)
+        vector = np.array(vector, dtype=float)
+        vector = strength * vector / norm(vector)
         _ = indices[0]
         self.CPLS[_].DM = vector
         self.CPLS_as_df.loc[_, 'DM'][0] = vector[0]

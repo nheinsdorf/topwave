@@ -5,7 +5,7 @@ from numpy.linalg import eig, eigh, eigvals, inv, multi_dot, norm
 from scipy.linalg import block_diag
 
 from topwave import solvers
-from topwave.model import Model, TightBindingModel
+from topwave.model import ModelMixin, TightBindingModel
 from topwave.util import Pauli
 
 
@@ -14,7 +14,7 @@ class Spec:
 
     Parameters
     ----------
-    model : model.Model
+    model : model.ModelMixin
         The model of which the Hamiltonian is built.
     ks : numpy.ndarray
         Array of three-dimensional vectors in k-space at which the
@@ -54,7 +54,8 @@ class Spec:
     -------
     solve():
         Diagonalizes the Hamiltonian.
-
+    get_greens_function(energies, eta)
+        Computes the unperturbed Greens function from the spectrum's energies.
     """
 
     def __init__(self, model, ks, parallel=False):
@@ -79,6 +80,7 @@ class Spec:
         if isinstance(model, TightBindingModel):
             self.H = self.get_tb_hamiltonian(model, self.KS)
             self.solve(eigh)
+
         # build Hamiltonian and diagonalize it
         else:
             self.H = self.get_sw_hamiltonian(model)
@@ -95,13 +97,30 @@ class Spec:
         # compute the Berry curvature
         # self.get_berry_curvature()
 
-    @staticmethod
-    def get_tb_hamiltonian(model, ks):
-        """ Function that builds the Hamiltonian for a tight-binding model.
+    def get_greens_function(self, energies, eta=0.02):
+        """Computes the unperturbed Greens function from the spectrum for a given set of energies.
 
         Parameters
         ----------
-        model : topwave.model.Model
+        energies : list or numpy.ndarray
+            The iso-energies at which the Greens function is computed.
+        eta : float
+            Small but finite (positive) broadening of the spectrum.
+
+        """
+
+        num_energies = len(energies)
+        energies = np.array(energies + 1j * eta, dtype=complex).reshape(num_energies)
+        spec = np.transpose(np.tile(self.E, (num_energies, 1, 1)), [1, 2, 0])
+        return np.imag(np.sum(np.reciprocal(spec - energies), axis=1))
+
+    @staticmethod
+    def get_tb_hamiltonian(model, ks):
+        """Function that builds the Hamiltonian for a tight-binding model.
+
+        Parameters
+        ----------
+        model : topwave.model.ModelMixin
             The spin wave model that is used to construct the Hamiltonian.
         ks : numpy.ndarray
             Array of three-dimensional vectors in k-space at which the
@@ -132,7 +151,7 @@ class Spec:
 
             # add Zeeman term
             for _, site in enumerate(model.STRUC):
-                MAT[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += Model.muB * Model.g * Pauli(model.MF, normalize=False)
+                MAT[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += ModelMixin.muB * ModelMixin.g * Pauli(model.MF, normalize=False)
 
                 # add onsite term
                 onsite_term = site.properties['onsite_strength'] * site.properties['onsite_spin_matrix']
@@ -158,7 +177,7 @@ class Spec:
 
         Parameters
         ----------
-        model : topwave.model.Model
+        model : topwave.model.ModelMixin
             The spin wave model that is used to construct the Hamiltonian.
 
         Returns
@@ -202,7 +221,7 @@ class Spec:
         # add the external magnetic field
         for _ in range(self.N):
             v = model.STRUC[_].properties['Rot'][:, 2]
-            H_Zeeman = Model.muB * Model.g * (model.MF @ v)
+            H_Zeeman = ModelMixin.muB * ModelMixin.g * (model.MF @ v)
             MAT[:, _, _] += H_Zeeman
             MAT[:, _ + self.N, _ + self.N] += H_Zeeman
 
@@ -309,7 +328,7 @@ class Spec:
 
         Parameters
         ----------
-        model : topwave.Model
+        model : topwave.ModelMixin
             The model that is used to calculate the spectrum.
         ks : numpy.ndarray
             List of k-points. Shape is (NK, 3).
@@ -386,7 +405,7 @@ class Spec:
 
         Parameters
         ----------
-        model : topwave.Model
+        model : topwave.ModelMixin
             The model that is used to calculate the spectrum.
 
         Returns

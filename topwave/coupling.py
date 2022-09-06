@@ -91,8 +91,6 @@ class Coupling:
         Generates matrix elements of the coupling at a given k-point.
 
 
-        
-
     """
 
     def __init__(self, site1, site2, cplid, symid, symop, R):
@@ -176,8 +174,6 @@ class Coupling:
             self.label_DM = 'D_' + str(int(self.SYMID)) + str(int(self.ID))
         else:
             self.label_DM = label
-
-
 
     def get_uv(self):
         """ Constructs the u and v vector when the system was magnetized.
@@ -304,7 +300,7 @@ class Coupling:
         c_k, inner = self.get_fourier_coefficients(k)
 
         # construct the spin-orbit coupling hoppings
-        spin_orbit_term = 1j * c_k *  Pauli(self.DM, normalize=False)
+        spin_orbit_term = 1j * c_k * Pauli(self.DM, normalize=False)
 
         return spin_orbit_term, inner
 
