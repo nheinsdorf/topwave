@@ -83,6 +83,8 @@ class Coupling:
         Returns an empty dataframe with the right column labels for printing.
     get_df():
         Returns attributes of self as a pandas dataframe.
+    get_exchange_matrix():
+        Returns the exchange matrix of the coupling.
     get_label(label=None, by_symmetry=True):
         Generates labels for the symbolic representation of the Hamiltonian.
     get_uv():
@@ -193,6 +195,21 @@ class Coupling:
         except KeyError:
             pass
 
+    def get_exchange_matrix(self):
+        """Returns the exchange matrix.
+
+        Returns
+        -------
+        exchange_matrix : numpy.ndarray
+            Three-by-three numpy.ndarray that gives the exchange interaction of the bond.
+
+        """
+
+        exchange_matrix = np.array([[self.strength, self.DM[2], -self.DM[1]],
+                                    [-self.DM[2], self.strength, self.DM[0]],
+                                    [self.DM[1], -self.DM[0], self.strength]], dtype=complex)
+        return exchange_matrix
+
     def get_fourier_coefficients(self, k):
         """
         Given a k-point this returns the Fourier coefficients for this bond,
@@ -242,9 +259,7 @@ class Coupling:
         c_k, inner = self.get_fourier_coefficients(k)
 
         # constructs the exchange matrix
-        Jhat = np.array([[self.strength, self.DM[2], -self.DM[1]],
-                         [-self.DM[2], self.strength, self.DM[0]],
-                         [self.DM[1], -self.DM[0], self.strength]], dtype=complex)
+        Jhat = self.get_exchange_matrix()
 
         # construct the matrix elements
         # NOTE: Check redundancy for the a (and possibly b)-type matrix elements.
