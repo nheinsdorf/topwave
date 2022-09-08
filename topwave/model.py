@@ -51,6 +51,8 @@ class ModelMixin:
         generated and grouped by symmetry based on the provided sg.
     invert_coupling(index):
         Invert the order of a given coupling.
+    remove_coupling(index, by_symmetry):
+        Removes a coupling.
     show_couplings():
         Prints the couplings.
     set_coupling(strength, index, by_symmetry, label):
@@ -148,6 +150,38 @@ class ModelMixin:
                                                 'at1', 'j', 'at2', 'strength', 'DM'])
         for cpl in self.CPLS:
             self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
+        self.CPLS_as_df.reset_index(drop=True, inplace=True)
+
+    def remove_coupling(self, index, by_symmetry=True):
+        """Removes a coupling.
+
+        Parameters
+        ----------
+        index : int
+            Integer that corresponds to the symmetry index of a selection of
+            couplings, or to the index if by_symmetry = False.
+        by_symmetry : bool
+            If true, index corresponds to the symmetry index of a selection of couplings.
+            If false, it corresponds to the index.
+
+        """
+
+        if by_symmetry:
+            indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
+        else:
+            indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
+
+        new_CPLS = self.CPLS.copy()
+        for _ in sorted(indices, reverse=True):
+            new_CPLS.pop(_)
+
+        self.reset_all_couplings()
+        for cplid, cpl in enumerate(new_CPLS):
+            site1 = model.STRUC[cpl.I]
+            site2 = model.STRUC[cpl.J]
+            new_cpl = Coupling(site1, site2, cplid, cpl.SYMID, cpl.SYMOP, cpl.R)
+            self.CPLS.append(new_cpl)
+            self.CPLS_as_df = pd.concat([self.CPLS_as_df, new_cpl.DF])
         self.CPLS_as_df.reset_index(drop=True, inplace=True)
 
     def show_couplings(self):
