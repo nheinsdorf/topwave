@@ -83,6 +83,8 @@ class Coupling:
         Returns an empty dataframe with the right column labels for printing.
     get_df():
         Returns attributes of self as a pandas dataframe.
+    get_energy():
+        Returns the classical exchange energy of the coupling.
     get_exchange_matrix():
         Returns the exchange matrix of the coupling.
     get_label(label=None, by_symmetry=True):
@@ -194,6 +196,23 @@ class Coupling:
             self.u1, self.u2, self.v1, self.v2 = u1, u2, v1, v2
         except KeyError:
             pass
+
+    def get_energy(self):
+        """Returns the classical energy of the coupling.
+
+        Returns
+        -------
+        energy : float
+            The classical energy of the coupling.
+
+        """
+
+        exchange_matrix = self.get_exchange_matrix()
+        S_1 = self.SITE1.properties['magmom']
+        S_2 = self.SITE2.properties['magmom']
+        energy = S_1 @ exchange_matrix @ S_2
+
+        return energy
 
     def get_exchange_matrix(self):
         """Returns the exchange matrix.
