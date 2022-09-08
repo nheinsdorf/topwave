@@ -49,7 +49,7 @@ class ModelMixin:
     generate_couplings(maxdist, sg):
         Given a maximal distance (in Angstrom) all periodic bonds are
         generated and grouped by symmetry based on the provided sg.
-    get_boundary_couplings(direction='xyz'):
+    get_boundary_couplings(direction):
         Returns a list of couplings that couple sites in adjacent unit cells in the direction
         given by the provided string. E.g.: 'x' returns all couplings that couple sites in the
         adjacent unit cell in the direction of the first lattice vector, whereas 'xyz' returns those
@@ -68,6 +68,9 @@ class ModelMixin:
         Apply an external magnetic field that is stored in self.MF
     set_moments(gs):
         Provide a classical magnetic ground state.
+    set_open_boundaries(direction):
+        Sets the strength of exchange/hopping and of DM/SOC for all couplings that couple sites
+        to adjacent unit cells in the given direction to zero. Default is for all directions.
     show_moments():
         Prints the magnetic moments.
     show_anisotropies():
@@ -156,15 +159,15 @@ class ModelMixin:
 
         Returns
         -------
-        boundary_couplings : list
-            List of topwave.coupling.
+        tuple[list, list]
+            List of topwave.coupling and the their indices w.r.t. self.CPLS.
 
         """
 
         Rs = np.array([cpl.R for cpl in self.CPLS], dtype=float)
 
         if len(Rs) == 0:
-            return []
+            boundary_couplings = boundary_indices = []
         else:
             x_indices = y_indices = z_indices = np.array([], dtype=int).reshape((0,))
             if 'x' in direction:
@@ -174,8 +177,9 @@ class ModelMixin:
             if 'z' in direction:
                 z_indices = np.arange(len(self.CPLS))[Rs[:, 2] != 0]
             boundary_indices = np.unique(np.concatenate((x_indices, y_indices, z_indices), axis=0))
+            boundary_couplings = [self.CPLS[_] for _ in boundary_indices]
 
-            return [self.CPLS[_] for _ in boundary_indices]
+        return boundary_couplings, boundary_indices
 
     def invert_coupling(self, index):
         """Inverts the order of a coupling.
@@ -320,6 +324,24 @@ class ModelMixin:
         # extract the u- and v-vectors from the rotation matrix
         for cpl in self.CPLS:
             cpl.get_uv()
+
+    def set_open_boundaries(self, direction='xyz'):
+        """Sets the exchange/hopping and DM/SOC along the boundary couplings to zero.
+
+        Parameters
+        ----------
+        direction : str
+            Direction along which the boundaries are set to open.
+
+        """
+
+        boundary_couplings, boundary_indices = self.get_boundary_couplings(direction=direction)
+        for _ in boundary_indices:
+            self.set_coupling(0, _, by_symmetry=False)
+            if isinstance(self, TightBindingModel):
+                self.set_spin_orbit(0, np.ones(3), _, by_symmetry=False)
+            else:
+                self.set_DM([0, 0, 0], _, by_symmetry=False)
 
     def show_moments(self):
         """
