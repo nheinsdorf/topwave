@@ -112,7 +112,7 @@ class Coupling:
         self.DELTA = site2.frac_coords - site1.frac_coords
         self.strength = 0.
         self.DM = np.array([0., 0., 0.], dtype=float)
-        self.spin_orbit = np.eye(2)
+        #self.spin_orbit = np.eye(2)
         self.label = None
         self.label_DM = None
         self.get_uv()
