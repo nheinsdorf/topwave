@@ -342,6 +342,8 @@ class SpinWaveModel(ModelMixin):
 
     Methods
     -------
+    get_classical_energy():
+        Returns the classical ground state energy of the model.
     set_DM(D, symid, by_symmetry):
         Assign anti-symmetric exchange to a selection of couplings based on
         their symmetry index.
@@ -349,6 +351,37 @@ class SpinWaveModel(ModelMixin):
         Assign single-ion anisotropy to site or selection thereof based on
         their symmetry index.
     """
+
+    def get_classical_energy(self, per_spin=True):
+        """Computes the classical ground state energy of the model.
+
+        Parameters
+        ----------
+        per_spin : bool
+            If true, the total energy is divided by the number of magnetic sites in the model.
+            Default is true.
+
+        Returns
+        -------
+        energy : float
+            Total classical ground state energy or energy per spin if per_spin is True.
+
+        """
+
+        energy = 0
+        # exchange energy
+        for coupling in self.CPLS:
+            energy += coupling.get_energy()
+
+        # Zeeman energy and anisotropies
+        for site in self.STRUC:
+            magmom = site.properties['magmom']
+            K = site.properties['single_ion_anisotropy']
+            print(magmom, K, magmom @ np.diag(K) @ magmom)
+            energy += magmom @ np.diag(K) @ magmom
+            energy -= ModelMixin.muB * ModelMixin.g * (model.MF @ magmom)
+
+        return energy
 
     def set_DM(self, D, index, by_symmetry=True):
         """
