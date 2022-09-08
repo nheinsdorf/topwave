@@ -49,6 +49,12 @@ class ModelMixin:
     generate_couplings(maxdist, sg):
         Given a maximal distance (in Angstrom) all periodic bonds are
         generated and grouped by symmetry based on the provided sg.
+    get_boundary_couplings(direction='xyz'):
+        Returns a list of couplings that couple sites in adjacent unit cells in the direction
+        given by the provided string. E.g.: 'x' returns all couplings that couple sites in the
+        adjacent unit cell in the direction of the first lattice vector, whereas 'xyz' returns those
+        that couple sites from any other unit cell. Default is 'xyz'.
+        Returns a list of couplings that
     invert_coupling(index):
         Invert the order of a given coupling.
     remove_coupling(index, by_symmetry):
@@ -137,6 +143,39 @@ class ModelMixin:
             self.CPLS.append(cpl)
             self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
         self.CPLS_as_df.reset_index(drop=True, inplace=True)
+
+    def get_boundary_couplings(self, direction='xyz'):
+        """Returns a list of couplings that couple sites in adjacent unit cells in the a given direction.
+
+        Parameters
+        ----------
+        direction : str
+            Specifies in which direction the boundary is set. E.g.: 'x' returns all couplings that couple
+            sites in the adjacent unit cell in the direction of the first lattice vector, whereas 'xyz' returns those
+            that couple sites from any other unit cell. Default is 'xyz'.
+
+        Returns
+        -------
+        boundary_couplings : list
+            List of topwave.coupling.
+
+        """
+
+        Rs = np.array([cpl.R for cpl in self.CPLS], dtype=float)
+
+        if len(Rs) == 0:
+            return []
+        else:
+            x_indices = y_indices = z_indices = np.array([], dtype=int).reshape((0,))
+            if 'x' in direction:
+                x_indices = np.arange(len(self.CPLS))[Rs[:, 0] != 0]
+            if 'y' in direction:
+                y_indices = np.arange(len(self.CPLS))[Rs[:, 1] != 0]
+            if 'z' in direction:
+                z_indices = np.arange(len(self.CPLS))[Rs[:, 2] != 0]
+            boundary_indices = np.unique(np.concatenate((x_indices, y_indices, z_indices), axis=0))
+
+            return [self.CPLS[_] for _ in boundary_indices]
 
     def invert_coupling(self, index):
         """Inverts the order of a coupling.
