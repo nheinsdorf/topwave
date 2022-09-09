@@ -219,11 +219,16 @@ class ModelMixin:
         num_uc = np.product(scaling_factors)
         x_lim, y_lim, z_lim = scaling_factors
         coords = []
+        cell_vectors = []
         for site in self.STRUC:
             for (x, y, z) in product(range(x_lim), range(y_lim), range(z_lim)):
                 coords.append((site.frac_coords + [x, y, z]) / scaling_factors)
+                cell_vectors.append([x, y, z])
         coords = np.array(coords, dtype=float).reshape((num_uc, self.N, 3), order='F')
         coords = coords.reshape((num_uc * self.N), 3)
+        cell_vectors = np.array(cell_vectors, dtype=int).reshape((num_uc, self.N, 3), order='F')
+        cell_vectors = cell_vectors.reshape((num_uc * self.N), 3)
+
         species = [site.species_string for site in self.STRUC] * num_uc
         supercell = Structure.from_spacegroup(1, lattice, species, coords)
 
@@ -233,6 +238,7 @@ class ModelMixin:
                     supercell[_].properties[key] = value
                 supercell[_].properties['id'] = _
                 supercell[_].properties['uc_site_index'] = site_index
+                supercell[_].properties['cell_vector'] = cell_vectors[_]
 
         self.supercell = supercell
 
