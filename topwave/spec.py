@@ -71,7 +71,7 @@ class Spec:
         self.E = None
         self.psi = None
         self.SS = None
-        self.N = len(model.STRUC)
+        self.N = len(model.STRUC) if model.supercell is None else len(model.supercell)
         self.NK = len(ks)
         self.parallel = parallel
         self.neutron = {}
@@ -132,7 +132,7 @@ class Spec:
 
         """
 
-        N = len(model.STRUC)
+        N = len(model.STRUC) if model.supercell is None else len(model.supercell)
         NK = len(ks)
         MAT = np.zeros((NK, N, N), dtype=complex)
 
@@ -186,6 +186,8 @@ class Spec:
 
         """
 
+        struc = model.STRUC if model.supercell is None else model.supercell
+
         MAT = np.zeros((self.NK, 2 * self.N, 2 * self.N), dtype=complex)
 
         # construct matrix elements at each k-point
@@ -210,9 +212,10 @@ class Spec:
                 MAT[_, cpl.I + self.N, cpl.J] += np.conj(B21)
 
         # add single ion anisotropies
+        struc = model.STRUC if model.supercell is None else model.supercell
         for _ in range(self.N):
-            u = model.STRUC[_].properties['Rot'][:, 0] + 1j * model.STRUC[_].properties['Rot'][:, 1]
-            K = np.diag(model.STRUC[_].properties['single_ion_anisotropy'])
+            u = struc[_].properties['Rot'][:, 0] + 1j * struc[_].properties['Rot'][:, 1]
+            K = np.diag(struc[_].properties['single_ion_anisotropy'])
             MAT[:, _, _] += u @ K @ np.conj(u)
             MAT[:, _ + self.N, _ + self.N] += np.conj(u @ K @ np.conj(u))
             MAT[:, _, _ + self.N] += u @ K @ u
@@ -220,7 +223,7 @@ class Spec:
 
         # add the external magnetic field
         for _ in range(self.N):
-            v = model.STRUC[_].properties['Rot'][:, 2]
+            v = struc[_].properties['Rot'][:, 2]
             H_Zeeman = ModelMixin.muB * ModelMixin.g * (model.MF @ v)
             MAT[:, _, _] += H_Zeeman
             MAT[:, _ + self.N, _ + self.N] += H_Zeeman
@@ -346,15 +349,17 @@ class Spec:
         nk = len(ks)
         N = self.N
 
+        struc = model.STRUC if model.supercell is None else model.supercell
+
         # calculate the phase factors for all sites
         phases = np.zeros((nk, N), dtype=complex)
         us = np.zeros((N, 3), dtype=complex)
-        for _, site in enumerate(model.STRUC.sites):
+        for _, site in enumerate(struc.sites):
             mu = np.sqrt(norm(site.properties['magmom'] / 2))
             phases[:, _] = mu * np.exp(-1j * np.einsum('ki, i -> k', ks, site.frac_coords) * 2 * np.pi)
             us[_, :] = site.properties['Rot'][:, 0] + 1j * site.properties['Rot'][:, 1]
 
-        phasesL = np.transpose(np.tile(np.concatenate((phases, phases), axis=1), (3, 3, 8, 1, 1)), (3, 2, 4, 0, 1))
+        phasesL = np.transpose(np.tile(np.concatenate((phases, phases), axis=1), (3, 3, 2 * N, 1, 1)), (3, 2, 4, 0, 1))
         phasesR = np.conj(phasesL.swapaxes(1, 2))
 
         usL = np.transpose(np.tile(np.concatenate((us, np.conj(us)), axis=0), (2 * N, 3, 1, 1)), (0, 2, 3, 1))
