@@ -5,12 +5,14 @@ Created on Wed Jan  5 14:07:56 2022
 
 @author: niclas
 """
+from itertools import product
 from pathlib import Path
 
 import numpy as np
 from numpy.linalg import eig, eigh, eigvals, multi_dot
 import pandas as pd
 from pymatgen.core.operations import SymmOp
+from pymatgen.core.structure import Structure
 from pymatgen.io.cif import CifWriter
 from pymatgen.symmetry.groups import SpaceGroup
 from scipy.linalg import block_diag, norm
@@ -42,11 +44,13 @@ class ModelMixin:
     MF : numpy.ndarray
         This is variable holds the external magnetic field. It is set via
         'set_field'. Default is [0, 0, 0].
+    supercell : pymatgen.core.Structure
+        The structure that holds the supercell constructed by the 'make_supercell'-method.
 
 
     Methods
     -------
-    generate_couplings(maxdist, sg):
+    generate_couplings(maxdist, sg, supercell):
         Given a maximal distance (in Angstrom) all periodic bonds are
         generated and grouped by symmetry based on the provided sg.
     get_boundary_couplings(direction):
@@ -57,6 +61,8 @@ class ModelMixin:
         Returns a list of couplings that
     invert_coupling(index):
         Invert the order of a given coupling.
+    make_supercell(scaling_factors):
+        Constructs a supercell.
     remove_coupling(index, by_symmetry):
         Removes a coupling.
     show_couplings():
@@ -109,6 +115,8 @@ class ModelMixin:
 
         # put zero magnetic field
         self.MF = np.zeros(3, dtype=float)
+
+        self.supercell = None
 
     def reset_all_couplings(self):
         """
@@ -194,6 +202,39 @@ class ModelMixin:
         for cpl in self.CPLS:
             self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
         self.CPLS_as_df.reset_index(drop=True, inplace=True)
+
+    def make_supercell(self, scaling_factors):
+        """Constructs a supercell
+
+        Parameters
+        ----------
+        scaling_factors : list
+            List of three integers that are used to scale the existing primitive unit cell.
+            E.g. [2, 1 ,1] corresponds to a supercell of dimensions (2a, b, c).
+
+        """
+
+        lattice = (scaling_factors * self.STRUC.lattice.matrix.T).T
+
+        num_uc = np.product(scaling_factors)
+        x_lim, y_lim, z_lim = scaling_factors
+        coords = []
+        for site in self.STRUC:
+            for (x, y, z) in product(range(x_lim), range(y_lim), range(z_lim)):
+                coords.append((site.frac_coords + [x, y, z]) / scaling_factors)
+        coords = np.array(coords, dtype=float).reshape((num_uc, self.N, 3), order='F')
+        coords = coords.reshape((num_uc * self.N), 3)
+        species = [site.species_string for site in self.STRUC] * num_uc
+        supercell = Structure.from_spacegroup(1, lattice, species, coords)
+
+        for site_index, site in enumerate(self.STRUC):
+            for _ in range(site_index, self.N * num_uc, self.N):
+                for key, value in site.properties.items():
+                    supercell[_].properties[key] = value
+                supercell[_].properties['id'] = _
+                supercell[_].properties['uc_site_index'] = site_index
+
+        self.supercell = supercell
 
     def remove_coupling(self, index, by_symmetry=True):
         """Removes a coupling.
