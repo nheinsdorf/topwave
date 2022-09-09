@@ -218,6 +218,9 @@ class ModelMixin:
 
         """
 
+        if len(self.CPLS) == 0:
+            logging.warning('Couplings must be generated before the supercell.')
+
         logging.debug('Unit cell is enlarged to supercell.')
         lattice = (scaling_factors * self.STRUC.lattice.matrix.T).T
 
