@@ -263,15 +263,19 @@ class ModelMixin:
                 R = np.floor_divide(coupling.R + [x, y, z], scaling_factors)
                 site1 = self.supercell[coupling.I + self.N * cell_index]
                 site2 = self.supercell[coupling.J + self.N * target_cell_index]
-                coupling_index = _ * len(uc_couplings) + cell_index
+                coupling_index = _ * num_uc + cell_index
                 cpl = Coupling(site1, site2, coupling_index, coupling.SYMID, coupling.SYMOP, R)
                 self.CPLS.append(cpl)
                 self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
                 self.set_coupling(coupling.strength, coupling_index, by_symmetry=False)
                 self.set_coupling(coupling.strength, coupling_index, by_symmetry=False)
+                self.CPLS_as_df.reset_index(drop=True, inplace=True)
+
                 if isinstance(self, TightBindingModel):
                     self.set_spin_orbit(norm(coupling.DM), coupling.DM, coupling_index, by_symmetry=False)
                 else:
+                    # TODO: use the set_DM method here instead
+                    # self.CPLS[coupling_index].DM = coupling.DM
                     self.set_DM(coupling.DM, coupling_index, by_symmetry=False)
         self.CPLS_as_df.reset_index(drop=True, inplace=True)
         logging.debug('Couplings for supercell have been created.')
@@ -390,18 +394,12 @@ class ModelMixin:
 
         """
 
+        # TODO: Add option to add magnetic moments to supercell
         if self.supercell is not None:
-            N = len(self.supercell)
-            if len(directions) == N:
-                struc = self.supercell
-                logging.debug('Magnetic moments for the supercell have been passed.')
-        else:
-            N = self.N
-            struc = self.STRUC
-            logging.debug('Magnetic moments for the unit cell have been passed.')
+            logging.warning('Magnetic moments must be set before the supercell.')
 
-        directions = np.array(directions, dtype=float).reshape((N, 3))
-        magnitudes = np.array(magnitudes, dtype=float).reshape((N,))
+        directions = np.array(directions, dtype=float).reshape((self.N, 3))
+        magnitudes = np.array(magnitudes, dtype=float).reshape((self.N,))
 
         for _, (direction, magnitude) in enumerate(zip(directions, magnitudes)):
             # rotate into cartesian coordinates and normalize it
@@ -409,9 +407,9 @@ class ModelMixin:
             moment = moment / norm(moment)
 
             # calculate the rotation matrix that rotates the spin to the quantization axis
-            struc.properties['Rot'] = rotate_vector_to_ez(moment)
+            self.STRUC[_].properties['Rot'] = rotate_vector_to_ez(moment)
             # stretch it to match the right magnetic moment and save it
-            struc[_].properties['magmom'] = moment * magnitude
+            self.STRUC[_].properties['magmom'] = moment * magnitude
 
         # extract the u- and v-vectors from the rotation matrix
         for cpl in self.CPLS:
