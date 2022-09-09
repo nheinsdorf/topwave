@@ -144,6 +144,9 @@ class ModelMixin:
 
         """
 
+        if self.supercell is not None:
+            logging.warning('Couplings must be generated before the supercell.')
+
         cpls = self.STRUC.get_symmetric_neighbor_list(maxdist, sg=sg, unique=True)
 
         # save the generated couplings (overriding any old ones)
@@ -261,6 +264,12 @@ class ModelMixin:
                 cpl = Coupling(site1, site2, coupling_index, coupling.SYMID, coupling.SYMOP, R)
                 self.CPLS.append(cpl)
                 self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
+                self.set_coupling(coupling.strength, coupling_index, by_symmetry=False)
+                self.set_coupling(coupling.strength, coupling_index, by_symmetry=False)
+                if isinstance(self, TightBindingModel):
+                    self.set_spin_orbit(norm(coupling.DM), coupling.DM, coupling_index, by_symmetry=False)
+                else:
+                    self.set_DM(coupling.DM, coupling_index, by_symmetry=False)
         self.CPLS_as_df.reset_index(drop=True, inplace=True)
         logging.debug('Couplings for supercell have been created.')
 
@@ -579,6 +588,9 @@ class SpinWaveModel(ModelMixin):
             International number corresponding to a space group by which the orbit of the site is generated.
             Default is None.
         """
+
+        if self.supercell is not None:
+            logging.warning('Single-ion-anisotropies must be generated before the supercell.')
 
         K = np.array(K, dtype=float).reshape(3,)
 
