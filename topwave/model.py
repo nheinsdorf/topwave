@@ -6,6 +6,7 @@ Created on Wed Jan  5 14:07:56 2022
 @author: niclas
 """
 from itertools import product
+import logging
 from pathlib import Path
 
 import numpy as np
@@ -204,7 +205,7 @@ class ModelMixin:
         self.CPLS_as_df.reset_index(drop=True, inplace=True)
 
     def make_supercell(self, scaling_factors):
-        """Constructs a supercell
+        """Constructs a supercell and the corresponding couplings.
 
         Parameters
         ----------
@@ -214,6 +215,7 @@ class ModelMixin:
 
         """
 
+        logging.debug('Unit cell is enlarged to supercell.')
         lattice = (scaling_factors * self.STRUC.lattice.matrix.T).T
 
         num_uc = np.product(scaling_factors)
@@ -231,6 +233,8 @@ class ModelMixin:
 
         species = [site.species_string for site in self.STRUC] * num_uc
         supercell = Structure.from_spacegroup(1, lattice, species, coords)
+        supercell.scaling_factors = scaling_factors
+        logging.debug(f'{x_lim}x{y_lim}x{z_lim} supercell has been created. Site properties are transferred.')
 
         for site_index, site in enumerate(self.STRUC):
             for _ in range(site_index, self.N * num_uc, self.N):
@@ -241,6 +245,24 @@ class ModelMixin:
                 supercell[_].properties['cell_vector'] = cell_vectors[_]
 
         self.supercell = supercell
+        logging.debug('Site properties have been transferred. Couplings for supercell are created.')
+
+        uc_couplings = self.CPLS.copy()
+        self.reset_all_couplings()
+        cell_vectors = np.unique(cell_vectors, axis=0)
+        for _, coupling in enumerate(uc_couplings):
+            for cell_index, (x, y, z) in enumerate(product(range(x_lim), range(y_lim), range(z_lim))):
+                target_cell = np.mod(coupling.R + [x, y, z], scaling_factors)
+                target_cell_index = np.arange(num_uc)[np.all(cell_vectors == target_cell, axis=1)][0]
+                R = np.floor_divide(coupling.R + [x, y, z], scaling_factors)
+                site1 = self.supercell[coupling.I + self.N * cell_index]
+                site2 = self.supercell[coupling.J + self.N * target_cell_index]
+                coupling_index = _ * len(uc_couplings) + cell_index
+                cpl = Coupling(site1, site2, coupling_index, coupling.SYMID, coupling.SYMOP, R)
+                self.CPLS.append(cpl)
+                self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
+        self.CPLS_as_df.reset_index(drop=True, inplace=True)
+        logging.debug('Couplings for supercell have been created.')
 
     def remove_coupling(self, index, by_symmetry=True):
         """Removes a coupling.
@@ -356,17 +378,28 @@ class ModelMixin:
 
         """
 
-        directions = np.array(directions, dtype=float).reshape((self.N, 3))
-        magnitudes = np.array(magnitudes, dtype=float).reshape((self.N,))
+        if self.supercell is not None:
+            N = len(self.supercell)
+            if len(directions) == N:
+                struc = self.supercell
+                logging.debug('Magnetic moments for the supercell have been passed.')
+        else:
+            N = self.N
+            struc = self.STRUC
+            logging.debug('Magnetic moments for the unit cell have been passed.')
+
+        directions = np.array(directions, dtype=float).reshape((N, 3))
+        magnitudes = np.array(magnitudes, dtype=float).reshape((N,))
+
         for _, (direction, magnitude) in enumerate(zip(directions, magnitudes)):
             # rotate into cartesian coordinates and normalize it
             moment = self.STRUC.lattice.matrix.T @ direction
             moment = moment / norm(moment)
 
             # calculate the rotation matrix that rotates the spin to the quantization axis
-            self.STRUC[_].properties['Rot'] = rotate_vector_to_ez(moment)
+            struc.properties['Rot'] = rotate_vector_to_ez(moment)
             # stretch it to match the right magnetic moment and save it
-            self.STRUC[_].properties['magmom'] = moment * magnitude
+            struc[_].properties['magmom'] = moment * magnitude
 
         # extract the u- and v-vectors from the rotation matrix
         for cpl in self.CPLS:
