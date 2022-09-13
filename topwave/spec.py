@@ -145,12 +145,14 @@ class Spec:
                 MAT[_, cpl.I, cpl.J] += A
                 MAT[_, cpl.J, cpl.I] += np.conj(A)
 
+        struc = model.STRUC if model.supercell is None else model.supercell
+
         # add spin degrees of freedom
         if model.spinful:
             MAT = np.kron(MAT, np.eye(2))
 
             # add Zeeman term
-            for _, site in enumerate(model.STRUC):
+            for _, site in enumerate(struc):
                 MAT[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += ModelMixin.muB * ModelMixin.g * Pauli(model.MF, normalize=False)
 
                 # add onsite term
@@ -165,7 +167,7 @@ class Spec:
                     MAT[_, 2 * cpl.J:2 * cpl.J + 2, 2 * cpl.I:2 * cpl.I + 2] += np.conj(spin_orbit_term.T)
 
         else:
-            for _, site in enumerate(model.STRUC):
+            for _, site in enumerate(struc):
                 MAT[:, _, _] += site.properties['onsite_strength']
 
         return MAT

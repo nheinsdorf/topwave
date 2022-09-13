@@ -23,6 +23,11 @@ from tabulate import tabulate
 from topwave.coupling import Coupling
 from topwave.util import rotate_vector_to_ez
 
+# TODO:
+# - make set_DM and set_SOC the same thing. Something like set_vector_exchange or something
+# - make set_single_ion anisotropy and set_onsite the same thing
+# - the two methods above can have different names in the SW- and TB model which just call the universal one
+
 
 class ModelMixin:
     """Base class that contains the physical model.
@@ -267,10 +272,8 @@ class ModelMixin:
                 cpl = Coupling(site1, site2, coupling_index, coupling.SYMID, coupling.SYMOP, R)
                 self.CPLS.append(cpl)
                 self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
-                self.set_coupling(coupling.strength, coupling_index, by_symmetry=False)
-                self.set_coupling(coupling.strength, coupling_index, by_symmetry=False)
                 self.CPLS_as_df.reset_index(drop=True, inplace=True)
-
+                self.set_coupling(coupling.strength, coupling_index, by_symmetry=False)
                 if isinstance(self, TightBindingModel):
                     self.set_spin_orbit(norm(coupling.DM), coupling.DM, coupling_index, by_symmetry=False)
                 else:
@@ -591,7 +594,8 @@ class SpinWaveModel(ModelMixin):
         """
 
         if self.supercell is not None:
-            logging.warning('Single-ion-anisotropies must be generated before the supercell.')
+            logging.warning('Single-ion-anisotropies must be generated before the supercell'
+                            'if you want them to be copied over.')
 
         K = np.array(K, dtype=float).reshape(3,)
 
@@ -711,6 +715,11 @@ class TightBindingModel(ModelMixin):
             staggered flux or a AFM Zeeman field. If not None, the model is made 'spinful'. Default is None.
         """
 
+        if self.supercell is not None:
+            logging.warning('Onsite terms must be generated before the supercell'
+                            'if you want them to be copied over.')
+
+
         if site_index is None:
             site_indices = np.arange(self.N)
             auto_label = 'E_0'
@@ -770,7 +779,7 @@ class TightBindingModel(ModelMixin):
             indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
 
         vector = np.array(vector, dtype=float)
-        vector = strength * vector / norm(vector)
+        vector = np.zeros(3, dtype=float) if norm(vector) == 0 else strength * vector / norm(vector)
         _ = indices[0]
         self.CPLS[_].DM = vector
         self.CPLS_as_df.loc[_, 'DM'][0] = vector[0]
