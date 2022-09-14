@@ -527,15 +527,19 @@ class SpinWaveModel(ModelMixin):
         for coupling in self.CPLS:
             energy += coupling.get_energy()
 
+        struc = self.STRUC if self.supercell is None else self.supercell
+
         # Zeeman energy and anisotropies
-        for site in self.STRUC:
+        for site in struc:
             magmom = site.properties['magmom']
             K = site.properties['single_ion_anisotropy']
-            print(magmom, K, magmom @ np.diag(K) @ magmom)
             energy += magmom @ np.diag(K) @ magmom
-            energy -= ModelMixin.muB * ModelMixin.g * (model.MF @ magmom)
+            energy -= ModelMixin.muB * ModelMixin.g * (self.MF @ magmom)
 
-        return energy
+        if per_spin:
+            return energy / len(struc)
+        else:
+            return energy
 
     def set_DM(self, D, index, by_symmetry=True):
         """
