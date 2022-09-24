@@ -17,6 +17,7 @@ from pymatgen.core.structure import Structure
 from pymatgen.io.cif import CifWriter
 from pymatgen.symmetry.groups import SpaceGroup
 from scipy.linalg import block_diag, norm
+from scipy.optimize import minimize
 import sympy as sp
 from tabulate import tabulate
 
@@ -308,8 +309,8 @@ class ModelMixin:
 
         self.reset_all_couplings()
         for cplid, cpl in enumerate(new_CPLS):
-            site1 = model.STRUC[cpl.I]
-            site2 = model.STRUC[cpl.J]
+            site1 = self.STRUC[cpl.I]
+            site2 = self.STRUC[cpl.J]
             new_cpl = Coupling(site1, site2, cplid, cpl.SYMID, cpl.SYMOP, cpl.R)
             self.CPLS.append(new_cpl)
             self.CPLS_as_df = pd.concat([self.CPLS_as_df, new_cpl.DF])
@@ -555,6 +556,23 @@ class SpinWaveModel(ModelMixin):
             return energy / len(struc)
         else:
             return energy
+
+    @staticmethod
+    def __get_classical_energy_wrapper(directions, moments, model):
+        """Private method that is used for the minimization of classical energy in 'get_classical_groundstate.
+
+        Parameters
+        ----------
+        directions : list
+            3N list of floats containing the components of magnetic moments in the cell which are optimized.
+        moments : list
+            List of N (positive) floats that give the magnitude of the magnetic moments
+        """
+
+        directions = np.array(directions, dtype=float).reshape((-1, 3))
+        model.set_moments(directions, moments)
+        return model.get_classical_energy()
+
 
     def set_DM(self, D, index, by_symmetry=True):
         """
