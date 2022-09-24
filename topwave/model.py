@@ -27,7 +27,7 @@ from topwave.util import rotate_vector_to_ez
 # - make set_DM and set_SOC the same thing. Something like set_vector_exchange or something
 # - make set_single_ion anisotropy and set_onsite the same thing
 # - the two methods above can have different names in the SW- and TB model which just call the universal one
-
+# - always work with the supercell and make it a [1, 1, 1] supercell by default
 
 class ModelMixin:
     """Base class that contains the physical model.
@@ -399,20 +399,32 @@ class ModelMixin:
 
         # TODO: Add option to add magnetic moments to supercell
         if self.supercell is not None:
-            logging.warning('Magnetic moments must be set before the supercell.')
-
-        directions = np.array(directions, dtype=float).reshape((self.N, 3))
-        magnitudes = np.array(magnitudes, dtype=float).reshape((self.N,))
+            N_SC = len(self.supercell)
+            try:
+                directions = np.array(directions, dtype=float).reshape((N_SC, 3))
+                magnitudes = np.array(magnitudes, dtype=float).reshape((N_SC,))
+                struc = self.supercell
+                #logging.warning('Magnetic moments must be set before the supercell.')
+            except:
+                directions = np.array(directions, dtype=float).reshape((self.N, 3))
+                magnitudes = np.array(magnitudes, dtype=float).reshape((self.N,))
+                struc = self.STRUC
+        else:
+            directions = np.array(directions, dtype=float).reshape((self.N, 3))
+            magnitudes = np.array(magnitudes, dtype=float).reshape((self.N,))
+            struc = self.STRUC
 
         for _, (direction, magnitude) in enumerate(zip(directions, magnitudes)):
             # rotate into cartesian coordinates and normalize it
-            moment = self.STRUC.lattice.matrix.T @ direction
+            moment = struc.lattice.matrix.T @ direction
             moment = moment / norm(moment)
 
             # calculate the rotation matrix that rotates the spin to the quantization axis
-            self.STRUC[_].properties['Rot'] = rotate_vector_to_ez(moment)
+            struc[_].properties['Rot'] = rotate_vector_to_ez(moment)
             # stretch it to match the right magnetic moment and save it
-            self.STRUC[_].properties['magmom'] = moment * magnitude
+            struc[_].properties['magmom'] = moment * magnitude
+
+        # NOTE: in case struc is the supercell do we need to copy over the magmoms to STRUC?
 
         # extract the u- and v-vectors from the rotation matrix
         for cpl in self.CPLS:
@@ -441,7 +453,7 @@ class ModelMixin:
         Prints the magnetic moments
 
         """
-
+        # TODO: make this for the supercell
         for _, site in enumerate(self.STRUC):
             print(f'Magnetic Moment on Site{_}:\t{site.properties["magmom"]}')
 
@@ -498,6 +510,9 @@ class SpinWaveModel(ModelMixin):
     -------
     get_classical_energy():
         Returns the classical ground state energy of the model.
+    get_classical_groundstate():
+        Adjusts the orientation of magnetic moments until a minimum in classical
+        energy is reached.
     set_DM(D, symid, by_symmetry):
         Assign anti-symmetric exchange to a selection of couplings based on
         their symmetry index.
