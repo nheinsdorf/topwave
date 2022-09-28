@@ -110,7 +110,7 @@ class ModelMixin:
             site.properties['onsite_label'] = None
             site.properties['onsite_strength'] = 0
             site.properties['onsite_spin_matrix'] = np.eye(2)
-            site.properties['single_ion_anisotropy'] = None
+            site.properties['single_ion_anisotropy'] = np.zeros(3, dtype=float)
 
         # count the number of magnetic sites and save
         self.N = len(self.STRUC)
@@ -454,8 +454,11 @@ class ModelMixin:
         Prints the magnetic moments
 
         """
+
+        struc = self.STRUC if self.supercell is None else self.supercell
+
         # TODO: make this for the supercell
-        for _, site in enumerate(self.STRUC):
+        for _, site in enumerate(struc):
             print(f'Magnetic Moment on Site{_}:\t{site.properties["magmom"]}')
 
     def show_anisotropies(self):
@@ -558,7 +561,7 @@ class SpinWaveModel(ModelMixin):
             return energy
 
     @staticmethod
-    def __get_classical_energy_wrapper(directions, moments, model):
+    def __get_classical_energy_wrapper(directions, magnitudes, model):
         """Private method that is used for the minimization of classical energy in 'get_classical_groundstate.
 
         Parameters
@@ -570,9 +573,39 @@ class SpinWaveModel(ModelMixin):
         """
 
         directions = np.array(directions, dtype=float).reshape((-1, 3))
-        model.set_moments(directions, moments)
+        model.set_moments(directions, magnitudes)
         return model.get_classical_energy()
 
+    def get_classical_groundstate(self, random_init=False):
+        """Tries to find the classical ground state by minimizing the classical groundstate
+        energy w.r.t. to the orientation of magnetic moments. Their magnitude is not considered.
+        The magnetic moments of the model are set in-place.
+
+        Parameters
+        ----------
+        random_init : bool
+            If true, the initial direction of the moments will be random. If False, the set moments of the
+            model are used. Default is False.
+
+        Returns
+        -------
+        res : scipy.optimize.OptimizeResult
+            Result of the minimization.
+        """
+
+        struc = self.STRUC if self.supercell is None else self.supercell
+
+        moments = np.array([site.properties['magmom'] for site in struc], dtype=float)
+        magnitudes = norm(moments, axis=1)
+
+        # get initial moments
+        x_0 = np.random.rand(struc.num_sites, 3) if random_init else moments
+
+        res = minimize(SpinWaveModel.__get_classical_energy_wrapper, x_0, args=(magnitudes, self))
+
+        # normalize the final configuration
+        res.x = (res.x.reshape((-1, 3)).T / norm(res.x.reshape((-1, 3)), axis=1)).flatten(order='F')
+        return res
 
     def set_DM(self, D, index, by_symmetry=True):
         """
