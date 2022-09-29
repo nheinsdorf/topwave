@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.linalg import norm
+from numpy.linalg import inv, norm
 
 kB = 0.086173324  # given in meV/K
 
@@ -80,6 +80,46 @@ class Pauli:
             d = d / norm(d)
         return np.einsum('i, inm -> nm', d, cls.vec)
 
+def rotate_vector(input, angle, rotation_axis, basis=None):
+    """Rotates a 3 component vector by a given angle (in radians) about an arbitrary axis.
+
+    Parameters
+    ----------
+    input : list or numpy.ndarray
+        Three-dimensional input vector.
+    angle : float
+        Angle given in radians.
+    rotation_axis : list or numpy.ndarray
+        Three dimensional vector specifying the rotation axis.
+    basis : numpy.ndarray
+        Three-by-three array that indicates the basis in which the rotation matrix is transformed.
+        If None, cartesian coordinates are used. Default is None.
+
+    Returns
+    -------
+    output : numpy.ndarray
+        The rotated input vector.
+
+    """
+
+    input = np.array(input, dtype=float).reshape((3,))
+    rotation_axis = np.array(rotation_axis, dtype=float).reshape((3,)) / norm(rotation_axis)
+
+    rotation_x = np.array([[1, 0, 0],
+                           [0, np.cos(angle), -np.sin(angle)],
+                           [0, np.sin(angle), np.cos(angle)]], dtype=float)
+    rotation_y = np.array([[np.cos(angle), 0, np.sin(angle)],
+                           [0, 1, 0],
+                           [-np.sin(angle), 0, np.cos(angle)]], dtype=float)
+    rotation_z = np.array([[np.cos(angle), -np.sin(angle), 0],
+                           [np.sin(angle), np.cos(angle), 0],
+                           [0, 0, 1]], dtype=float)
+
+    rotation = np.einsum('n, nij -> ij', rotation_axis, [rotation_x, rotation_y, rotation_z])
+
+    basis = np.eye(3) if basis is None else np.array(basis, dtype=float).reshape((3, 3))
+
+    return inv(basis) @ rotation @ basis @ input
 
 def rotate_vector_to_ez(v):
     """Creates a 3x3 rotation matrix R with R v = [0, 0, 1]
