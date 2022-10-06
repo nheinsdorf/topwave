@@ -49,6 +49,24 @@ def gaussian(x, mean, std, normalize=True):
     pre_factor = 1 / (std * np.sqrt(2 * np.pi)) if normalize else 1
     return pre_factor * np.exp(-0.5 * np.square((x - mean) / std))
 
+def get_elevation_angle(vector):
+    """Returns the elevation angle of a three component vector w.r.t. [0, 0, 1].
+
+    Parameters
+    ----------
+    vector : list or numpy.ndarray
+        Three-dimensional input vector.
+
+    Returns
+    -------
+    angle : float
+        The elevation angle of the input vector in radians.
+
+    """
+
+    vector = np.array(vector, dtype=float).reshape((3,))
+    vector = vector / norm(vector)
+    return np.arccos(vector @ [0, 0, 1])
 
 class Pauli:
     """Class that holds the Pauli matrices.
