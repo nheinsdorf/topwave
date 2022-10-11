@@ -325,7 +325,7 @@ class ModelMixin:
         print(tabulate(self.CPLS_as_df, headers='keys', tablefmt='github',
                        showindex=True))
 
-    def set_coupling(self, strength, index, by_symmetry=True, label=None):
+    def set_coupling(self, strength, index, by_symmetry=True, by_distance=False, label=None):
         """
         Assigns Heisenberg interaction or hopping amplitude to a selection
         of couplings based on their (symmetry) index.
@@ -341,6 +341,9 @@ class ModelMixin:
         by_symmetry : bool
             If true, index corresponds to the symmetry index of a selection of couplings.
             If false, it corresponds to the index.
+        by_distance : bool
+            If true, index corresponds to the index in list of unique coupling distances. Overrides
+            by_symmetry. Default is False.
         label : str
             Label for the exchange/hopping parameter that is used for the symbolic
             representation of the Hamiltonian. If None, a label is generated based
@@ -348,7 +351,12 @@ class ModelMixin:
 
         """
 
-        if by_symmetry:
+        tol = 5
+        if by_distance:
+            distances = np.unique([np.round(coupling.D, tol) for coupling in self.CPLS])
+            dist = distances[index]
+            indices = self.CPLS_as_df.index[np.round(self.CPLS_as_df['dist'], tol) == dist].tolist()
+        elif by_symmetry:
             indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
         else:
             indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
