@@ -453,7 +453,8 @@ class ModelMixin:
         for _ in boundary_indices:
             self.set_coupling(0, _, by_symmetry=False)
             if isinstance(self, TightBindingModel):
-                self.set_spin_orbit(0, np.ones(3), _, by_symmetry=False)
+                if self.spinful:
+                    self.set_spin_orbit(0, np.ones(3), _, by_symmetry=False)
             else:
                 self.set_DM([0, 0, 0], _, by_symmetry=False)
 
