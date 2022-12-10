@@ -1,3 +1,6 @@
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+
 from topwave.spec import Spec
 
 import numpy as np
@@ -59,3 +62,17 @@ class WCC_evolution():
             else:
                 spec.wilson_loop(occ)
             self.WCCs[:, _] = spec.wannier_center
+
+class WilsonLoop(ABC):
+    """Wilson
+
+    Parameters
+    ----------
+    spec : topwave.spec
+        Spectrum on a closed loop in k-space.
+
+    """
+
+    @abstractmethod
+    def get_operator(self):
+        pass

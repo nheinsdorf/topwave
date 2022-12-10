@@ -75,6 +75,7 @@ class Spec:
         self.NK = len(ks)
         self.parallel = parallel
         self.neutron = {}
+        self.wilson_loop_operator = None
 
         # NOTE: think about the real implementation. Maybe two child classes of spec?
         if isinstance(model, TightBindingModel):
@@ -570,3 +571,36 @@ class Spec:
             except:
                 s = f'Spectrum is degenerate at {k}{E_k}. Berry Curvature is not well-defined at that point.'
                 print(s)
+
+    def get_wilson_loop_operator(self, occ):
+        """Returns the fermionic wilson loop operator.
+
+        NOTE: Make the distinction by the Type of the spectrum.
+
+        Parameters
+        ----------
+        occ : list
+            List of occupied bands.
+
+        """
+
+        # select the wavefunctions of occupied bands
+        psi_right = self.psi[:, :, occ]
+
+        # check whether start and end k-point are the same and impose closed loop
+        if np.all(np.isclose(self.KS[0], self.KS[-1])):
+            psi_right[0] = psi_right[-1]
+        else:
+            # implement the case where they are connected by a reciprocal vector
+            # https://github.com/bellomia/PythTB/blob/master/pythtb.py
+            # see 'impose_pbc'-method
+            pass
+
+        # construct bra-eigenvectors for k+1
+        psi_left = np.roll(np.conj(psi_right), 1, axis=0)
+
+        # compute num_k - 1 overlaps
+        F = np.einsum('knm, knl -> kml', psi_left[1:], psi_right[1:])
+
+        # take the product of the matrices to compute the wilson loop operator
+        self.wilson_loop_operator = multi_dot(F)
