@@ -5,7 +5,7 @@ from numpy.linalg import eig, eigh, eigvals, inv, multi_dot, norm
 from scipy.linalg import block_diag
 
 from topwave import solvers
-from topwave.model import ModelMixin, TightBindingModel
+from topwave.model import Model, TightBindingModel
 from topwave.util import Pauli
 
 
@@ -154,7 +154,7 @@ class Spec:
 
             # add Zeeman term
             for _, site in enumerate(struc):
-                MAT[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += ModelMixin.muB * ModelMixin.g * Pauli(model.MF, normalize=False)
+                MAT[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += Model.muB * Model.g * Pauli(model.MF, normalize=False)
 
                 # add onsite term
                 onsite_term = site.properties['onsite_strength'] * site.properties['onsite_spin_matrix']
@@ -227,7 +227,7 @@ class Spec:
         # add the external magnetic field
         for _ in range(self.N):
             v = struc[_].properties['Rot'][:, 2]
-            H_Zeeman = ModelMixin.muB * ModelMixin.g * (model.MF @ v)
+            H_Zeeman = Model.muB * Model.g * (model.MF @ v)
             MAT[:, _, _] += H_Zeeman
             MAT[:, _ + self.N, _ + self.N] += H_Zeeman
 

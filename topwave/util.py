@@ -1,5 +1,12 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 import numpy as np
-from numpy.linalg import inv, norm
+from numpy import linalg
+import numpy.typing as npt
+
+if TYPE_CHECKING:
+    from topwave import model
 
 kB = 0.086173324  # given in meV/K
 
@@ -27,6 +34,26 @@ def bose_distribution(energies, temperature):
     else:
         return np.reciprocal(np.exp(energies / (kB * temperature)) - 1)
 
+def coupling_selector(attribute: str, value: int | float, model: model.Model) -> list[int]:
+    """Selects a couplings based on a given attribute."""
+
+    match attribute:
+        case 'is_set':
+            indices = [coupling.index for coupling in model.CPLS if coupling.is_set == value]
+        case 'index':
+            indices = [coupling.index for coupling in model.CPLS if coupling.index == value]
+        case 'symmetry_id':
+            indices = [coupling.index for coupling in model.CPLS if coupling.symmetry_id == value]
+        case 'distance':
+            indices = [coupling.index for coupling in model.CPLS if np.isclose(coupling.distance, value, atol=1e-5)]
+    return indices
+
+def format_input_vector(orientation: list[float] | npt.NDArray[np.float64], length: float = None) -> npt.NDArray[np.float64]:
+    """Normalizes an input vector and scales it by length, or does nothing if length=None."""
+
+    unscaled_vector =  np.array(orientation, dtype=float).reshape((3,))
+    out = unscaled_vector if length is None else length * unscaled_vector / linalg.norm(unscaled_vector)
+    return out
 
 def gaussian(x, mean, std, normalize=True):
     """Evaluates the normal distribution at x.
@@ -67,7 +94,7 @@ def get_azimuthal_angle(vector, deg=False):
     """
 
     vector = np.array(vector, dtype=float).reshape((3,))
-    vector /= norm(vector)
+    vector /= linalg.norm(vector)
     angle = np.arccos(vector @ [1, 0, 0])
     if deg:
         return np.rad2deg(angle)
@@ -92,7 +119,7 @@ def get_elevation_angle(vector, deg=False):
     """
 
     vector = np.array(vector, dtype=float).reshape((3,))
-    vector /= norm(vector)
+    vector /= linalg.norm(vector)
     angle = np.arccos(vector @ [0, 0, 1])
     if deg:
         return np.rad2deg(angle)
@@ -126,7 +153,7 @@ class Pauli:
     def __new__(cls, d, normalize=True):
         d = np.array(d).reshape((3,))
         if normalize:
-            d = d / norm(d)
+            d = d / linalg.norm(d)
         return np.einsum('i, inm -> nm', d, cls.vec)
 
 def rotate_vector(input, angle, rotation_axis, basis=None):
@@ -152,7 +179,7 @@ def rotate_vector(input, angle, rotation_axis, basis=None):
     """
 
     input = np.array(input, dtype=float).reshape((3,))
-    rotation_axis = np.array(rotation_axis, dtype=float).reshape((3,)) / norm(rotation_axis)
+    rotation_axis = np.array(rotation_axis, dtype=float).reshape((3,)) / linalg.norm(rotation_axis)
 
     rotation_x = np.array([[1, 0, 0],
                            [0, np.cos(angle), -np.sin(angle)],
@@ -168,7 +195,7 @@ def rotate_vector(input, angle, rotation_axis, basis=None):
 
     basis = np.eye(3) if basis is None else np.array(basis, dtype=float).reshape((3, 3))
 
-    return inv(basis) @ rotation @ basis @ input
+    return linalg.inv(basis) @ rotation @ basis @ input
 
 def rotate_vector_to_ez(v):
     """Creates a 3x3 rotation matrix R with R v = [0, 0, 1]
@@ -185,13 +212,13 @@ def rotate_vector_to_ez(v):
 
             """
 
-    v = np.array(v, dtype=float) / norm(v)
+    v = np.array(v, dtype=float) / linalg.norm(v)
     e3 = v
     if np.isclose(np.abs(v), [1, 0, 0], atol=0.00001).all():
         e2 = np.array([0, 0, 1])
     else:
         e2 = np.cross(v, [1, 0, 0])
-    e2 = e2 / norm(e2)
+    e2 = e2 / linalg.norm(e2)
     e1 = np.cross(e2, e3)
 
     return np.array([e1, e2, e3]).T

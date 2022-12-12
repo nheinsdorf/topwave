@@ -5,11 +5,13 @@ Created on Wed Jan  5 14:07:56 2022
 
 @author: niclas
 """
+from abc import ABC, abstractmethod
 from itertools import product
 import logging
 from pathlib import Path
 
 import numpy as np
+import numpy.typing as npt
 from numpy.linalg import eig, eigh, eigvals, multi_dot
 import pandas as pd
 from pymatgen.core.operations import SymmOp
@@ -21,8 +23,8 @@ from scipy.optimize import minimize
 import sympy as sp
 from tabulate import tabulate
 
-from topwave.coupling import Coupling
-from topwave.util import rotate_vector_to_ez
+from topwave import coupling
+from topwave import util
 
 # TODO:
 # - make set_DM and set_SOC the same thing. Something like set_vector_exchange or something
@@ -30,7 +32,7 @@ from topwave.util import rotate_vector_to_ez
 # - the two methods above can have different names in the SW- and TB model which just call the universal one
 # - always work with the supercell and make it a [1, 1, 1] supercell by default
 
-class ModelMixin:
+class Model(ABC):
     """Base class that contains the physical model.
 
     Parameters
@@ -107,7 +109,6 @@ class ModelMixin:
         for _, site in enumerate(self.STRUC):
             site.properties['id'] = _
             site.properties['magmom'] = None
-            site.properties['onsite_label'] = None
             site.properties['onsite_strength'] = 0
             site.properties['onsite_spin_matrix'] = np.eye(2)
             site.properties['single_ion_anisotropy'] = np.zeros(3, dtype=float)
@@ -151,7 +152,7 @@ class ModelMixin:
         """
 
         if self.supercell is not None:
-            logging.warning('Couplings must be generated before the supercell.')
+            logging.warning('coupling.Couplings must be generated before the supercell.')
 
         cpls = self.STRUC.get_symmetric_neighbor_list(maxdist, sg=sg, unique=True)
 
@@ -160,10 +161,8 @@ class ModelMixin:
         for cplid, (i, j, R, d, symid, symop) in enumerate(zip(*cpls)):
             site1 = self.STRUC[i]
             site2 = self.STRUC[j]
-            cpl = Coupling(site1, site2, cplid, symid, symop, R)
+            cpl = coupling.Coupling(cplid, R, site1, site2, symid, symop)
             self.CPLS.append(cpl)
-            self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
-        self.CPLS_as_df.reset_index(drop=True, inplace=True)
 
     def get_boundary_couplings(self, direction='xyz'):
         """Returns a list of couplings that couple sites in adjacent unit cells in the a given direction.
@@ -204,14 +203,10 @@ class ModelMixin:
         """
 
         cpl = self.CPLS[index]
-        site1, site2, R, symid, symop = cpl.SITE1, cpl.SITE2, cpl.R, cpl.SYMID, cpl.SYMOP
-        inverted_coupling = Coupling(site2, site1, index, symid, symop, -R)
+        site1, site2, R, symid, symop = cpl.site1, cpl.site2, cpl.lattice_vector, cpl.symmetry_id, cpl.symmetry_op
+        inverted_coupling = coupling.Coupling(index, -R, site1, symid, symop)
         self.CPLS[index] = inverted_coupling
-        self.CPLS_as_df = pd.DataFrame(columns=['symid', 'symop', 'delta', 'R', 'dist', 'i',
-                                                'at1', 'j', 'at2', 'strength', 'DM'])
-        for cpl in self.CPLS:
-            self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
-        self.CPLS_as_df.reset_index(drop=True, inplace=True)
+
 
     def make_supercell(self, scaling_factors):
         """Constructs a supercell and the corresponding couplings.
@@ -225,7 +220,7 @@ class ModelMixin:
         """
 
         if len(self.CPLS) == 0:
-            logging.warning('Couplings must be generated before the supercell.')
+            logging.warning('coupling.Couplings must be generated before the supercell.')
 
         logging.debug('Unit cell is enlarged to supercell.')
         lattice = (scaling_factors * self.STRUC.lattice.matrix.T).T
@@ -257,7 +252,7 @@ class ModelMixin:
                 supercell[_].properties['cell_vector'] = cell_vectors[_]
 
         self.supercell = supercell
-        logging.debug('Site properties have been transferred. Couplings for supercell are created.')
+        logging.debug('Site properties have been transferred. coupling.Couplings for supercell are created.')
 
         uc_couplings = self.CPLS.copy()
         self.reset_all_couplings()
@@ -270,7 +265,7 @@ class ModelMixin:
                 site1 = self.supercell[coupling.I + self.N * cell_index]
                 site2 = self.supercell[coupling.J + self.N * target_cell_index]
                 coupling_index = _ * num_uc + cell_index
-                cpl = Coupling(site1, site2, coupling_index, coupling.SYMID, coupling.SYMOP, R)
+                cpl = coupling.Coupling(coupling_index, R, site1, site2, coupling.SYMID, coupling.SYMOP)
                 self.CPLS.append(cpl)
                 self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
                 self.CPLS_as_df.reset_index(drop=True, inplace=True)
@@ -282,7 +277,7 @@ class ModelMixin:
                     # self.CPLS[coupling_index].DM = coupling.DM
                     self.set_DM(coupling.DM, coupling_index, by_symmetry=False)
         self.CPLS_as_df.reset_index(drop=True, inplace=True)
-        logging.debug('Couplings for supercell have been created.')
+        logging.debug('coupling.Couplings for supercell have been created.')
 
     def remove_coupling(self, index, by_symmetry=True):
         """Removes a coupling.
@@ -311,7 +306,8 @@ class ModelMixin:
         for cplid, cpl in enumerate(new_CPLS):
             site1 = self.STRUC[cpl.I]
             site2 = self.STRUC[cpl.J]
-            new_cpl = Coupling(site1, site2, cplid, cpl.SYMID, cpl.SYMOP, cpl.R)
+
+            new_cpl = coupling.Coupling(cplid, cpl.R, site1, site2, cpl.SYMID, cpl.SYMOP)
             self.CPLS.append(new_cpl)
             self.CPLS_as_df = pd.concat([self.CPLS_as_df, new_cpl.DF])
         self.CPLS_as_df.reset_index(drop=True, inplace=True)
@@ -325,46 +321,24 @@ class ModelMixin:
         print(tabulate(self.CPLS_as_df, headers='keys', tablefmt='github',
                        showindex=True))
 
-    def set_coupling(self, strength, index, by_symmetry=True, by_distance=False, label=None):
-        """
-        Assigns Heisenberg interaction or hopping amplitude to a selection
-        of couplings based on their (symmetry) index.
+    def set_coupling(self, attribute_value: int | float, strength: float, attribute: str = 'index'):
+        """Assigns (scalar) hopping/exchange to a selection of couplings."""
 
-
-        Parameters
-        ----------
-        strength : float
-            Strength of the Exchange/Hopping.
-        index : int
-            Integer that corresponds to the symmetry index of a selection of
-            couplings, or to the index if by_symmetry = False.
-        by_symmetry : bool
-            If true, index corresponds to the symmetry index of a selection of couplings.
-            If false, it corresponds to the index.
-        by_distance : bool
-            If true, index corresponds to the index in list of unique coupling distances. Overrides
-            by_symmetry. Default is False.
-        label : str
-            Label for the exchange/hopping parameter that is used for the symbolic
-            representation of the Hamiltonian. If None, a label is generated based
-            on the index.
-
-        """
-
-        tol = 5
-        if by_distance:
-            distances = np.unique([np.round(coupling.D, tol) for coupling in self.CPLS])
-            dist = distances[index]
-            indices = self.CPLS_as_df.index[np.round(self.CPLS_as_df['dist'], tol) == dist].tolist()
-        elif by_symmetry:
-            indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
-        else:
-            indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
+        indices = util.coupling_selector(attribute=attribute, value=attribute_value, model=self)
 
         for _ in indices:
             self.CPLS[_].strength = strength
-            self.CPLS_as_df.loc[_, 'strength'] = strength
-            self.CPLS[_].get_label(label, by_symmetry)
+            self.CPLS[_].is_set = True
+
+    def set_spin_orbit(self, attribute_value: int | float, vector: list[float] | npt.NDArray[np.float64], strength: float = None, attribute: str = 'index'):
+        """Assigns spin dependent hopping/DM exchange to a selection of couplings."""
+
+        input_vector = util.format_input_vector(orientation=vector, length=strength)
+        indices = util.coupling_selector(attribute=attribute, value=attribute_value, model=self)
+
+        for _ in indices:
+            self.CPLS[_].spin_orbit = self.CPLS[_].symmetry_op.apply_rotation_only(input_vector) if attribute == 'symmetry_id' else input_vector
+            self.CPLS[_].is_set = True
 
     def set_field(self, direction, magnitude):
         """
@@ -429,15 +403,9 @@ class ModelMixin:
             moment = moment / norm(moment)
 
             # calculate the rotation matrix that rotates the spin to the quantization axis
-            struc[_].properties['Rot'] = rotate_vector_to_ez(moment)
+            struc[_].properties['Rot'] = util.rotate_vector_to_ez(moment)
             # stretch it to match the right magnetic moment and save it
             struc[_].properties['magmom'] = moment * magnitude
-
-        # NOTE: in case struc is the supercell do we need to copy over the magmoms to STRUC?
-
-        # extract the u- and v-vectors from the rotation matrix
-        for cpl in self.CPLS:
-            cpl.get_uv()
 
     def set_open_boundaries(self, direction='xyz'):
         """Sets the exchange/hopping and DM/SOC along the boundary couplings to zero.
@@ -496,26 +464,14 @@ class ModelMixin:
 
         CifWriter(self.STRUC, write_magmoms=True).write_file(path)
 
-    def get_set_couplings(self):
-        """ Function that returns list of couplings that have been set and assigned a label.
+    def get_set_couplings(self) -> list[coupling.Coupling]:
+        """Returns couplings that have been assigned some exchange."""
 
-        Returns
-        -------
-        set_couplings : list
-            Couplings from self.CPLS that have been set and assigned a label via
-            'set_coupling' or 'set_DM'.
-
-        """
-
-        set_couplings = []
-        for cpl in self.CPLS:
-            if cpl.label is not None or cpl.label_DM is not None:
-                set_couplings.append(cpl)
-
-        return set_couplings
+        indices = util.coupling_selector(attribute='is_set', value=True, model=self)
+        return [self.CPLS[index] for index in indices]
 
 
-class SpinWaveModel(ModelMixin):
+class SpinWaveModel(Model):
     """
     Class for a Spin Wave Model.
 
@@ -562,7 +518,7 @@ class SpinWaveModel(ModelMixin):
             magmom = site.properties['magmom']
             K = site.properties['single_ion_anisotropy']
             energy += magmom @ np.diag(K) @ magmom
-            energy -= ModelMixin.muB * ModelMixin.g * (self.MF @ magmom)
+            energy -= Model.muB * Model.g * (self.MF @ magmom)
 
         if per_spin:
             return energy / len(struc)
@@ -634,28 +590,23 @@ class SpinWaveModel(ModelMixin):
             If true, index corresponds to the symmetry index of a selection of couplings.
             If false, it corresponds to the index.
         """
-        # IDEA for the problem with implementation of future symbolic representation and labels
-        # there's a problem when DM is initialized first on a bond. Maybe just check when DM is
-        # set whether there's a J bond, and if not create one with 0 strength.
-        if by_symmetry:
-            indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
-        else:
-            indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
 
+        if by_symmetry:
+            indices = [coupling.index for coupling in self.CPLS if coupling.symmetry_id == index]
+            # indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
+        else:
+            # indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
+            indices = [index]
         D = np.array(D, dtype=float)
         _ = indices[0]
-        self.CPLS[_].DM = D
-        self.CPLS_as_df.loc[_, 'DM'][0] = D[0]
-        self.CPLS_as_df.loc[_, 'DM'][1] = D[1]
-        self.CPLS_as_df.loc[_, 'DM'][2] = D[2]
+        self.CPLS[_].spin_orbit = D
+
 
         if by_symmetry:
             for _ in indices[1:]:
-                Drot = self.CPLS[_].SYMOP.apply_rotation_only(D)
-                self.CPLS[_].DM = Drot
-                self.CPLS_as_df.loc[_, 'DM'][0] = Drot[0]
-                self.CPLS_as_df.loc[_, 'DM'][1] = Drot[1]
-                self.CPLS_as_df.loc[_, 'DM'][2] = Drot[2]
+                Drot = self.CPLS[_].symmetry_op.apply_rotation_only(D)
+                self.CPLS[_].spin_orbit = Drot
+
 
     def set_single_ion_anisotropy(self, K, site_index, space_group=None):
         """Assigns single-ion anisotropies to a selection of bonds based on their symmetry.
@@ -695,7 +646,7 @@ class SpinWaveModel(ModelMixin):
 
 
 
-class TightBindingModel(ModelMixin):
+class TightBindingModel(Model):
     """
     Class for a tight-binding model.
 
@@ -727,48 +678,7 @@ class TightBindingModel(ModelMixin):
         super().__init__(struc)
         self.spinful = False
 
-    def get_symbolic_hamiltonian(self):
-        """ Uses sympy to construct and return a symbolic representation of
-        the Hamiltonian.
 
-        Returns
-        -------
-        symbolic_hamiltonian : sympy.matrices.dense.Matrix
-            Symbolic Hamiltonian
-        """
-
-        symbolic_hamiltonian = sp.Matrix(np.zeros((self.N, self.N)))
-        kx, ky, kz = sp.symbols('k_x k_y k_z', real=True)
-        labels = []
-        symbols = []
-        for cpl in self.get_set_couplings():
-            if cpl.label in labels:
-                index = labels.index(cpl.label)
-                symbol = symbols[index]
-            else:
-                labels.append(cpl.label)
-                if np.imag(cpl.strength) == 0:
-                    symbol = sp.Symbol(cpl.label, real=True)
-                else:
-                    symbol = sp.Symbol(cpl.label)
-                symbols.append(symbol)
-            fourier_coefficient = sp.exp(-sp.I * (cpl.R[0] * kx + cpl.R[1] * ky + cpl.R[2] * kz))
-            symbolic_hamiltonian[cpl.I, cpl.J] += symbol * fourier_coefficient
-            symbolic_hamiltonian[cpl.J, cpl.I] += (symbol * fourier_coefficient).conjugate()
-
-        labels = [site.properties['onsite_label'] for site in self.STRUC]
-        unique_labels = [None]
-        for _, label in enumerate(labels):
-            if label not in unique_labels:
-                unique_labels.append(label)
-                symbol = sp.Symbol(label, real=True)
-                symbols.append(symbol)
-                indices = [index for index in range(self.N) if labels[index] == label]
-                for index in indices:
-                    symbolic_hamiltonian[index, index] += symbol
-
-        symbols = [kx, ky, kz] + symbols
-        return sp.nsimplify(symbolic_hamiltonian), symbols
 
     def make_spinful(self):
         """Sets the spinful flag to True adding spin degree of freedom to the Hilbert space.
@@ -825,51 +735,4 @@ class TightBindingModel(ModelMixin):
             spin = site.properties['onsite_spin_matrix']
             print(f'Onsite energy on Site{_}:\t{energy}\nSpin:\n{spin}')
 
-    def set_spin_orbit(self, strength, vector, index, by_symmetry=True, label=None):
-        """
-        Sets a spin-orbit (hopping) term that couples the spin degrees of freedom.
-        Automatically calls the 'make_spinful'-method.
-
-        Parameters
-        ----------
-        strength : complex
-            Strength of the spin-orbit interaction.
-        vector : numpy.ndarray
-            A vector the components of which corresponds to the coeffecients of a linear combination
-            of Pauli matrices. The vector will be normalized.
-        index : int
-            Integer that corresponds to the symmetry index of a selection of
-            couplings, or to the index if by_symmetry = False.
-        by_symmetry : bool
-            If true, index corresponds to the symmetry index of a selection of couplings.
-            If false, it corresponds to the index.
-        label : str
-            Label for the exchange/hopping parameter that is used for the symbolic
-            representation of the Hamiltonian. If None, a label is generated based
-            on the index.
-
-        """
-
-        self.make_spinful()
-
-        if by_symmetry:
-            indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
-        else:
-            indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
-
-        vector = np.array(vector, dtype=float)
-        vector = np.zeros(3, dtype=float) if norm(vector) == 0 else strength * vector / norm(vector)
-        _ = indices[0]
-        self.CPLS[_].DM = vector
-        self.CPLS_as_df.loc[_, 'DM'][0] = vector[0]
-        self.CPLS_as_df.loc[_, 'DM'][1] = vector[1]
-        self.CPLS_as_df.loc[_, 'DM'][2] = vector[2]
-
-        if by_symmetry:
-            for _ in indices[1:]:
-                Drot = self.CPLS[_].SYMOP.apply_rotation_only(vector)
-                self.CPLS[_].DM = Drot
-                self.CPLS_as_df.loc[_, 'DM'][0] = Drot[0]
-                self.CPLS_as_df.loc[_, 'DM'][1] = Drot[1]
-                self.CPLS_as_df.loc[_, 'DM'][2] = Drot[2]
 
