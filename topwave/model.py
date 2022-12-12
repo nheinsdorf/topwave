@@ -80,7 +80,7 @@ class Model(ABC):
         Assign Heisenberg Exchange or hopping amplitude terms to a collection of couplings based
         on their symmetry index.
     set_field(B):
-        Apply an external magnetic field that is stored in self.MF
+        Apply an external magnetic field that is stored in self.zeeman
     set_moments(gs):
         Provide a classical magnetic ground state.
     set_open_boundaries(direction):
@@ -122,7 +122,7 @@ class Model(ABC):
         self.reset_all_couplings()
 
         # put zero magnetic field
-        self.MF = np.zeros(3, dtype=float)
+        self.zeeman = np.zeros(3, dtype=float)
 
         self.supercell = None
 
@@ -340,26 +340,10 @@ class Model(ABC):
             self.CPLS[_].spin_orbit = self.CPLS[_].symmetry_op.apply_rotation_only(input_vector) if attribute == 'symmetry_id' else input_vector
             self.CPLS[_].is_set = True
 
-    def set_field(self, direction, magnitude):
-        """
-        Setter for self.MF an external magnetic field to the model. This will
-        be translated to a Zeeman term mu_B B dot S. If the model is an instance of TightBindingModel,
-        this method will call its 'make_spinful'-method.
+    def set_zeeman(self, orientation: list[float] | npt.NDArray[np.float64], strength: float = None):
+        """Sets a global Zeeman term."""
 
-        Parameters
-        ----------
-        direction : list
-            Three-dimensional vector that gives direction of an external magnetic field.
-        magnitude : float
-            Strength of the external magnetic field.
-
-        """
-
-        field = np.real(magnitude) * np.array(direction, dtype=float) / norm(direction)
-        self.MF[0], self.MF[1], self.MF[2] = tuple(field.tolist())
-
-        if isinstance(self, TightBindingModel):
-            self.make_spinful()
+        self.zeeman = util.format_input_vector(orientation=orientation, length=strength)
 
     def set_moments(self, directions, magnitudes):
         """ Assigns a magnetic ground state to the model
@@ -518,7 +502,7 @@ class SpinWaveModel(Model):
             magmom = site.properties['magmom']
             K = site.properties['single_ion_anisotropy']
             energy += magmom @ np.diag(K) @ magmom
-            energy -= Model.muB * Model.g * (self.MF @ magmom)
+            energy -= Model.muB * Model.g * (self.zeeman @ magmom)
 
         if per_spin:
             return energy / len(struc)
@@ -571,41 +555,6 @@ class SpinWaveModel(Model):
         # normalize the final configuration
         res.x = (res.x.reshape((-1, 3)).T / norm(res.x.reshape((-1, 3)), axis=1)).flatten(order='F')
         return res
-
-    def set_DM(self, D, index, by_symmetry=True):
-        """
-        Assigns asymmetric exchange terms to a selection of couplings based
-        on their symmetry. The vector that is passed is rotated according to
-        the symmetries as well.
-
-        Parameters
-        ----------
-        D : list
-            Three-dimensional vector that gives the anti-symmetric part of
-            the exchange.
-        index : int
-            Integer that corresponds to the symmetry index of a selection of
-            couplings, or to the index if by_symmetry = False.
-        by_symmetry : bool
-            If true, index corresponds to the symmetry index of a selection of couplings.
-            If false, it corresponds to the index.
-        """
-
-        if by_symmetry:
-            indices = [coupling.index for coupling in self.CPLS if coupling.symmetry_id == index]
-            # indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
-        else:
-            # indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
-            indices = [index]
-        D = np.array(D, dtype=float)
-        _ = indices[0]
-        self.CPLS[_].spin_orbit = D
-
-
-        if by_symmetry:
-            for _ in indices[1:]:
-                Drot = self.CPLS[_].symmetry_op.apply_rotation_only(D)
-                self.CPLS[_].spin_orbit = Drot
 
 
     def set_single_ion_anisotropy(self, K, site_index, space_group=None):
