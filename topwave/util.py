@@ -5,10 +5,9 @@ import numpy as np
 from numpy import linalg
 import numpy.typing as npt
 
+from topwave.constants import K_BOLTZMANN
 if TYPE_CHECKING:
-    from topwave import model
-
-kB = 0.086173324  # given in meV/K
+    from topwave.model import Model
 
 
 def bose_distribution(energies, temperature):
@@ -32,28 +31,40 @@ def bose_distribution(energies, temperature):
     if temperature == 0:
         return np.zeros(energies.shape, dtype=float)
     else:
-        return np.reciprocal(np.exp(energies / (kB * temperature)) - 1)
+        return np.reciprocal(np.exp(energies / (K_BOLTZMANN * temperature)) - 1)
 
-def coupling_selector(attribute: str, value: int | float, model: model.Model) -> list[int]:
+
+def coupling_selector(attribute: str, value: int | float, model: Model) -> list[int]:
     """Selects a couplings based on a given attribute."""
 
     match attribute:
         case 'is_set':
-            indices = [coupling.index for coupling in model.CPLS if coupling.is_set == value]
+            indices = [coupling.index for coupling in model.couplings if coupling.is_set == value]
         case 'index':
-            indices = [coupling.index for coupling in model.CPLS if coupling.index == value]
+            indices = [coupling.index for coupling in model.couplings if coupling.index == value]
         case 'symmetry_id':
-            indices = [coupling.index for coupling in model.CPLS if coupling.symmetry_id == value]
+            indices = [coupling.index for coupling in model.couplings if coupling.symmetry_id == value]
         case 'distance':
-            indices = [coupling.index for coupling in model.CPLS if np.isclose(coupling.distance, value, atol=1e-5)]
+            indices = [coupling.index for coupling in model.couplings if np.isclose(coupling.distance, value, atol=1e-5)]
     return indices
+
+
+def get_boundary_couplings(model: Model, direction: str = 'xyz') -> npt.NDArray[np.int64]:
+    """Returns indices of couplings that change the unit cell in a given direction."""
+
+    x_indices = [coupling.index for coupling in model.couplings if coupling.lattice_vector[0] != 0] if 'x' in direction else []
+    y_indices = [coupling.index for coupling in model.couplings if coupling.lattice_vector[1] != 0] if 'y' in direction else []
+    z_indices = [coupling.index for coupling in model.couplings if coupling.lattice_vector[2] != 0] if 'z' in direction else []
+    return np.unique(np.concatenate((x_indices, y_indices, z_indices), axis=0)).astype(np.int64)
+
 
 def format_input_vector(orientation: list[float] | npt.NDArray[np.float64], length: float = None) -> npt.NDArray[np.float64]:
     """Normalizes an input vector and scales it by length, or does nothing if length=None."""
 
-    unscaled_vector =  np.array(orientation, dtype=float).reshape((3,))
+    unscaled_vector = np.array(orientation, dtype=float).reshape((3,))
     out = unscaled_vector if length is None else length * unscaled_vector / linalg.norm(unscaled_vector)
     return out
+
 
 def gaussian(x, mean, std, normalize=True):
     """Evaluates the normal distribution at x.
@@ -75,6 +86,7 @@ def gaussian(x, mean, std, normalize=True):
     x = np.array([x], dtype=float).flatten()
     pre_factor = 1 / (std * np.sqrt(2 * np.pi)) if normalize else 1
     return pre_factor * np.exp(-0.5 * np.square((x - mean) / std))
+
 
 def get_azimuthal_angle(vector, deg=False):
     """Returns the azimuthal angle of a three component vector w.r.t. [1, 0, 0].
@@ -101,6 +113,7 @@ def get_azimuthal_angle(vector, deg=False):
     else:
         return angle
 
+
 def get_elevation_angle(vector, deg=False):
     """Returns the elevation angle of a three component vector w.r.t. [0, 0, 1].
 
@@ -125,6 +138,7 @@ def get_elevation_angle(vector, deg=False):
         return np.rad2deg(angle)
     else:
         return angle
+
 
 class Pauli:
     """Class that holds the Pauli matrices.
@@ -155,6 +169,7 @@ class Pauli:
         if normalize:
             d = d / linalg.norm(d)
         return np.einsum('i, inm -> nm', d, cls.vec)
+
 
 def rotate_vector(input, angle, rotation_axis, basis=None):
     """Rotates a 3 component vector by a given angle (in radians) about an arbitrary axis.
@@ -196,6 +211,7 @@ def rotate_vector(input, angle, rotation_axis, basis=None):
     basis = np.eye(3) if basis is None else np.array(basis, dtype=float).reshape((3, 3))
 
     return linalg.inv(basis) @ rotation @ basis @ input
+
 
 def rotate_vector_to_ez(v):
     """Creates a 3x3 rotation matrix R with R v = [0, 0, 1]

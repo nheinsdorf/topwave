@@ -5,345 +5,225 @@ Created on Wed Jan  5 14:07:56 2022
 
 @author: niclas
 """
-from abc import ABC, abstractmethod
+from abc import ABC
 from itertools import product
 import logging
-from pathlib import Path
 
 import numpy as np
 import numpy.typing as npt
-from numpy.linalg import eig, eigh, eigvals, multi_dot
-import pandas as pd
 from pymatgen.core.operations import SymmOp
 from pymatgen.core.structure import Structure
 from pymatgen.io.cif import CifWriter
 from pymatgen.symmetry.groups import SpaceGroup
-from scipy.linalg import block_diag, norm
+from scipy.linalg import norm
 from scipy.optimize import minimize
-import sympy as sp
-from tabulate import tabulate
 
-from topwave import coupling
+from topwave.constants import G_LANDE, MU_BOHR
+from topwave.coupling import Coupling
+from topwave import logging_messages
 from topwave import util
 
 # TODO:
-# - make set_DM and set_SOC the same thing. Something like set_vector_exchange or something
 # - make set_single_ion anisotropy and set_onsite the same thing
 # - the two methods above can have different names in the SW- and TB model which just call the universal one
-# - always work with the supercell and make it a [1, 1, 1] supercell by default
+# - get rid of self.dim!!!
+# - move make supercell to its own module (can be static) (together with twist)
 
 class Model(ABC):
-    """Base class that contains the physical model.
+    """Base class that contains the physical model."""
 
-    Parameters
-    ----------
-    struc : pymatgen.core.Structure
-        pymatgen Structure that contains all the sites of the model.
-
-    Attributes
-    ----------
-    STRUC : pymatgen.core.Structure
-        This is where struc is stored
-    N : int
-        Number of sites in STRUC
-    CPLS : list
-        This is where all the couplings of the model are stored.
-    CPLS_df : pandas.core.frame.DataFrame
-        Attributes of CPLS are stored here for printing and selecting.
-    MF : numpy.ndarray
-        This is variable holds the external magnetic field. It is set via
-        'set_field'. Default is [0, 0, 0].
-    supercell : pymatgen.core.Structure
-        The structure that holds the supercell constructed by the 'make_supercell'-method.
-
-
-    Methods
-    -------
-    generate_couplings(maxdist, sg, supercell):
-        Given a maximal distance (in Angstrom) all periodic bonds are
-        generated and grouped by symmetry based on the provided sg.
-    get_boundary_couplings(direction):
-        Returns a list of couplings that couple sites in adjacent unit cells in the direction
-        given by the provided string. E.g.: 'x' returns all couplings that couple sites in the
-        adjacent unit cell in the direction of the first lattice vector, whereas 'xyz' returns those
-        that couple sites from any other unit cell. Default is 'xyz'.
-        Returns a list of couplings that
-    invert_coupling(index):
-        Invert the order of a given coupling.
-    make_supercell(scaling_factors):
-        Constructs a supercell.
-    remove_coupling(index, by_symmetry):
-        Removes a coupling.
-    show_couplings():
-        Prints the couplings.
-    set_coupling(strength, index, by_symmetry, label):
-        Assign Heisenberg Exchange or hopping amplitude terms to a collection of couplings based
-        on their symmetry index.
-    set_field(B):
-        Apply an external magnetic field that is stored in self.zeeman
-    set_moments(gs):
-        Provide a classical magnetic ground state.
-    set_open_boundaries(direction):
-        Sets the strength of exchange/hopping and of DM/SOC for all couplings that couple sites
-        to adjacent unit cells in the given direction to zero. Default is for all directions.
-    show_moments():
-        Prints the magnetic moments.
-    show_anisotropies():
-        Prints the single ion anisotropies.
-    write_cif():
-        A function that uses pymatgen functionality to save ModelMixin.STRUC
-        as a mcif file to be visualized in e.g. VESTA
-
-    """
-
-    # maybe i should save these in topwave itself
-    muB = 0.057883818066000  # given in meV/Tesla
-    g = 2  # for now let's fix the g-tensor to 2 (as a number)
-    kB = 0.086173324 # given in meV/K
-
-    def __init__(self, struc):
+    def __init__(self, struc: Structure) -> None:
 
         # save the input structure
-        self.STRUC = struc
+        self.structure = struc
         # and label the sites within struc by an index
-        for _, site in enumerate(self.STRUC):
-            site.properties['id'] = _
+        for _, site in enumerate(self.structure):
+            site.properties['index'] = _
             site.properties['magmom'] = None
-            site.properties['onsite_strength'] = 0
-            site.properties['onsite_spin_matrix'] = np.eye(2)
+            site.properties['onsite_scalar'] = 0.
+            site.properties['onsite_vector'] = np.zeros(3, dtype=float)
+            # site.properties['onsite_spin_matrix'] = np.eye(2)
             site.properties['single_ion_anisotropy'] = np.zeros(3, dtype=float)
 
         # count the number of magnetic sites and save
-        self.N = len(self.STRUC)
+        self.dim = len(self.structure)
 
         # allocate an empty list for the couplings and a dataframe (for easy access and printing)
-        self.CPLS = None
-        self.CPLS_as_df = None
-        self.reset_all_couplings()
+        self.delete_all_couplings()
 
         # put zero magnetic field
         self.zeeman = np.zeros(3, dtype=float)
 
         self.supercell = None
 
-    def reset_all_couplings(self):
-        """
-        Deletes all couplings from self.CPLS and self.CPLS_as_df and allocates the
-        name space to an empty list/df.
+    def delete_all_couplings(self) -> None:
+        """Deletes all couplings."""
 
-        """
-        self.CPLS = []
-        self.CPLS_as_df = pd.DataFrame(columns=['symid', 'symop', 'delta', 'R', 'dist', 'i',
-                                                'at1', 'j', 'at2', 'strength', 'DM'])
+        self.couplings = []
 
-    def generate_couplings(self, maxdist, sg):
-        """
-        Generates couplings up to a distance maxdist and stores them
-
-
-        Parameters
-        ----------
-        maxdist : float
-            Distance (in Angstrom) up to which couplings are generated.
-        sg : int, optional
-            International Space Group number.
-
-
-        """
+    def generate_couplings(self, max_distance: float, space_group: int) -> None:
+        """Generates couplings up to a distance and groups them based on the spacegroup."""
 
         if self.supercell is not None:
             logging.warning('coupling.Couplings must be generated before the supercell.')
 
-        cpls = self.STRUC.get_symmetric_neighbor_list(maxdist, sg=sg, unique=True)
+        neighbors = self.structure.get_symmetric_neighbor_list(max_distance, sg=space_group, unique=True)
 
         # save the generated couplings (overriding any old ones)
-        self.reset_all_couplings()
-        for cplid, (i, j, R, d, symid, symop) in enumerate(zip(*cpls)):
-            site1 = self.STRUC[i]
-            site2 = self.STRUC[j]
-            cpl = coupling.Coupling(cplid, R, site1, site2, symid, symop)
-            self.CPLS.append(cpl)
+        self.delete_all_couplings()
+        for index, (site1_id, site2_id, lattice_vector, _, symmetry_id, symmetry_op) in enumerate(zip(*neighbors)):
+            site1 = self.structure[site1_id]
+            site2 = self.structure[site2_id]
+            coupling = Coupling(index, lattice_vector, site1, site2, symmetry_id, symmetry_op)
+            self.couplings.append(coupling)
 
-    def get_boundary_couplings(self, direction='xyz'):
-        """Returns a list of couplings that couple sites in adjacent unit cells in the a given direction.
+    def get_set_couplings(self) -> list[Coupling]:
+        """Returns couplings that have been assigned some exchange."""
 
-        Parameters
-        ----------
-        direction : str
-            Specifies in which direction the boundary is set. E.g.: 'x' returns all couplings that couple
-            sites in the adjacent unit cell in the direction of the first lattice vector, whereas 'xyz' returns those
-            that couple sites from any other unit cell. Default is 'xyz'.
+        indices = util.coupling_selector(attribute='is_set', value=True, model=self)
+        return [self.couplings[index] for index in indices]
 
-        Returns
-        -------
-        tuple[list, list]
-            List of topwave.coupling and the their indices w.r.t. self.CPLS.
+    def invert_coupling(self, index: int) -> None:
+        """Inverts the orientation of a coupling."""
 
-        """
+        coupling = self.couplings[index]
+        site1, site2 = coupling.site1, coupling.site2
+        lattice_vector = coupling.lattice_vector
+        symmetry_id, symmetry_op = coupling.symmetry_id, coupling.symmetry_op
+        inverted_coupling = Coupling(index, -lattice_vector, site2, site1, symmetry_id, symmetry_op)
+        self.couplings[index] = inverted_coupling
 
-        Rs = np.array([cpl.R for cpl in self.CPLS], dtype=float)
+    def make_supercell(self, scaling_factors: list[int] | npt.NDArray[np.int64]) -> None:
+        """Constructs a supercell and generates the new couplings."""
 
-        if len(Rs) == 0:
-            boundary_couplings = boundary_indices = []
-        else:
-            x_indices = y_indices = z_indices = np.array([], dtype=int).reshape((0,))
-            if 'x' in direction:
-                x_indices = np.arange(len(self.CPLS))[Rs[:, 0] != 0]
-            if 'y' in direction:
-                y_indices = np.arange(len(self.CPLS))[Rs[:, 1] != 0]
-            if 'z' in direction:
-                z_indices = np.arange(len(self.CPLS))[Rs[:, 2] != 0]
-            boundary_indices = np.unique(np.concatenate((x_indices, y_indices, z_indices), axis=0))
-            boundary_couplings = [self.CPLS[_] for _ in boundary_indices]
-
-        return boundary_couplings, boundary_indices
-
-    def invert_coupling(self, index):
-        """Inverts the order of a coupling.
-        """
-
-        cpl = self.CPLS[index]
-        site1, site2, R, symid, symop = cpl.site1, cpl.site2, cpl.lattice_vector, cpl.symmetry_id, cpl.symmetry_op
-        inverted_coupling = coupling.Coupling(index, -R, site1, symid, symop)
-        self.CPLS[index] = inverted_coupling
-
-
-    def make_supercell(self, scaling_factors):
-        """Constructs a supercell and the corresponding couplings.
-
-        Parameters
-        ----------
-        scaling_factors : list
-            List of three integers that are used to scale the existing primitive unit cell.
-            E.g. [2, 1 ,1] corresponds to a supercell of dimensions (2a, b, c).
-
-        """
-
-        if len(self.CPLS) == 0:
+        if len(self.couplings) == 0:
             logging.warning('coupling.Couplings must be generated before the supercell.')
 
         logging.debug('Unit cell is enlarged to supercell.')
-        lattice = (scaling_factors * self.STRUC.lattice.matrix.T).T
+        lattice = (scaling_factors * self.structure.lattice.matrix.T).T
 
         num_uc = np.product(scaling_factors)
         x_lim, y_lim, z_lim = scaling_factors
         coords = []
         cell_vectors = []
-        for site in self.STRUC:
+        dim = len(self.structure)
+        for site in self.structure:
             for (x, y, z) in product(range(x_lim), range(y_lim), range(z_lim)):
                 coords.append((site.frac_coords + [x, y, z]) / scaling_factors)
                 cell_vectors.append([x, y, z])
-        coords = np.array(coords, dtype=float).reshape((num_uc, self.N, 3), order='F')
-        coords = coords.reshape((num_uc * self.N), 3)
-        cell_vectors = np.array(cell_vectors, dtype=int).reshape((num_uc, self.N, 3), order='F')
-        cell_vectors = cell_vectors.reshape((num_uc * self.N), 3)
+        coords = np.array(coords, dtype=float).reshape((num_uc, dim, 3), order='F')
+        coords = coords.reshape((num_uc * dim), 3)
+        cell_vectors = np.array(cell_vectors, dtype=int).reshape((num_uc, dim, 3), order='F')
+        cell_vectors = cell_vectors.reshape((num_uc * dim), 3)
 
-        species = [site.species_string for site in self.STRUC] * num_uc
+        species = [site.species_string for site in self.structure] * num_uc
         supercell = Structure.from_spacegroup(1, lattice, species, coords)
         supercell.scaling_factors = scaling_factors
         logging.debug(f'{x_lim}x{y_lim}x{z_lim} supercell has been created. Site properties are transferred.')
 
-        for site_index, site in enumerate(self.STRUC):
-            for _ in range(site_index, self.N * num_uc, self.N):
+        for site_index, site in enumerate(self.structure):
+            for _ in range(site_index, dim * num_uc, dim):
                 for key, value in site.properties.items():
                     supercell[_].properties[key] = value
-                supercell[_].properties['id'] = _
+                supercell[_].properties['index'] = _
                 supercell[_].properties['uc_site_index'] = site_index
                 supercell[_].properties['cell_vector'] = cell_vectors[_]
 
         self.supercell = supercell
         logging.debug('Site properties have been transferred. coupling.Couplings for supercell are created.')
 
-        uc_couplings = self.CPLS.copy()
-        self.reset_all_couplings()
+        uc_couplings = self.couplings.copy()
+        self.delete_all_couplings()
         cell_vectors = np.unique(cell_vectors, axis=0)
         for _, coupling in enumerate(uc_couplings):
             for cell_index, (x, y, z) in enumerate(product(range(x_lim), range(y_lim), range(z_lim))):
-                target_cell = np.mod(coupling.R + [x, y, z], scaling_factors)
+                target_cell = np.mod(coupling.lattice_vector + [x, y, z], scaling_factors)
                 target_cell_index = np.arange(num_uc)[np.all(cell_vectors == target_cell, axis=1)][0]
-                R = np.floor_divide(coupling.R + [x, y, z], scaling_factors)
-                site1 = self.supercell[coupling.I + self.N * cell_index]
-                site2 = self.supercell[coupling.J + self.N * target_cell_index]
-                coupling_index = _ * num_uc + cell_index
-                cpl = coupling.Coupling(coupling_index, R, site1, site2, coupling.SYMID, coupling.SYMOP)
-                self.CPLS.append(cpl)
-                self.CPLS_as_df = pd.concat([self.CPLS_as_df, cpl.DF])
-                self.CPLS_as_df.reset_index(drop=True, inplace=True)
-                self.set_coupling(coupling.strength, coupling_index, by_symmetry=False)
-                if isinstance(self, TightBindingModel):
-                    self.set_spin_orbit(norm(coupling.DM), coupling.DM, coupling_index, by_symmetry=False)
-                else:
-                    # TODO: use the set_DM method here instead
-                    # self.CPLS[coupling_index].DM = coupling.DM
-                    self.set_DM(coupling.DM, coupling_index, by_symmetry=False)
-        self.CPLS_as_df.reset_index(drop=True, inplace=True)
+                R = np.floor_divide(coupling.lattice_vector + [x, y, z], scaling_factors)
+                site1 = self.supercell[coupling.site1.properties['index'] + dim * cell_index]
+                site2 = self.supercell[coupling.site2.properties['index'] + dim * target_cell_index]
+                new_coupling_index = _ * num_uc + cell_index
+                new_coupling = Coupling(new_coupling_index, R, site1, site2, coupling.symmetry_id, coupling.symmetry_op)
+                self.couplings.append(new_coupling)
+                self.set_coupling(new_coupling_index, coupling.strength, attribute='index')
+                self.set_spin_orbit(new_coupling_index, coupling.spin_orbit, attribute='index')
+
         logging.debug('coupling.Couplings for supercell have been created.')
 
-    def remove_coupling(self, index, by_symmetry=True):
-        """Removes a coupling.
-
-        Parameters
-        ----------
-        index : int
-            Integer that corresponds to the symmetry index of a selection of
-            couplings, or to the index if by_symmetry = False.
-        by_symmetry : bool
-            If true, index corresponds to the symmetry index of a selection of couplings.
-            If false, it corresponds to the index.
-
-        """
-
-        if by_symmetry:
-            indices = self.CPLS_as_df.index[self.CPLS_as_df['symid'] == index].tolist()
-        else:
-            indices = self.CPLS_as_df.index[self.CPLS_as_df.index == index].tolist()
-
-        new_CPLS = self.CPLS.copy()
-        for _ in sorted(indices, reverse=True):
-            new_CPLS.pop(_)
-
-        self.reset_all_couplings()
-        for cplid, cpl in enumerate(new_CPLS):
-            site1 = self.STRUC[cpl.I]
-            site2 = self.STRUC[cpl.J]
-
-            new_cpl = coupling.Coupling(cplid, cpl.R, site1, site2, cpl.SYMID, cpl.SYMOP)
-            self.CPLS.append(new_cpl)
-            self.CPLS_as_df = pd.concat([self.CPLS_as_df, new_cpl.DF])
-        self.CPLS_as_df.reset_index(drop=True, inplace=True)
-
-    def show_couplings(self):
-        """
-        Prints the couplings
-
-        """
-
-        print(tabulate(self.CPLS_as_df, headers='keys', tablefmt='github',
-                       showindex=True))
-
-    def set_coupling(self, attribute_value: int | float, strength: float, attribute: str = 'index'):
+    def set_coupling(self, attribute_value: int | float, strength: float, attribute: str = 'index') -> None:
         """Assigns (scalar) hopping/exchange to a selection of couplings."""
 
         indices = util.coupling_selector(attribute=attribute, value=attribute_value, model=self)
-
         for _ in indices:
-            self.CPLS[_].strength = strength
-            self.CPLS[_].is_set = True
+            self.couplings[_].strength = strength
+            self.couplings[_].is_set = True
 
-    def set_spin_orbit(self, attribute_value: int | float, vector: list[float] | npt.NDArray[np.float64], strength: float = None, attribute: str = 'index'):
+    def unset_coupling(self, attribute_value: int | float, attribute: str = 'index') -> None:
+        """Removes exchanges from a coupling and makes it unset."""
+
+        indices = util.coupling_selector(attribute=attribute, value=attribute_value, model=self)
+        for _ in indices:
+            self.couplings[_].strength = 0.
+            self.couplings[_].spin_orbit = np.zeros(3, dtype=np.float64)
+            self.couplings[_].is_set = False
+
+    def unset_moments(self):
+        """Unsets all magnetic moments of the structure."""
+
+        for site in self.structure:
+            site.properties['magmom'] = None
+
+    def set_spin_orbit(self, attribute_value: int | float, vector: list[float] | npt.NDArray[np.float64], strength: float = None, attribute: str = 'index') -> None:
         """Assigns spin dependent hopping/DM exchange to a selection of couplings."""
 
         input_vector = util.format_input_vector(orientation=vector, length=strength)
         indices = util.coupling_selector(attribute=attribute, value=attribute_value, model=self)
-
         for _ in indices:
-            self.CPLS[_].spin_orbit = self.CPLS[_].symmetry_op.apply_rotation_only(input_vector) if attribute == 'symmetry_id' else input_vector
-            self.CPLS[_].is_set = True
+            self.couplings[_].spin_orbit = self.couplings[_].symmetry_op.apply_rotation_only(input_vector) if attribute == 'symmetry_id' else input_vector
+            self.couplings[_].is_set = True
 
-    def set_zeeman(self, orientation: list[float] | npt.NDArray[np.float64], strength: float = None):
+        if isinstance(self, TightBindingModel):
+            self.make_spinful()
+
+    def set_onsite_vector(self, index: int, vector: list[float] | npt.NDArray[np.float64], strength: float = None, space_group: int = 1) -> None:
+        """Sets a local Zeeman field/single-ion anisotropy to a given site."""
+
+        input_vector = util.format_input_vector(orientation=vector, length=strength)
+        if self.supercell is None:
+            space_group = SpaceGroup.from_int_number(space_group)
+            coordinates, operations = space_group.get_orbit_and_generators(self.structure[index].frac_coords)
+            for coordinate, operation in zip(coordinates, operations):
+                cartesian_coordinate = self.structure.lattice.get_cartesian_coords(coordinate)
+                site = self.structure.get_sites_in_sphere(cartesian_coordinate, 1e-06)[0]
+                site.properties['onsite_vector'] = operation.apply_rotation_only(input_vector)
+        else:
+            logging.warning(logging_messages.SET_SITE_PROPERTY_SUPERCELL)
+            self.supercell[index].properties['onsite_vector'] = input_vector
+
+        if isinstance(self, TightBindingModel):
+            self.make_spinful()
+
+    def set_onsite_scalar(self, index: int, strength: float, space_group: int = 1) -> None:
+        """Sets a scalar onsite energy to a given site."""
+
+        if self.supercell is None:
+            space_group = SpaceGroup.from_int_number(space_group)
+            coordinates = space_group.get_orbit(self.structure[index].frac_coords)
+            for coordinate in coordinates:
+                cartesian_coordinate = self.structure.lattice.get_cartesian_coords(coordinate)
+                site = self.structure.get_sites_in_sphere(cartesian_coordinate, 1e-06)[0]
+                site.properties['onsite_scalar'] = strength
+        else:
+            logging.warning(logging_messages.SET_SITE_PROPERTY_SUPERCELL)
+            self.supercell[index].properties['onsite_scalar'] = strength
+
+    def set_zeeman(self, orientation: list[float] | npt.NDArray[np.float64], strength: float = None) -> None:
         """Sets a global Zeeman term."""
 
         self.zeeman = util.format_input_vector(orientation=orientation, length=strength)
+
+        if isinstance(self, TightBindingModel):
+            self.make_spinful()
 
     def set_moments(self, directions, magnitudes):
         """ Assigns a magnetic ground state to the model
@@ -373,13 +253,13 @@ class Model(ABC):
                 struc = self.supercell
                 #logging.warning('Magnetic moments must be set before the supercell.')
             except:
-                directions = np.array(directions, dtype=float).reshape((self.N, 3))
-                magnitudes = np.array(magnitudes, dtype=float).reshape((self.N,))
-                struc = self.STRUC
+                directions = np.array(directions, dtype=float).reshape((self.dim, 3))
+                magnitudes = np.array(magnitudes, dtype=float).reshape((self.dim,))
+                struc = self.structure
         else:
-            directions = np.array(directions, dtype=float).reshape((self.N, 3))
-            magnitudes = np.array(magnitudes, dtype=float).reshape((self.N,))
-            struc = self.STRUC
+            directions = np.array(directions, dtype=float).reshape((self.dim, 3))
+            magnitudes = np.array(magnitudes, dtype=float).reshape((self.dim,))
+            struc = self.structure
 
         for _, (direction, magnitude) in enumerate(zip(directions, magnitudes)):
             # rotate into cartesian coordinates and normalize it
@@ -391,90 +271,30 @@ class Model(ABC):
             # stretch it to match the right magnetic moment and save it
             struc[_].properties['magmom'] = moment * magnitude
 
-    def set_open_boundaries(self, direction='xyz'):
-        """Sets the exchange/hopping and DM/SOC along the boundary couplings to zero.
+    def set_open_boundaries(self, direction: str = 'xyz') -> None:
+        """Sets the exchange/hopping and DM/SOC at the chosen boundary to zero."""
 
-        Parameters
-        ----------
-        direction : str
-            Direction along which the boundaries are set to open.
+        boundary_indices = util.get_boundary_couplings(model=self, direction=direction)
+        for index in boundary_indices:
+            self.unset_coupling(attribute_value=index, attribute='index')
 
-        """
+    def write_cif(self, path: str, write_magmoms: bool = True) -> None:
+        """Saves the structure to a .mcif file."""
 
-        boundary_couplings, boundary_indices = self.get_boundary_couplings(direction=direction)
-        for _ in boundary_indices:
-            self.set_coupling(0, _, by_symmetry=False)
-            if isinstance(self, TightBindingModel):
-                if self.spinful:
-                    self.set_spin_orbit(0, np.ones(3), _, by_symmetry=False)
-            else:
-                self.set_DM([0, 0, 0], _, by_symmetry=False)
-
-    def show_moments(self):
-        """
-        Prints the magnetic moments
-
-        """
-
-        struc = self.STRUC if self.supercell is None else self.supercell
-
-        # TODO: make this for the supercell
-        for _, site in enumerate(struc):
-            print(f'Magnetic Moment on Site{_}:\t{site.properties["magmom"]}')
-
-    def show_anisotropies(self):
-        """
-        Prints the single ion anisotropies.
-
-        """
-
-        for _, site in enumerate(self.STRUC):
-            print(f'Single ion anisotropy on Site{_}:\t{site.properties["single_ion_anisotropy"]}')
-
-    def write_cif(self, path=None):
-        """
-        Function that writes the pymatgen structure to a mcif file for visualization in e.g. VESTA
-
-        Parameters
-        ----------
-        path : str
-            Absolute path to the directory where the mcif file should be saved, e.g.
-            '/home/user/material/material.mcif'
-        """
-
-        # get user's home directory
-        home = str(Path.home())
-        path = home + '/topwave_model.mcif' if path is None else path
-
-        CifWriter(self.STRUC, write_magmoms=True).write_file(path)
-
-    def get_set_couplings(self) -> list[coupling.Coupling]:
-        """Returns couplings that have been assigned some exchange."""
-
-        indices = util.coupling_selector(attribute='is_set', value=True, model=self)
-        return [self.CPLS[index] for index in indices]
+        if isinstance(self, TightBindingModel) and write_magmoms:
+            logging.info(logging_messages.TIGHTBINDING_MCIF)
+            for site in self.structure:
+                site.properties['magmom'] = site.properties['onsite_vector']
+                CifWriter(self.structure, write_magmoms=write_magmoms).write_file(path)
+                self.unset_moments()
+        else:
+            CifWriter(self.structure, write_magmoms=write_magmoms).write_file(path)
 
 
 class SpinWaveModel(Model):
-    """
-    Class for a Spin Wave Model.
+    """Child class of Model for Spinwave models."""
 
-    Methods
-    -------
-    get_classical_energy():
-        Returns the classical ground state energy of the model.
-    get_classical_groundstate():
-        Adjusts the orientation of magnetic moments until a minimum in classical
-        energy is reached.
-    set_DM(D, symid, by_symmetry):
-        Assign anti-symmetric exchange to a selection of couplings based on
-        their symmetry index.
-    set_single_ion_anisotropy(K, site_index, space_group):
-        Assign single-ion anisotropy to site or selection thereof based on
-        their symmetry index.
-    """
-
-    def get_classical_energy(self, per_spin=True):
+    def get_classical_energy(self, per_spin: bool = True) -> float:
         """Computes the classical ground state energy of the model.
 
         Parameters
@@ -492,17 +312,17 @@ class SpinWaveModel(Model):
 
         energy = 0
         # exchange energy
-        for coupling in self.CPLS:
+        for coupling in self.couplings:
             energy += coupling.get_energy()
 
-        struc = self.STRUC if self.supercell is None else self.supercell
+        struc = self.structure if self.supercell is None else self.supercell
 
         # Zeeman energy and anisotropies
         for site in struc:
             magmom = site.properties['magmom']
             K = site.properties['single_ion_anisotropy']
             energy += magmom @ np.diag(K) @ magmom
-            energy -= Model.muB * Model.g * (self.zeeman @ magmom)
+            energy -= MU_BOHR * G_LANDE * (self.zeeman @ magmom)
 
         if per_spin:
             return energy / len(struc)
@@ -542,7 +362,7 @@ class SpinWaveModel(Model):
             Result of the minimization.
         """
 
-        struc = self.STRUC if self.supercell is None else self.supercell
+        struc = self.structure if self.supercell is None else self.supercell
 
         moments = np.array([site.properties['magmom'] for site in struc], dtype=float)
         magnitudes = norm(moments, axis=1)
@@ -556,132 +376,19 @@ class SpinWaveModel(Model):
         res.x = (res.x.reshape((-1, 3)).T / norm(res.x.reshape((-1, 3)), axis=1)).flatten(order='F')
         return res
 
+    def set_single_ion_anisotropy(self, index: int, vector: list[float] | npt.NDArray[np.float64], strength: float = None, space_group: int = 1) -> None:
+        """Assigns single-ion anisotropy to a given site."""
 
-    def set_single_ion_anisotropy(self, K, site_index, space_group=None):
-        """Assigns single-ion anisotropies to a selection of bonds based on their symmetry.
-
-        Parameters
-        ----------
-        K : list
-            Three-dimensional list for the three possible components of the single-ion anisotropy term.
-        site_index : int
-            Integer that corresponds to the index of a site. If space_group is not None, the term is added
-            to all sites in the orbit of the provided site and transformed accordingly.
-        space_group : int
-            International number corresponding to a space group by which the orbit of the site is generated.
-            Default is None.
-        """
-
-        if self.supercell is not None:
-            logging.warning('Single-ion-anisotropies must be generated before the supercell'
-                            'if you want them to be copied over.')
-
-        K = np.array(K, dtype=float).reshape(3,)
-
-        if space_group is not None:
-            space_group = SpaceGroup.from_int_number(space_group)
-            coords, ops = space_group.get_orbit_and_generators(self.STRUC[site_index].frac_coords)
-            sites = []
-            for coord in coords:
-                cartesian_coord = self.STRUC.lattice.get_cartesian_coords(coord)
-                sites.append(self.STRUC.get_sites_in_sphere(cartesian_coord, 1e-06)[0])
-        else:
-            sites = [self.STRUC[site_index]]
-            ops = [SymmOp.from_rotation_and_translation(np.eye(3), np.zeros(3))]
-
-        for site, op in zip(sites, ops):
-            site.properties['single_ion_anisotropy'] = op.apply_rotation_only(K)
-
-
-
+        self.set_onsite_vector(index=index, vector=vector, strength=strength, space_group=space_group)
 
 class TightBindingModel(Model):
-    """
-    Class for a tight-binding model.
-
-    Parameters
-    ----------
-    struc : pymatgen.core.Structure
-        pymatgen Structure that contains all the sites of the model.
-
-    Attributes
-    ----------
-    spinful : bool
-        Flag that specifies whether the model is spinless (fully spin polarized) or spinful.
-        Setting an external magnetic field will automatically set it True. Default is False.
-
-    Methods
-    -------
-    get_symbolic_hamiltonian():
-        Returns a symbolic representation of the Hamiltonian.
-    make_spinful():
-        Adds spin degree of freedom to the Hamiltonian.
-    set_onsite_term(strength, site_index, label, spin_matrix):
-        Adds onsite energy terms to the given sites.
-    set_spin_orbit(strength, matrix, index, by_symmetry, label):
-        Adds a (generally) complex hopping term that couples spin-up
-        and -down degrees of freedom.
-    """
+    """Child class of Model for Tight-Binding models."""
 
     def __init__(self, struc):
         super().__init__(struc)
         self.spinful = False
 
-
-
     def make_spinful(self):
-        """Sets the spinful flag to True adding spin degree of freedom to the Hilbert space.
-        """
+        """Adds spin as a degree of freedom to the model."""
 
         self.spinful = True
-
-    def set_onsite_term(self, strength, site_index=None, label=None, spin_matrix=None):
-        """Adds onsite term to the specified diagonal matrix element of the Hamiltonian.
-
-        Parameters
-        ----------
-        strength : float
-            Magnitude of the onsite term.
-        site_index : int
-            Site index (ordered as in self.STRUC) that the term will be added to.
-            If None, the term will be added to all sites. Default is None.
-        label : str
-            A label that is used for the symbolic representation of the Hamiltonian. If None,
-            an automatic label is generated. Default is None.
-        spin_matrix : numpy.ndarray
-            Two-by-two array in spin space for spin-dependant onsite terms, e.g. a spin-dependent
-            staggered flux or a AFM Zeeman field. If not None, the model is made 'spinful'. Default is None.
-        """
-
-        if self.supercell is not None:
-            logging.warning('Onsite terms must be generated before the supercell'
-                            'if you want them to be copied over.')
-
-
-        if site_index is None:
-            site_indices = np.arange(self.N)
-            auto_label = 'E_0'
-        else:
-            site_indices = [site_index]
-            auto_label = f'E_{site_index}'
-
-        for _ in site_indices:
-            self.STRUC[_].properties['onsite_strength'] = strength
-            self.STRUC[_].properties['onsite_label'] = label if label is not None else auto_label
-            self.STRUC[_].properties['onsite_spin_matrix'] = spin_matrix
-
-        if spin_matrix is not None:
-            self.make_spinful()
-
-    def show_onsite_terms(self):
-        """
-        Prints the single ion anisotropies.
-
-        """
-
-        for _, site in enumerate(self.STRUC):
-            energy = site.properties['onsite_strength']
-            spin = site.properties['onsite_spin_matrix']
-            print(f'Onsite energy on Site{_}:\t{energy}\nSpin:\n{spin}')
-
-

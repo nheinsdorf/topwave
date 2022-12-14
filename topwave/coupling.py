@@ -27,16 +27,13 @@ class Coupling:
     symmetry_id: int
     symmetry_op: SymmOp
     distance: float = field(init=False)
-    site1_id: int = field(init=False)
     sublattice_vector: npt.NDArray[np.float64] = field(init=False)
-    site2_id: int = field(init=False)
     is_set: bool = False
     spin_orbit: npt.NDArray[np.float64] = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
     strength: float = 0.
 
     def __post_init__(self) -> None:
-        self.site1_id = self.site1.properties['id']
-        self.site2_id = self.site2.properties['id']
+        self.distance = self.site1.distance(self.site2, self.lattice_vector)
         self.sublattice_vector = self.site2.frac_coords - self.site1.frac_coords
 
     def get_energy(self) -> float:
@@ -56,14 +53,14 @@ class Coupling:
 
     def get_fourier_coefficients(
             self,
-            k: npt.ArrayLike) -> tuple[complex, npt.NDArray[np.complex128]]:
-        """Returns the Fourier coefficient and its inner derivatives at k."""
+            k_point: npt.ArrayLike) -> tuple[complex, npt.NDArray[np.complex128]]:
+        """Returns the Fourier coefficient and its inner derivatives at k_point."""
 
-        return np.exp(-2j * np.pi * np.dot(self.lattice_vector, k)), -2j * np.pi * self.lattice_vector
+        return np.exp(-2j * np.pi * np.dot(self.lattice_vector, k_point)), -2j * np.pi * self.lattice_vector
 
-    def get_sw_matrix_elements(
+    def get_spinwave_matrix_elements(
             self,
-            k: npt.ArrayLike) -> tuple[complex, complex, complex, complex, complex, complex, np.ndarray]:
+            k_point: npt.ArrayLike) -> tuple[complex, complex, complex, complex, complex, complex, np.ndarray]:
         """Constructs the matrix elements for the Spinwave Hamiltonian at a given k-point."""
 
         # the local spin reference frames
@@ -80,7 +77,7 @@ class Coupling:
         pre_factor = np.sqrt(spin_magnitude1 * spin_magnitude2) / 2
 
         # phase factors and their derivatives
-        phase_factor, inner = self.get_fourier_coefficients(k)
+        phase_factor, inner = self.get_fourier_coefficients(k_point)
 
         # spin exchange matrix
         exchange_matrix = self.get_exchange_matrix()
@@ -99,10 +96,10 @@ class Coupling:
 
         return A, Abar, CI, CJ, B, Bbar, inner
 
-    def get_tb_matrix_elements(self, k: npt.ArrayLike) -> tuple[complex, np.ndarray]:
+    def get_tightbinding_matrix_elements(self, k_point: npt.ArrayLike) -> tuple[complex, np.ndarray]:
         """Constructs the matrix elements for the TightBinding Hamiltonian at a given k-point."""
 
-        c_k, inner = self.get_fourier_coefficients(k)
+        c_k, inner = self.get_fourier_coefficients(k_point)
 
         # construct the matrix elements
         A = c_k * self.strength

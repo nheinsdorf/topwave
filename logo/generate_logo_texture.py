@@ -41,13 +41,13 @@ def arrow3d(ax, length=1, width=0.05, head=0.2, headwidth=2,
 # Parameters of the plot
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # numbers of spins on the outmost ring on the disk
-num_phi_max = 24
+num_phi_max = 19
 # number of rings on the disk
-num_r = 10
+num_r = 7
 # colors for the color gradient on the disk
 colors = ["pink", "hotpink"]
 # set the length of the spins
-arrow_length = 0.13
+arrow_length = 0.15
 # factor by which the background disk is larger than the region on which the spins sit
 disk_factor = 1.3
 # cmap for the sprinkles
@@ -70,6 +70,7 @@ num_whites = int((np.sqrt(2) - 1) * 256)
 whites = np.array([[255/256, 255/256, 255/256, 1]] * num_whites)
 newcolors = np.concatenate((newcolors, whites), axis=0)
 cmap = ListedColormap(newcolors)
+
 
 #scale the radius of the disk
 Rp = R * disk_factor

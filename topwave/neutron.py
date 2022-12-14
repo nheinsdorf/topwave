@@ -10,8 +10,8 @@ class NeutronScattering:
     ----------
     spec : topwave.spec.Spec
         Spinwave spectrum.
-    energies : list or numpy.ndarray
-        List of energies for which the intensity map is computed. If None, 501 energies from 0 to 1.1 * max(spec)
+    energy_bins : list or numpy.ndarray
+        List of energy_bins for which the intensity map is computed. If None, 501 energy_bins from 0 to 1.1 * max(spec)
         are used. Default is None.
     resolution : float
         Standard deviation of the normal distribution that is convolved with the intensity map
@@ -25,11 +25,11 @@ class NeutronScattering:
         This is where spec is stored.
     cross_section : numpy.ndarray
         This is where the computed cross section of the spectrum is stored. The shape is (NK, N).
-    energies : numpy.ndarray
-        This is where energies is stored.
+    energy_bins : numpy.ndarray
+        This is where energy_bins is stored.
     intensity_map : numpy.ndarray
         This is where the intensity map of the cross section is stored. The shape is (NK, NE), where NE is the
-        number of provided energies.
+        number of provided energy_bins.
     resolution : float
         This is where resolution is stored.
     temperature : float
@@ -44,21 +44,14 @@ class NeutronScattering:
 
     """
 
-    def __init__(self, spec, energies=None, resolution=0.05, temperature=0):
+    def __init__(self, spec, energy_bins=None, resolution=0.05, temperature=0):
         self.spec = spec
         self.component = 'S_perp'
-        self.cross_section = self.get_cross_section(spec)
-        self.intensity_map, self.energies = self.get_intensity_map(energies, resolution, temperature)
+        self.SS = self.get_spin_spin_expectation_val()
+        self.cross_section = self.get_cross_section()
+        self.intensity_map, self.energy_bins = self.get_intensity_map(energy_bins, resolution, temperature)
         self.resolution = resolution
         self.temperature = temperature
-
-        # save everything in spec's 'neutron'-dict
-        spec.neutron['component'] = self.component
-        spec.neutron['cross_section'] = self.cross_section
-        spec.neutron['energies'] = self.energies
-        spec.neutron['intensity_map'] = self.intensity_map
-        spec.neutron['resolution'] = self.resolution
-        spec.neutron['temperature'] = self.temperature
 
     def __getattr__(self, item):
         try:
@@ -66,8 +59,8 @@ class NeutronScattering:
         except:
             raise AttributeError(f"NeutronScattering object has no attribute {item}.")
 
-    @staticmethod
-    def get_cross_section(spec):
+
+    def get_cross_section(self):
         """Calculates the neutron scattering cross section of unpolarized neutrons.
 
         The neutron scattering cross section is defined as the perpendicular part of the symmetrized
@@ -85,19 +78,19 @@ class NeutronScattering:
         """
 
         # Normalize all the scattering vectors.
-        hkl = (spec.KS_xyz.T / norm(spec.KS_xyz, axis=1)).T
+        hkl = (self.k_points_xyz.T / norm(self.k_points_xyz, axis=1)).T
         q_perp = np.eye(3) - np.einsum('ka, kb -> kab', hkl, hkl)
 
         # Calculate the perpendicular component of the (symmetric part of the) dynamical structure factor.
-        return np.real(np.einsum('kab, knab -> kn', q_perp, 0.5 * (spec.SS + spec.SS.swapaxes(2, 3))))
+        return np.real(np.einsum('kab, knab -> kn', q_perp, 0.5 * (self.SS + self.SS.swapaxes(2, 3))))
 
-    def get_intensity_map(self, energies=None, resolution=0.05, temperature=0):
+    def get_intensity_map(self, energy_bins=None, resolution=0.05, temperature=0):
         """Converts a correlation function to an intensity map on a provided set of energy bins.
 
         Parameters
         ----------
-        energies : list or numpy.ndarray
-            List of energies for which the intensity map is computed. If None, 501 energies from 0 to 1.1 * max(spec)
+        energy_bins : list or numpy.ndarray
+            List of energy_bins for which the intensity map is computed. If None, 501 energy_bins from 0 to 1.1 * max(spec)
             are used. Default is None.
         resolution : float
             Standard deviation of the normal distribution that is convolved with the intensity map
@@ -110,17 +103,52 @@ class NeutronScattering:
 
         Returns
         -------
-        The convolved cross_section at the provided energies and the energies.
+        The convolved cross_section at the provided energy_bins and the energy_bins.
         """
 
-        if energies is None:
-            energies = np.linspace(0, 1.1 * np.max(self.E), 501)
+        dim = len(self.structure)
+        if energy_bins is None:
+            energy_bins = np.linspace(0, 1.1 * np.max(self.energies), 501)
 
         # NOTE: this should be (maybe) complex for other components of the dynamical structure factor
-        intensity_map = np.zeros((self.NK, len(energies)), dtype=float)
-        for k, (E_k, S_k) in enumerate(zip(self.E[:, :self.N], self.cross_section[:, :self.N])):
+        intensity_map = np.zeros((len(self.k_points), len(energy_bins)), dtype=float)
+        for k, (E_k, S_k) in enumerate(zip(self.energies[:, :dim], self.cross_section[:, :dim])):
             bose_factors = bose_distribution(E_k, temperature=temperature) + 1
             for (mean, intensity, bose_factor) in zip(E_k, S_k, bose_factors):
-                intensity_map[k, :] += intensity * gaussian(energies, mean, resolution) * bose_factor
+                intensity_map[k, :] += intensity * gaussian(energy_bins, mean, resolution) * bose_factor
 
-        return intensity_map, energies
+        return intensity_map, energy_bins
+
+    def get_spin_spin_expectation_val(self):
+        """
+        Calculates the local spin-spin expectation values for a given set of k_points.
+        """
+
+        model = self.model
+        k_points = self.k_points
+        psi_k = self.psi
+        dim = len(self.structure)
+
+        struc = self.structure
+
+        # calculate the phase factors for all sites
+        phases = np.zeros((len(k_points), dim), dtype=complex)
+        us = np.zeros((dim, 3), dtype=complex)
+        for _, site in enumerate(struc.sites):
+            mu = np.sqrt(norm(site.properties['magmom'] / 2))
+            phases[:, _] = mu * np.exp(-1j * np.einsum('ki, i -> k', k_points, site.frac_coords) * 2 * np.pi)
+            us[_, :] = site.properties['Rot'][:, 0] + 1j * site.properties['Rot'][:, 1]
+
+        phasesL = np.transpose(np.tile(np.concatenate((phases, phases), axis=1), (3, 3, 2 * dim, 1, 1)), (3, 2, 4, 0, 1))
+        phasesR = np.conj(phasesL.swapaxes(1, 2))
+
+        usL = np.transpose(np.tile(np.concatenate((us, np.conj(us)), axis=0), (2 * dim, 3, 1, 1)), (0, 2, 3, 1))
+        usL = np.tile(usL, (len(k_points), 1, 1, 1, 1))
+        usR = np.conj(np.transpose(usL, (0, 2, 1, 4, 3)))
+
+        psiR = np.transpose(np.tile(psi_k, (3, 3, 1, 1, 1)), (2, 3, 4, 0, 1))
+        psiL = np.conj(psiR.swapaxes(1, 2))
+
+        S_k = np.sum(usL * phasesL * psiL, axis=2) * np.sum(usR * phasesR * psiR, axis=1)
+
+        return S_k
