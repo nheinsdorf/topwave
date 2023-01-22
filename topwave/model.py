@@ -6,6 +6,7 @@ Created on Wed Jan  5 14:07:56 2022
 @author: niclas
 """
 from abc import ABC
+from itertools import product
 
 import numpy as np
 import numpy.typing as npt
@@ -34,6 +35,7 @@ class Model(ABC):
             site.properties['magmom'] = None
             site.properties['onsite_scalar'] = 0.
             site.properties['onsite_vector'] = np.zeros(3, dtype=float)
+            site.properties['orbitals'] = 1
             site.properties['Rot'] = None
 
         # allocate an empty list for the couplings and a dataframe (for easy access and printing)
@@ -55,8 +57,9 @@ class Model(ABC):
         for index, (site1_id, site2_id, lattice_vector, _, symmetry_id, symmetry_op) in enumerate(zip(*neighbors)):
             site1 = self.structure[site1_id]
             site2 = self.structure[site2_id]
-            coupling = Coupling(index, lattice_vector, site1, site2, symmetry_id, symmetry_op)
-            self.couplings.append(coupling)
+            for orbital1, orbital2 in product(range(site1.properties['orbitals']), range(site2.properties['orbitals'])):
+                coupling = Coupling(index, lattice_vector, site1, orbital1, site2, orbital2, symmetry_id, symmetry_op)
+                self.couplings.append(coupling)
 
     def get_couplings(self, attribute: str, value: int | float) -> list[Coupling]:
         """Returns couplings selected by some attribute"""
@@ -76,9 +79,10 @@ class Model(ABC):
 
         coupling = self.couplings[index]
         site1, site2 = coupling.site1, coupling.site2
+        orbital1, orbital2 = coupling.site1.properties['orbitals'], coupling.site2.properties['orbitals']
         lattice_vector = coupling.lattice_vector
         symmetry_id, symmetry_op = coupling.symmetry_id, coupling.symmetry_op
-        inverted_coupling = Coupling(index, -lattice_vector, site2, site1, symmetry_id, symmetry_op)
+        inverted_coupling = Coupling(index, -lattice_vector, site2, orbital2, site1, orbital1, symmetry_id, symmetry_op)
         self.couplings[index] = inverted_coupling
 
     def set_coupling(self, attribute_value: int | float, strength: float, attribute: str = 'index') -> None:
@@ -130,6 +134,11 @@ class Model(ABC):
             cartesian_coordinate = self.structure.lattice.get_cartesian_coords(coordinate)
             site = self.structure.get_sites_in_sphere(cartesian_coordinate, 1e-06)[0]
             site.properties['onsite_scalar'] = strength
+
+    def set_orbitals(self, index: int, num_orbitals: int):
+        """Sets the number of orbitals on a given site."""
+
+        self.structure[index].properties['orbitals'] = num_orbitals
 
     def set_zeeman(self, orientation: list[float] | npt.NDArray[np.float64], strength: float = None) -> None:
         """Sets a global Zeeman term."""

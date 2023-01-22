@@ -23,7 +23,9 @@ class Coupling:
     index: int
     lattice_vector: npt.NDArray[np.int64]
     site1: PeriodicSite
+    orbital1: int
     site2: PeriodicSite
+    orbital2: int
     symmetry_id: int
     symmetry_op: SymmOp
     distance: float = field(init=False)
