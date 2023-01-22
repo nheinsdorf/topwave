@@ -12,7 +12,7 @@ from topwave.constants import G_LANDE, MU_BOHR
 from topwave.model import Model, SpinWaveModel, TightBindingModel
 from topwave.util import Pauli
 
-
+# CHECK for model.dim
 @dataclass
 class Spec:
     """Computes the spectrum of a model for a given set of k-points."""
@@ -23,26 +23,23 @@ class Spec:
     hamiltonian: npt.NDArray[np.float64] = field(init=False)
     k_points_xyz: npt.NDArray[np.float64] = field(init=False)
     psi: npt.NDArray[np.float64] = field(init=False)
-    structure: Structure = field(init=False)
 
     def __post_init__(self) -> None:
         self.k_points = np.array(self.k_points, dtype=np.float64).reshape((-1, 3))
         self.k_points_xyz = 2 * np.pi * np.einsum('ka, ab -> kb', self.k_points, inv(self.model.structure.lattice.matrix))
 
-        self.structure = self.model.structure if self.model.supercell is None else self.model.supercell
-
-        if isinstance(self.model, TightBindingModel):
-            constructor, solver = self.get_tightbinding_hamiltonian, eigh
-        else:
+        if self.model.type == 'spinwave':
             constructor, solver = self.get_spinwave_hamiltonian, solvers.colpa
+        else:
+            constructor, solver = self.get_tightbinding_hamiltonian, eigh
+
         self.hamiltonian = constructor(self.model, self.k_points)
         self.energies, self.psi = self.solve(solver)
-
 
     def get_spinwave_hamiltonian(self, model: SpinWaveModel, k_points: npt.NDArray[np.float64]) -> npt.NDArray[np.complex128]:
         """Constructs the spin wave Hamiltonian for a set of given k-points."""
 
-        dim = len(self.structure)
+        dim = len(self.model.structure)
         matrix = np.zeros((len(k_points), 2 * dim, 2 * dim), dtype=complex)
 
         # construct matrix elements at each k-point
@@ -71,8 +68,8 @@ class Spec:
 
         # add single ion anisotropies
         for _ in range(dim):
-            u = self.structure[_].properties['Rot'][:, 0] + 1j * self.structure[_].properties['Rot'][:, 1]
-            K = np.diag(self.structure[_].properties['single_ion_anisotropy'])
+            u = self.model.structure[_].properties['Rot'][:, 0] + 1j * self.model.structure[_].properties['Rot'][:, 1]
+            K = np.diag(self.model.structure[_].properties['onsite_vector'])
             matrix[:, _, _] += u @ K @ np.conj(u)
             matrix[:, _ + dim, _ + dim] += np.conj(u @ K @ np.conj(u))
             matrix[:, _, _ + dim] += u @ K @ u
@@ -80,17 +77,17 @@ class Spec:
 
         # add the external magnetic field
         for _ in range(dim):
-            v = self.structure[_].properties['Rot'][:, 2]
+            v = self.model.structure[_].properties['Rot'][:, 2]
             H_Zeeman = MU_BOHR * G_LANDE * np.dot(model.zeeman, v)
             matrix[:, _, _] += H_Zeeman
             matrix[:, _ + dim, _ + dim] += H_Zeeman
 
         return matrix
 
-    def get_tightbinding_hamiltonian(self, model: Model, k_points: npt.NDArray[np.float64]) -> npt.NDArray[np.complex128]:
+    def get_tightbinding_hamiltonian(self, model: TightBindingModel, k_points: npt.NDArray[np.float64]) -> npt.NDArray[np.complex128]:
         """Constructs the spin wave Hamiltonian for a set of given k-points."""
 
-        matrix = np.zeros((len(k_points), len(self.structure), len(self.structure)), dtype=complex)
+        matrix = np.zeros((len(k_points), len(self.model.structure), len(self.model.structure)), dtype=complex)
 
         # construct matrix elements at each k-point
         for _, k_point in enumerate(k_points):
@@ -98,33 +95,31 @@ class Spec:
                 i, j = coupling.site1.properties['index'], coupling.site2.properties['index']
 
                 # get the matrix elements from the couplings
-                A, _ = coupling.get_tightbinding_matrix_elements(k_point)
+                A, inner = coupling.get_tightbinding_matrix_elements(k_point)
 
                 matrix[_, i, j] += A
                 matrix[_, j, i] += np.conj(A)
 
+        for _, site in enumerate(self.model.structure):
+            matrix[:, _, _] += site.properties['onsite_scalar']
+
         # add spin degrees of freedom
-        if model.spinful:
+        if model.check_if_spinful():
             matrix = np.kron(matrix, np.eye(2))
 
-            # add Zeeman term
-            for _, site in enumerate(self.structure):
+            for _, site in enumerate(self.model.structure):
                 matrix[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += MU_BOHR * G_LANDE * Pauli(model.zeeman, normalize=False)
 
                 # add onsite term
-                onsite_term = site.properties['onsite_strength'] * site.properties['onsite_spin_matrix']
-                matrix[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += onsite_term
+                matrix[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += Pauli(site.properties['onsite_vector'], normalize=False)
 
             # add spin-orbit term
             for _, k_point in enumerate(k_points):
-                for cpl in model.get_set_couplings():
-                    spin_orbit_term, _ = cpl.get_spin_orbit_matrix_elements(k_point)
+                for coupling in model.get_set_couplings():
+                    i, j = coupling.site1.properties['index'], coupling.site2.properties['index']
+                    spin_orbit_term, inner = coupling.get_spin_orbit_matrix_elements(k_point)
                     matrix[_, 2 * i:2 * i + 2, 2 * j:2 * j + 2] += spin_orbit_term
                     matrix[_, 2 * j:2 * j + 2, 2 * i:2 * i + 2] += np.conj(spin_orbit_term.T)
-
-        else:
-            for _, site in enumerate(self.structure):
-                matrix[:, _, _] += site.properties['onsite_strength']
 
         return matrix
 

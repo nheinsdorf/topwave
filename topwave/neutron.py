@@ -2,7 +2,7 @@ import numpy as np
 from numpy.linalg import norm
 
 from topwave.util import bose_distribution, gaussian
-
+# CHECK for model.dim
 class NeutronScattering:
     """Base class to calculate observables that are measured in neutron scattering experiments.
 
@@ -106,7 +106,7 @@ class NeutronScattering:
         The convolved cross_section at the provided energy_bins and the energy_bins.
         """
 
-        dim = len(self.structure)
+        dim = len(self.model.structure)
         if energy_bins is None:
             energy_bins = np.linspace(0, 1.1 * np.max(self.energies), 501)
 
@@ -127,9 +127,9 @@ class NeutronScattering:
         model = self.model
         k_points = self.k_points
         psi_k = self.psi
-        dim = len(self.structure)
+        dim = len(self.model.structure)
 
-        struc = self.structure
+        struc = self.model.structure
 
         # calculate the phase factors for all sites
         phases = np.zeros((len(k_points), dim), dtype=complex)

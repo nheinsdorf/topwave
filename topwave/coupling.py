@@ -13,9 +13,9 @@ from numpy.linalg import norm
 from pymatgen.core.operations import SymmOp
 from pymatgen.core.sites import PeriodicSite
 
-from topwave.util import Pauli
+from topwave.util import format_input_vector, Pauli
 
-
+# TODO: implement the set_coupling, set_spin_orbit, etc as a function here as well.
 @dataclass(slots=True)
 class Coupling:
     """Coupling of two sites."""
@@ -96,36 +96,37 @@ class Coupling:
 
         return A, Abar, CI, CJ, B, Bbar, inner
 
-    def get_tightbinding_matrix_elements(self, k_point: npt.ArrayLike) -> tuple[complex, np.ndarray]:
+    def get_tightbinding_matrix_elements(self, k_point: npt.ArrayLike) -> tuple[complex, npt.NDArray[np.complex128]]:
         """Constructs the matrix elements for the TightBinding Hamiltonian at a given k-point."""
 
         c_k, inner = self.get_fourier_coefficients(k_point)
+        matrix_element = c_k * self.strength
+        return matrix_element, inner
 
-        # construct the matrix elements
-        A = c_k * self.strength
+    def get_spin_orbit_matrix_elements(self, k_point: npt.ArrayLike) -> tuple[npt.NDArray[np.complex128], npt.NDArray[np.complex128]]:
+        """Creates the matrix elements of the tight-binding Hamiltonian that come from spin-orbit interation."""
 
-        # construct the spin-orbit coupling hoppings
-        spin_orbit_term = 1j * Pauli(self.DM, normalize=False)
-
-        return A, inner
-
-    def get_spin_orbit_matrix_elements(self, k):
-        """Creates the matrix elements of the tight-binding Hamiltonian that come from spin-orbit interation.
-
-        Parameters
-        ----------
-        k : numpy.ndarray
-            Three-dimensional array corresponding to some k-point.
-
-        Returns
-        -------
-        Matrix elements.
-
-        """
-
-        c_k, inner = self.get_fourier_coefficients(k)
-
-        # construct the spin-orbit coupling hoppings
-        spin_orbit_term = 1j * c_k * Pauli(self.DM, normalize=False)
-
+        c_k, inner = self.get_fourier_coefficients(k_point)
+        spin_orbit_term = 1j * c_k * Pauli(self.spin_orbit, normalize=False)
         return spin_orbit_term, inner
+
+    # NOTE: should I make this a property? Check how it works with dataclasses.
+    def set_coupling(self, strength: float) -> None:
+        """Sets the couplings."""
+
+        self.strength = strength
+        self.is_set = True
+
+    def set_spin_orbit(self, vector: list[float] | npt.NDArray[np.float64], strength: float = None) -> None:
+        """Sets the spin-orbit coupling."""
+
+        input_vector = format_input_vector(orientation=vector, length=strength)
+        self.spin_orbit = input_vector
+        self.is_set = True
+
+    def unset(self) -> None:
+        """Sets strength and spin_orbit coupling to zero and unsets itself."""
+
+        self.strength = 0.
+        self.spin_orbit = np.zeros(3, dtype=np.float64)
+        self.is_set = False
