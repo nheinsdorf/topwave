@@ -13,7 +13,7 @@ from numpy.linalg import norm
 from pymatgen.core.operations import SymmOp
 from pymatgen.core.sites import PeriodicSite
 
-from topwave.util import format_input_vector, Pauli
+from topwave.util import format_input_vector, pauli
 
 # TODO: implement the set_coupling, set_spin_orbit, etc as a function here as well.
 @dataclass(slots=True)
@@ -109,7 +109,7 @@ class Coupling:
         """Creates the matrix elements of the tight-binding Hamiltonian that come from spin-orbit interation."""
 
         c_k, inner = self.get_fourier_coefficients(k_point)
-        spin_orbit_term = 1j * c_k * Pauli(self.spin_orbit, normalize=False)
+        spin_orbit_term = 1j * c_k * pauli(self.spin_orbit, normalize=False)
         return spin_orbit_term, inner
 
     # NOTE: should I make this a property? Check how it works with dataclasses.

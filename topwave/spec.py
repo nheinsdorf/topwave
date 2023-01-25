@@ -10,7 +10,7 @@ from pymatgen.core.structure import Structure
 from topwave import solvers
 from topwave.constants import G_LANDE, MU_BOHR
 from topwave.model import Model, SpinWaveModel, TightBindingModel
-from topwave.util import Pauli
+from topwave.util import pauli
 
 # CHECK for model.dim
 @dataclass
@@ -108,10 +108,10 @@ class Spec:
             matrix = np.kron(matrix, np.eye(2))
 
             for _, site in enumerate(self.model.structure):
-                matrix[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += MU_BOHR * G_LANDE * Pauli(model.zeeman, normalize=False)
+                matrix[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += MU_BOHR * G_LANDE * pauli(model.zeeman, normalize=False)
 
                 # add onsite term
-                matrix[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += Pauli(site.properties['onsite_vector'], normalize=False)
+                matrix[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += pauli(site.properties['onsite_vector'], normalize=False)
 
             # add spin-orbit term
             for _, k_point in enumerate(k_points):

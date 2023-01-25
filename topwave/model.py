@@ -54,12 +54,14 @@ class Model(ABC):
 
         neighbors = self.structure.get_symmetric_neighbor_list(max_distance, sg=space_group, unique=True)
         self.delete_all_couplings()
-        for index, (site1_id, site2_id, lattice_vector, _, symmetry_id, symmetry_op) in enumerate(zip(*neighbors)):
+        index = 0
+        for site1_id, site2_id, lattice_vector, _, symmetry_id, symmetry_op in zip(*neighbors):
             site1 = self.structure[site1_id]
             site2 = self.structure[site2_id]
             for orbital1, orbital2 in product(range(site1.properties['orbitals']), range(site2.properties['orbitals'])):
                 coupling = Coupling(index, lattice_vector, site1, orbital1, site2, orbital2, symmetry_id, symmetry_op)
                 self.couplings.append(coupling)
+                index += 1
 
     def get_couplings(self, attribute: str, value: int | float) -> list[Coupling]:
         """Returns couplings selected by some attribute"""
@@ -149,7 +151,6 @@ class Model(ABC):
         """Sets the magnetic moments on each site of the structure given in lattice coordinates."""
 
         for _, (orientation, site) in enumerate(zip(orientations, self.structure)):
-            print(orientation)
             # compute or save the magnitude (in lattice coordinates!).
             magnitude = norm(moment) if magnitudes is None else magnitudes[_]
             # transform into cartesian coordinates (spin frame) and normalize.
