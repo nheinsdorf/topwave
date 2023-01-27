@@ -3,6 +3,9 @@ import unittest
 
 import numpy as np
 from numpy.linalg import norm
+from pymatgen.core.structure import Structure
+
+from topwave.model import SpinWaveModel
 
 from topwave.constants import PAULI_X, PAULI_Y, PAULI_Z, PAULI_VEC
 from topwave import util
@@ -28,10 +31,83 @@ class BoseDistributionTest(unittest.TestCase):
 
 
 class CouplingSelectorTest(unittest.TestCase):
-    """I'll implement this checks when I have a test case of model."""
+
+    def setUp(self):
+        """ We use the non-chiral space group 198 with four magnetic sites for testing."""
+
+        self.space_group = 198
+        self.max_distance = 7
+        self.structure = Structure.from_spacegroup(self.space_group, 8.908 * np.eye(3), ['Cu'], [[0., 0., 0.]])
+        self.model = SpinWaveModel(self.structure)
+
     def test_coupling_selector_case1(self):
-        """Check that..."""
-        pass
+        """Checks that no couplings are selected if more than a single value is passed."""
+
+        self.model.generate_couplings(self.max_distance, self.space_group)
+        values = [0, 1]
+        self.assertFalse(util.coupling_selector('is_set', values, self.model))
+        self.assertFalse(util.coupling_selector('index', values, self.model))
+        self.assertFalse(util.coupling_selector('symmetry_id', values, self.model))
+        self.assertFalse(util.coupling_selector('distance', values, self.model))
+
+    def test_coupling_selector_case2(self):
+        """Checks the selection based on the 'is_set' attribute. (Also tested in test_model.py)."""
+
+        self.model.generate_couplings(self.max_distance, self.space_group)
+        indices1 = [0, 4, 5, 6, 9, 14, 20, 21]
+        indices2 = [0, 3, 4, 8, 11, 14]
+        for index in indices1:
+            self.model.set_coupling(index, 1.2)
+        for index in indices2:
+            self.model.set_spin_orbit(index, [1, 2, 3])
+        indices = np.unique(np.concatenate([indices1, indices2], axis=0))
+        np.testing.assert_equal(util.coupling_selector('is_set', True, self.model), indices)
+
+    def test_coupling_selector_case3(self):
+        """Checks the selection based on the 'index' attribute."""
+
+        self.model.generate_couplings(self.max_distance, self.space_group)
+        indices = [0, 2, 9, 15, 23]
+        for index in indices:
+            self.assertEqual(util.coupling_selector('index', index, self.model)[0], index)
+
+    def test_coupling_selector_case4(self):
+        """Checks the selection based on symmetry index."""
+
+        self.model.generate_couplings(self.max_distance, self.space_group)
+        symmetry_id = 1
+        indices = [coupling.index for coupling in self.model.couplings if coupling.symmetry_id == symmetry_id]
+        np.testing.assert_equal(util.coupling_selector('symmetry_id', symmetry_id, self.model), indices)
+
+    def test_coupling_selector_case5(self):
+        """Checks the selection based on distance."""
+
+        self.model.generate_couplings(2 * self.max_distance, self.space_group)
+        distance = self.model.couplings[0].distance
+        indices1 = util.coupling_selector('distance', distance, self.model)
+        self.assertLess(len(indices1), len(self.model.couplings))
+        indices2 = [coupling.index for coupling in self.model.couplings if np.isclose(coupling.distance, distance)]
+        np.testing.assert_equal(indices1, indices2)
+
+    def test_coupling_selector_case6(self):
+        """Checks that an empty list is returned when the attribute value is not matched."""
+
+        self.model.generate_couplings(self.max_distance, self.space_group)
+        self.assertFalse(util.coupling_selector('is_set', True, self.model))
+        self.assertFalse(util.coupling_selector('index', len(self.model.couplings) + 1, self.model))
+        self.assertFalse(util.coupling_selector('symmetry_id', len(self.model.couplings) + 1, self.model))
+        self.assertFalse(util.coupling_selector('distance', self.max_distance + 1, self.model))
+
+    def test_coupling_selector_case7(self):
+        """Checks that an error is raised if the attribute does not exist."""
+
+        with self.assertRaises(UnboundLocalError):
+            util.coupling_selector('unknown_attribute', 0, self.model)
+
+    def test_coupling_selector_case8(self):
+        """Checks that an empty list is returned when there are no couplings."""
+
+        self.assertFalse(util.coupling_selector('index', 0, self.model))
 
 
 class FormatInputVectorTest(unittest.TestCase):
@@ -112,10 +188,46 @@ class GetAzimuthalAngleTest(unittest.TestCase):
 
 
 class GetBoundaryCouplingsTest(unittest.TestCase):
-    """I'll implement this checks when I have a test case of model."""
+
+    def setUp(self):
+        """ We use the non-chiral space group 198 with four magnetic sites for testing."""
+
+        self.space_group = 198
+        self.max_distance = 7
+        self.structure = Structure.from_spacegroup(self.space_group, 8.908 * np.eye(3), ['Cu'], [[0., 0., 0.]])
+        self.model = SpinWaveModel(self.structure)
+
     def test_get_boundary_couplings_case1(self):
-        """Check that..."""
-        pass
+        """Checks that there's the right amount of boundary couplings for the hoppings in each direction."""
+
+        self.model.generate_couplings(self.max_distance, self.space_group)
+        num_x = len(util.get_boundary_couplings(self.model, 'x'))
+        num_y = len(util.get_boundary_couplings(self.model, 'y'))
+        num_z = len(util.get_boundary_couplings(self.model, 'z'))
+        # there should be eight boundary hoppings in each direction.
+        np.testing.assert_equal([num_x, num_y, num_z], [8] * 3)
+        self.assertEqual(len(util.get_boundary_couplings(self.model, 'xy')), 14)
+        self.assertEqual(len(util.get_boundary_couplings(self.model, 'yz')), 14)
+        self.assertEqual(len(util.get_boundary_couplings(self.model, 'xz')), 14)
+        self.assertEqual(len(util.get_boundary_couplings(self.model, 'xyz')), 18)
+
+    def test_get_boundary_couplings_case2(self):
+        """Checks that the order of the characters in the string does not matter."""
+
+        self.model.generate_couplings(self.max_distance, self.space_group)
+        np.testing.assert_equal(util.get_boundary_couplings(self.model, 'xy'),
+                                util.get_boundary_couplings(self.model, 'yx'))
+        np.testing.assert_equal(util.get_boundary_couplings(self.model, 'xyz'),
+                                util.get_boundary_couplings(self.model, 'zxy'))
+
+    def test_get_boundary_couplings_case3(self):
+        """Checks that also vectors that connect to a unit cell more than one lattice vector away are found."""
+
+        self.model.generate_couplings(16.7, 1)
+        indices_two_vectors = [coupling.index for coupling in self.model.couplings if np.abs(coupling.lattice_vector[0]) == 2]
+        boundary_indices = util.get_boundary_couplings(self.model, 'x')
+        for index in indices_two_vectors:
+            self.assertIn(index, boundary_indices)
 
 
 class GetElevationAngleTest(unittest.TestCase):
@@ -207,6 +319,12 @@ class RotateVectorTest(unittest.TestCase):
             util.rotate_vector(wrong_input, angle=0.3, axis=vector)
         with self.assertRaises(ValueError):
             util.rotate_vector(vector, angle=0.3, axis=wrong_input)
+
+    def test_rotate_vector_case6(self):
+        """Checks SOMETHING WITH BASIS"""
+
+        pass
+
 
 class RotateVectorToEzTest(unittest.TestCase):
 

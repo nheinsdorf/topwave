@@ -13,7 +13,7 @@ from topwave.model import Model, SpinWaveModel, TightBindingModel
 from topwave.util import pauli
 
 # CHECK for model.dim
-@dataclass
+@dataclass(slots=True)
 class Spec:
     """Computes the spectrum of a model for a given set of k-points."""
 

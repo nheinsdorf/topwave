@@ -14,12 +14,13 @@ class Supercell(SpinWaveModel, TightBindingModel):
 
         super_structure = Supercell.get_supercell_structure(model, scaling_factors)
         if isinstance(model, SpinWaveModel):
-            SpinWaveModel.__init__(self, super_structure)
+            SpinWaveModel.__init__(self, super_structure, import_site_properties=True)
         else:
-            TightBindingModel.__init__(self, super_structure)
+            TightBindingModel.__init__(self, super_structure, import_site_properties=True)
 
         self.scaling_factors = scaling_factors
         self._generate_supercell_couplings(model)
+        self.zeeman = model.zeeman
 
     @staticmethod
     def get_supercell_structure(model: Model, scaling_factors: list[int] | npt.NDArray[np.int64]) -> Structure:
@@ -71,8 +72,8 @@ class Supercell(SpinWaveModel, TightBindingModel):
                 site1 = self.structure[coupling.site1.properties['index'] + dim * cell_index]
                 site2 = self.structure[coupling.site2.properties['index'] + dim * target_cell_index]
                 new_coupling_index = _ * num_uc + cell_index
-                new_coupling = Coupling(new_coupling_index, lattice_vector, site1, site2, coupling.symmetry_id,
-                                        coupling.symmetry_op)
+                new_coupling = Coupling(new_coupling_index, lattice_vector, site1, coupling.orbital1,
+                                        site2, coupling.orbital2, coupling.symmetry_id, coupling.symmetry_op)
                 self.couplings.append(new_coupling)
                 self.set_coupling(new_coupling_index, coupling.strength, attribute='index')
                 self.set_spin_orbit(new_coupling_index, coupling.spin_orbit, attribute='index')
