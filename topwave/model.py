@@ -21,7 +21,7 @@ from topwave.constants import G_LANDE, MU_BOHR
 from topwave.coupling import Coupling
 from topwave import util
 
-
+__all__ = ["Model"]
 class Model(ABC):
     """Base class that contains the physical model."""
 
@@ -42,10 +42,13 @@ class Model(ABC):
                 site.properties['orbitals'] = 1
                 site.properties['Rot'] = None
 
-                # supercell properties
+                # supercell and twisted properties
                 site.properties['cell_vector'] = None
                 site.properties['uc_site_index'] = None
+                site.properties['layer'] = None
         self.scaling_factors = None
+        self.normal = None
+        self.twist_tuple = None
 
         # put zero magnetic field
         self.zeeman = np.zeros(3, dtype=float)
@@ -204,13 +207,13 @@ class Model(ABC):
         """Prints the site properties."""
 
         header = ['index', 'species', 'orbitals', 'coordinates (latt.)', 'coordinates (cart.)', 'magmom',
-                  'onsite scalar', 'onsite vector', 'unit cell index', 'supercell vector']
+                  'onsite scalar', 'onsite vector', 'unit cell index', 'supercell vector', 'layer']
         table = []
         for site in self.structure:
             table.append([site.properties['index'], site.species, site.properties['orbitals'], site.frac_coords,
                           site.coords, site.properties['magmom'], site.properties['onsite_scalar'],
                           site.properties['onsite_vector'], site.properties['uc_site_index'],
-                          site.properties['cell_vector']])
+                          site.properties['cell_vector'], site.properties['layer']])
 
         print(tabulate(table, headers=header, tablefmt='fancy_grid'))
         print(f'Zeeman: {self.zeeman}')
@@ -247,6 +250,13 @@ class Model(ABC):
 
 class SpinWaveModel(Model):
     """Child class of Model for Spinwave models."""
+
+    # NOTE: if I can make the multiple inheritance with the abstract get-type method work, delete this again.
+    def __init__(self,
+                 structure: Structure,
+                 import_site_properties: bool = False) -> None:
+        super().__init__(structure, import_site_properties)
+        self.type = 'spinwave'
 
     def get_classical_energy(self,
                              per_spin: bool = True) -> float:
@@ -320,6 +330,13 @@ class SpinWaveModel(Model):
 class TightBindingModel(Model):
     """Child class of Model for Tight-Binding models."""
 
+    # NOTE: if I can make the multiple inheritance with the abstract get-type method work, delete this again.
+    def __init__(self,
+                 structure: Structure,
+                 import_site_properties: bool = False) -> None:
+        super().__init__(structure, import_site_properties)
+        self.type = 'tightbinding'
+
     def check_if_spinful(self):
         """Checks whether the model is spinful or spinless (polarized)."""
 
@@ -330,7 +347,7 @@ class TightBindingModel(Model):
         return any([has_spin_orbit, has_onsite_vector, has_zeeman])
 
     def get_type(self) -> str:
-        """Overrides the 'get_type'-method to return the spinwave type."""
+        """Overrides the 'get_type'-method to return the tightbinding type."""
 
         return 'tightbinding'
 

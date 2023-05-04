@@ -15,7 +15,7 @@ from topwave import util
 class SpinWaveModelTest1(unittest.TestCase):
 
     def setUp(self):
-        """ We use the non-chiral space group 198 with four magnetic sites for testing."""
+        """We use the non-chiral space group 198 with four magnetic sites for testing."""
 
         self.space_group = 198
         self.max_distance = 7
@@ -642,6 +642,19 @@ class SpinWaveModelTest1(unittest.TestCase):
             site = self.model.structure.get_sites_in_sphere(cartesian_coordinate, 1e-06)[0]
             inverted_vector = operation.inverse.apply_rotation_only(site.properties['onsite_vector'])
             np.testing.assert_almost_equal(inverted_vector, vector)
+
+class TightBindingModelTest1(unittest.TestCase):
+
+    def setUp(self):
+        """We use the hmm, model as an example to test this class."""
+
+    def test_check_if_spinful_case1(self):
+        """Checks that..."""
+        pass
+
+    def test_get_type_case1(self):
+        """Checks that the correct type is returned."""
+        pass
 
 
 if __name__ == '__main__':

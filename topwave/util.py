@@ -58,6 +58,18 @@ def gaussian(x: int | float | npt.NDArray[np.float64],
     pre_factor = 1 / (std * np.sqrt(2 * np.pi)) if normalize else 1
     return pre_factor * np.exp(-0.5 * np.square((x - mean) / std))
 
+def get_angle(vector1: npt.ArrayLike,
+              vector2: npt.ArrayLike,
+              deg: bool = False) -> float:
+    """Returns the angle of two vectors."""
+
+    vector1 = np.array(vector1, dtype=np.float64)
+    vector2 = np.array(vector2, dtype=np.float64)
+
+    angle = np.arccos(np.dot(vector1, vector2) / linalg.norm(vector1) / linalg.norm(vector2))
+    if deg:
+        return np.rad2deg(angle)
+    return angle
 
 def get_azimuthal_angle(vector: npt.ArrayLike,
                         deg: bool = False) -> float:
@@ -91,6 +103,16 @@ def get_elevation_angle(vector: npt.ArrayLike,
     if deg:
         return np.rad2deg(angle)
     return angle
+
+
+def get_span_indices(normal: str) -> tuple[int, int, int]:
+    match normal:
+        case 'x':
+            return 1, 2, 0
+        case 'y':
+            return 0, 2, 1
+        case 'z':
+            return 0, 1, 2
 
 
 def pauli(vector: npt.ArrayLike,

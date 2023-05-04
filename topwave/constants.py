@@ -1,6 +1,7 @@
 """Collection of physical constants."""
 from numpy import array
 
+__all__ = ["G_LANDE"]
 
 G_LANDE = 2  # different Lande factors not implemented yet
 K_BOLTZMANN = 0.086173324  # given in meV/K

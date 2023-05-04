@@ -5,7 +5,6 @@ from typing import Callable
 import numpy as np
 import numpy.typing as npt
 from numpy.linalg import eigh, eigvals, inv, multi_dot
-from pymatgen.core.structure import Structure
 
 from topwave import solvers
 from topwave.constants import G_LANDE, MU_BOHR

@@ -15,6 +15,8 @@ from pymatgen.core.sites import PeriodicSite
 
 from topwave.util import format_input_vector, pauli
 
+__all__ = ["Coupling"]
+
 # TODO: implement the set_coupling, set_spin_orbit, etc as a function here as well.
 @dataclass(slots=True)
 class Coupling:
