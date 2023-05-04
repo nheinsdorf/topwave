@@ -4,6 +4,7 @@ setup(
     name='topwave',
     version='0.1.0', # put this in a version.py-file. # create funciton that reads the file.
     packages=['topwave'],
+    python_requires='>=3.11',
     url='',
     license='',
     author='Niclas Heinsdorf',
