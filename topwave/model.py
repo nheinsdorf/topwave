@@ -23,7 +23,7 @@ from topwave import util
 
 __all__ = ["Model"]
 class Model(ABC):
-    """Base class that contains the physical model."""
+    """Base class that contains the physical model. lol"""
 
     def __init__(self,
                  structure: Structure,
