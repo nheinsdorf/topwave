@@ -14,8 +14,12 @@
 import os
 import sys
 
+import sphinx_material
+
 sys.path.insert(0, os.path.abspath(".."))
 import topwave
+
+
 
 # -- Project information -----------------------------------------------------
 
@@ -34,14 +38,61 @@ release = '0.1.04a'
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.doctest",
     "sphinx.ext.todo",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.ifconfig",
-    "sphinx.ext.napoleon",
+    "sphinx.ext.extlinks",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.viewcode",
     "IPython.sphinxext.ipython_console_highlighting",
     "IPython.sphinxext.ipython_directive",
 ]
+
+autosummary_generate = True
+autoclass_content = "class"
+
+
+python_apigen_default_groups = [
+    ("class:.*", "Classes"),
+    ("data:.*", "Variables"),
+    ("function:.*", "Functions"),
+    ("method:.*", "Methods"),
+    ("classmethod:.*", "Class methods"),
+    ("property:.*", "Properties"),
+    (r"method:.*\.[A-Z][A-Za-z,_]*", "Constructors"),
+    (r"method:.*\.__[A-Za-z,_]*__", "Special methods"),
+    (r"method:.*\.__(init|new)__", "Constructors"),
+    (r"method:.*\.__(str|repr)__", "String representation"),
+    # (r"method:.*\.is_[a-z,_]*", "Tests"),
+    # (r"property:.*\.is_[a-z,_]*", "Tests"),
+]
+python_apigen_default_order = [
+    ("class:.*", 10),
+    ("data:.*", 11),
+    ("function:.*", 12),
+    ("method:.*", 24),
+    ("classmethod:.*", 22),
+    ("property:.*", 30),
+    (r"method:.*\.[A-Z][A-Za-z,_]*", 20),
+    (r"method:.*\.__[A-Za-z,_]*__", 23),
+    (r"method:.*\.__(init|new)__", 20),
+    (r"method:.*\.__(str|repr)__", 21),
+    # (r"method:.*\.is_[a-z,_]*", 31),
+    # (r"property:.*\.is_[a-z,_]*", 32),
+]
+
+python_apigen_order_tiebreaker = "alphabetical"
+python_apigen_case_insensitive_filesystem = False
+python_apigen_show_base_classes = True
+
+python_transform_type_annotations_pep585 = False
+
+object_description_options = [
+    ("py:.*", dict(include_rubrics_in_toc=True)),
+]
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -52,17 +103,19 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
-autodoc_default_options = {
-    "imported-members": True,
-    "members": True,
+
+
+# -- HTML theme settings ------------------------------------------------
+
+html_show_sourcelink = False
+html_sidebars = {
+    "**": ["logo-text.html", "globaltoc.html", "localtoc.html", "searchbox.html"]
 }
 
-# -- Options for HTML output -------------------------------------------------
-
-# The theme to use for HTML and HTML Help pages.  See the documentation for
-# a list of builtin themes.
-#
-html_theme = 'sphinx_material'
+extensions.append("sphinx_material")
+html_theme_path = sphinx_material.html_theme_path()
+html_context = sphinx_material.get_html_context()
+html_theme = "sphinx_material"
 
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -70,9 +123,31 @@ html_theme = 'sphinx_material'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-html_title = "Topwave"
+html_title = "topwave"
+html_short_title = "topwave"
 html_favicon = "_static/favicon-32x32.png"
-html_logo = "_static/logo.jpeg"
+html_logo = "_static/topwave-logo.png"
+
+# Define a custom inline Python syntax highlighting literal
+rst_prolog = """
+.. role:: python(code)
+   :language: python
+   :class: highlight
+"""
+
+
+# Sphinx Immaterial theme options
+html_theme_options = {
+    "repo_url": "https://github.com/nheinsdorf/topwave",
+    "repo_name": "nheinsdorf/topwave",
+    "repo_type": "github",
+    "globaltoc_collapse": True,
+    "globaltoc_depth": 2,
+    "version_dropdown": True,
+    "color_primary": "pink",
+    "color_accent": "red",
+    "master_doc": False,
+}
 
 ipython_execlines = [
     "import math",

@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jan  5 14:32:35 2022
-
-@author: niclas
-"""
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -20,7 +13,19 @@ __all__ = ["Coupling"]
 # TODO: implement the set_coupling, set_spin_orbit, etc as a function here as well.
 @dataclass(slots=True)
 class Coupling:
-    """Coupling of two sites."""
+    """Coupling of two sites.
+
+    Parameters
+    ----------
+
+    Examples
+    --------
+
+    Group
+    -----
+    coupling
+
+    """
 
     index: int
     lattice_vector: npt.NDArray[np.int64]

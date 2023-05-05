@@ -3,9 +3,34 @@
 Topwave
 =======
 
-``Topwave`` is a library is composed of the follwoing modules:
+``Topwave`` is a library is composed of the following modules:
 
 
-.. automodule:: topwave
+coupling
+--------
+
+
+.. automodule:: topwave.coupling
     :members:
-    :noindex:
+    :undoc-members:
+
+model
+-----
+
+.. automodule:: topwave.model
+    :members:
+    :undoc-members:
+
+solvers
+-------
+
+spec
+----
+
+supercell
+---------
+
+util
+----
+
+'

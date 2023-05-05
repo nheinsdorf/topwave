@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jan  5 14:07:56 2022
-
-@author: niclas
-"""
 from abc import ABC, abstractmethod
 from itertools import product
 
@@ -21,9 +14,9 @@ from topwave.constants import G_LANDE, MU_BOHR
 from topwave.coupling import Coupling
 from topwave import util
 
-__all__ = ["Model"]
+__all__ = ["Model", "SpinWaveModel", "TightBindingModel"]
 class Model(ABC):
-    """Base class that contains the physical model. lol"""
+    """Base class that contains the physical model. """
 
     def __init__(self,
                  structure: Structure,
@@ -249,7 +242,23 @@ class Model(ABC):
 
 
 class SpinWaveModel(Model):
-    """Child class of Model for Spinwave models."""
+    """Class for Spinwave models.
+
+    Parameters
+    ----------
+
+    Examples
+    --------
+    lolol
+
+    Group
+    -----
+    model
+
+
+
+    """
+
 
     # NOTE: if I can make the multiple inheritance with the abstract get-type method work, delete this again.
     def __init__(self,

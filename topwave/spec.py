@@ -11,6 +11,8 @@ from topwave.constants import G_LANDE, MU_BOHR
 from topwave.model import Model, SpinWaveModel, TightBindingModel
 from topwave.util import pauli
 
+__all__ = ["Spec"]
+
 # CHECK for model.dim
 @dataclass(slots=True)
 class Spec:

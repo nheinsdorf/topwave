@@ -8,6 +8,7 @@ from topwave.model import Model, SpinWaveModel, TightBindingModel
 from topwave import util
 
 __all__ = ["Supercell"]
+
 class Supercell(SpinWaveModel, TightBindingModel):
     """Supercell of a given model."""
 
