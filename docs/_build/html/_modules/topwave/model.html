@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>topwave.model &#8212; topwave</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <link rel="icon" href="../../_static/favicon-32x32.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=pink data-md-color-accent=red>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#_modules/topwave/model" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="topwave"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">topwave</span>
+          <span class="md-header-nav__topic"> topwave.model </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/nheinsdorf/topwave" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    nheinsdorf/topwave
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+  
+  <script src="../../_static/javascripts/version_dropdown.js"></script>
+  <script>
+    var json_loc = "../../"versions.json"",
+        target_loc = "../../../",
+        text = "Versions";
+    $( document ).ready( add_version_dropdown(json_loc, target_loc, text));
+  </script>
+  
+
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">Module code</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="topwave" class="md-nav__button md-logo">
+      
+        <img src="../../_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="topwave">topwave</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/nheinsdorf/topwave" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    nheinsdorf/topwave
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Tutorials</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../tutorials/intro-to-coupling.html" class="md-nav__link">Introduction to Couplings</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Examples</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../examples/breathing_pyrochlore.html" class="md-nav__link">Magnon Weyl Nodes</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../api.html" class="md-nav__link">Topwave</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+  <ul class="md-nav__list" data-md-scrollfix="">
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <h1 id="modules-topwave-model--page-root">Source code for topwave.model</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
+<span class="kn">from</span> <span class="nn">pymatgen.core.structure</span> <span class="kn">import</span> <span class="n">Structure</span>
+<span class="kn">from</span> <span class="nn">pymatgen.io.cif</span> <span class="kn">import</span> <span class="n">CifWriter</span>
+<span class="kn">from</span> <span class="nn">pymatgen.symmetry.groups</span> <span class="kn">import</span> <span class="n">SpaceGroup</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
+
+<span class="kn">from</span> <span class="nn">topwave.constants</span> <span class="kn">import</span> <span class="n">G_LANDE</span><span class="p">,</span> <span class="n">MU_BOHR</span>
+<span class="kn">from</span> <span class="nn">topwave.coupling</span> <span class="kn">import</span> <span class="n">Coupling</span>
+<span class="kn">from</span> <span class="nn">topwave.types</span> <span class="kn">import</span> <span class="n">RealList</span><span class="p">,</span> <span class="n">Vector</span><span class="p">,</span> <span class="n">VectorList</span>
+<span class="kn">from</span> <span class="nn">topwave</span> <span class="kn">import</span> <span class="n">util</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Model"</span><span class="p">,</span> <span class="s2">"SpinWaveModel"</span><span class="p">,</span> <span class="s2">"TightBindingModel"</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Model"><a class="viewcode-back" href="../../api.html#topwave.model.Model">[docs]</a><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">"""Base class that is used to build a model.</span>
+
+<span class="sd">    This is an **abstract** base class. Use its child classes to instantiate a model.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Create a cubic lattice of cobalt atoms and space group symmetry P23 (#195) with pymatgen and use it to create a SpinWaveModel.</span>
+
+<span class="sd">    .. ipython:: python</span>
+
+<span class="sd">        from pymatgen.core.structure import Structure</span>
+<span class="sd">        structure = Structure.from_spacegroup(sg=195, lattice=np.eye(3), species=['Co'], coords=[[0, 0, 0]])</span>
+<span class="sd">        print(structure)</span>
+
+<span class="sd">        model = tp.model.SpinWaveModel(structure)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`topwave.model.SpinWaveModel`, :class:`topwave.model.TightBindingModel`</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
+                 <span class="n">import_site_properties</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">structure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
+
+        <span class="c1"># allocate site properties and enumerate them by an index</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">import_site_properties</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">):</span>
+                <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_</span>
+                <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'magmom'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+                <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'Rot'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="c1"># supercell and twisted properties</span>
+                <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'cell_vector'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'uc_site_index'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'layer'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scaling_factors</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">twist_tuple</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># put zero magnetic field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zeeman</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+        <span class="c1"># allocate an empty list for the couplings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="Model.delete_all_couplings"><a class="viewcode-back" href="../../api.html#topwave.model.Model.delete_all_couplings">[docs]</a>    <span class="k">def</span> <span class="nf">delete_all_couplings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Deletes all couplings."""</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="Model.generate_couplings"><a class="viewcode-back" href="../../api.html#topwave.model.Model.generate_couplings">[docs]</a>    <span class="k">def</span> <span class="nf">generate_couplings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                           <span class="n">max_distance</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                           <span class="n">space_group</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Generates couplings up to a distance and groups them based on the space group symmetry.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        max_distance: float</span>
+<span class="sd">            The distance up to which the couplings are generated.</span>
+<span class="sd">        space_group: int</span>
+<span class="sd">            The international number of the space group (1 to 230) that is used to group the couplings.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Find and create the nearest-neighbors and group them by space group symmetry P23 (#195).</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.generate_couplings(max_distance=1, space_group=195)</span>
+<span class="sd">            model.show_couplings()</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">get_symmetric_neighbor_list</span><span class="p">(</span><span class="n">max_distance</span><span class="p">,</span> <span class="n">sg</span><span class="o">=</span><span class="n">space_group</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete_all_couplings</span><span class="p">()</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">site1_id</span><span class="p">,</span> <span class="n">site2_id</span><span class="p">,</span> <span class="n">lattice_vector</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">symmetry_id</span><span class="p">,</span> <span class="n">symmetry_op</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">neighbors</span><span class="p">):</span>
+            <span class="n">site1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">site1_id</span><span class="p">]</span>
+            <span class="n">site2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">site2_id</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">orbital1</span><span class="p">,</span> <span class="n">orbital2</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">site1</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">]),</span> <span class="nb">range</span><span class="p">(</span><span class="n">site2</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">])):</span>
+                <span class="n">coupling</span> <span class="o">=</span> <span class="n">Coupling</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">lattice_vector</span><span class="p">,</span> <span class="n">site1</span><span class="p">,</span> <span class="n">orbital1</span><span class="p">,</span> <span class="n">site2</span><span class="p">,</span> <span class="n">orbital2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">symmetry_id</span><span class="p">),</span> <span class="n">symmetry_op</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coupling</span><span class="p">)</span>
+                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Model.get_couplings"><a class="viewcode-back" href="../../api.html#topwave.model.Model.get_couplings">[docs]</a>    <span class="k">def</span> <span class="nf">get_couplings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                      <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                      <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Coupling</span><span class="p">]:</span>
+        <span class="sd">"""Return couplings selected by some attribute.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attribute: str</span>
+<span class="sd">            The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.</span>
+<span class="sd">        value: int | float</span>
+<span class="sd">            The value of the selected attribute.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[Coupling]</span>
+<span class="sd">            A list that contains the couplings that match the value of the selected attribute.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Select one of the couplings based on its index.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.get_couplings('index', 1)</span>
+
+<span class="sd">        Select all the couplings based on their symmetry.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.get_couplings('symmetry_id', 0)</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :class:`topwave.util.coupling_selector`</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">coupling_selector</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span></div>
+
+    <span class="c1"># NOTE: should I get rid of this and just replace it with get_couplings in spec?</span>
+<div class="viewcode-block" id="Model.get_set_couplings"><a class="viewcode-back" href="../../api.html#topwave.model.Model.get_set_couplings">[docs]</a>    <span class="k">def</span> <span class="nf">get_set_couplings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Coupling</span><span class="p">]:</span>
+        <span class="sd">"""Returns couplings that have been assigned some exchange.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[Coupling]</span>
+<span class="sd">            A list that contains the couplings that were assigned some exchange.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :class:`topwave.model.Model.get_couplings`</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">coupling_selector</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="s1">'is_set'</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Model.get_type"><a class="viewcode-back" href="../../api.html#topwave.model.Model.get_type">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Returns the type of the model."""</span></div>
+
+<div class="viewcode-block" id="Model.invert_coupling"><a class="viewcode-back" href="../../api.html#topwave.model.Model.invert_coupling">[docs]</a>    <span class="k">def</span> <span class="nf">invert_coupling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                        <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Inverts the orientation of a coupling.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index: int</span>
+<span class="sd">            The index of the coupling that is inverted.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        The lattice vector that connects a coupling before and after inversion:</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            print(f'R = {model.couplings[0].lattice_vector}')</span>
+<span class="sd">            model.invert_coupling(0)</span>
+<span class="sd">            print(f'R = {model.couplings[0].lattice_vector}')</span>
+
+
+<span class="sd">        """</span>
+
+        <span class="n">coupling</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">site1</span><span class="p">,</span> <span class="n">site2</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site1</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site2</span>
+        <span class="n">orbital1</span><span class="p">,</span> <span class="n">orbital2</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">]</span>
+        <span class="n">lattice_vector</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">lattice_vector</span>
+        <span class="n">symmetry_id</span><span class="p">,</span> <span class="n">symmetry_op</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">symmetry_id</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">symmetry_op</span>
+        <span class="n">inverted_coupling</span> <span class="o">=</span> <span class="n">Coupling</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="o">-</span><span class="n">lattice_vector</span><span class="p">,</span> <span class="n">site2</span><span class="p">,</span> <span class="n">orbital2</span><span class="p">,</span> <span class="n">site1</span><span class="p">,</span> <span class="n">orbital1</span><span class="p">,</span> <span class="n">symmetry_id</span><span class="p">,</span> <span class="n">symmetry_op</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">inverted_coupling</span></div>
+
+<div class="viewcode-block" id="Model.set_coupling"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_coupling">[docs]</a>    <span class="k">def</span> <span class="nf">set_coupling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">attribute_value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
+                     <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                     <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'index'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Assigns (scalar) hopping/exchange to a selection of couplings.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attribute_value: int | float</span>
+<span class="sd">            The value of the selected attribute.</span>
+<span class="sd">        strength: float</span>
+<span class="sd">            Strength of the hopping/exchange.</span>
+<span class="sd">        attribute: str</span>
+<span class="sd">            The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        Assign ferromagnetic exchange with J=1 to all nearest neighbors. See the 'strength' column in the output.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.set_coupling(attribute_value=0, strength=1, attribute='symmetry_id')</span>
+<span class="sd">            model.show_couplings()</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">couplings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_couplings</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">attribute_value</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="n">couplings</span><span class="p">:</span>
+            <span class="n">coupling</span><span class="o">.</span><span class="n">set_coupling</span><span class="p">(</span><span class="n">strength</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.set_moments"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_moments">[docs]</a>    <span class="k">def</span> <span class="nf">set_moments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">orientations</span><span class="p">:</span> <span class="n">VectorList</span><span class="p">,</span>
+                    <span class="n">magnitudes</span><span class="p">:</span> <span class="n">RealList</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Sets the magnetic moments on each site of the structure given in lattice coordinates.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        orientations: VectorList</span>
+<span class="sd">            A list of three-dimensional vectors that specify the direction of local magnetic moment on each site.</span>
+<span class="sd">        magnitudes: RealList</span>
+<span class="sd">            A list of floats that specifies the magnitude of the local moment for each site. If None, the length</span>
+<span class="sd">            of the input vector is used. Default is None.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Put spin-1/2 moments on the site that point into the 111-direction.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.set_moments([[1, 1, 1]], [0.5])</span>
+<span class="sd">            model.show_site_properties()</span>
+
+<span class="sd">        """</span>
+
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="p">(</span><span class="n">orientation</span><span class="p">,</span> <span class="n">site</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">orientations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">)):</span>
+            <span class="c1"># compute or save the magnitude (in lattice coordinates!).</span>
+            <span class="n">magnitude</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">orientation</span><span class="p">)</span> <span class="k">if</span> <span class="n">magnitudes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">magnitudes</span><span class="p">[</span><span class="n">_</span><span class="p">]</span>
+            <span class="n">orientation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">orientation</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,))</span>
+            <span class="c1"># transform into cartesian coordinates (spin frame) and normalize.</span>
+            <span class="n">moment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">orientation</span>
+            <span class="n">moment</span> <span class="o">=</span> <span class="n">moment</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">moment</span><span class="p">)</span>
+            <span class="c1"># calculate rotation matrix that rotates the spin to the quantization axis.</span>
+            <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'Rot'</span><span class="p">]</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">rotate_vector_to_ez</span><span class="p">(</span><span class="n">moment</span><span class="p">)</span>
+            <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'magmom'</span><span class="p">]</span> <span class="o">=</span> <span class="n">moment</span> <span class="o">*</span> <span class="n">magnitude</span></div>
+
+<div class="viewcode-block" id="Model.set_onsite_scalar"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_onsite_scalar">[docs]</a>    <span class="k">def</span> <span class="nf">set_onsite_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                          <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                          <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                          <span class="n">space_group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Sets a scalar onsite energy to a given site.</span>
+
+<span class="sd">        For a TightBindingModel this is a site or orbital dependent onsite energy. For SpinWaveModel this term is ignored.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index: int</span>
+<span class="sd">            The index of the site.</span>
+<span class="sd">        strength: float</span>
+<span class="sd">            The strength of the onsite term.</span>
+<span class="sd">        space_group: int</span>
+<span class="sd">            If a compatible space group symmetry is selected, the term will automatically be assigned to all</span>
+<span class="sd">            symmetrically equivalent sites. Default is None.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        We assign a onsite energy of E = 0.25 to the zeroth site. See the onsite scalar column in the output.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.set_onsite_scalar(0, 0.25)</span>
+<span class="sd">            model.show_site_properties()</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">space_group</span> <span class="o">=</span> <span class="n">SpaceGroup</span><span class="o">.</span><span class="n">from_int_number</span><span class="p">(</span><span class="n">space_group</span><span class="p">)</span>
+        <span class="n">coordinates</span> <span class="o">=</span> <span class="n">space_group</span><span class="o">.</span><span class="n">get_orbit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">coordinate</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="p">:</span>
+            <span class="n">cartesian_coordinate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_cartesian_coords</span><span class="p">(</span><span class="n">coordinate</span><span class="p">)</span>
+            <span class="n">site</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">get_sites_in_sphere</span><span class="p">(</span><span class="n">cartesian_coordinate</span><span class="p">,</span> <span class="mf">1e-06</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">strength</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.set_onsite_vector"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_onsite_vector">[docs]</a>    <span class="k">def</span> <span class="nf">set_onsite_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                          <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                          <span class="n">vector</span><span class="p">:</span> <span class="n">Vector</span><span class="p">,</span>
+                          <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">space_group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Sets an onsite vector to a given site.</span>
+
+<span class="sd">        For a SpinWaveModel this corresponds to a single-ion anisotropy. For a TightBindingModel to a local magnetic field.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index: int</span>
+<span class="sd">            The index of the site.</span>
+<span class="sd">        vector: Vector</span>
+<span class="sd">            The orientation of the term.</span>
+<span class="sd">        strength: float</span>
+<span class="sd">            The strength of the onsite term. If None, the length of the input vector is used. Default is None.</span>
+<span class="sd">        space_group: int</span>
+<span class="sd">            If a compatible space group symmetry is selected, the term will automatically be assigned to all</span>
+<span class="sd">            symmetrically equivalent sites and the assigned vector will be rotated accordingly. Default is None.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If the model is a :class:`topwave.model.TightBindingModel` calling this method will make the model spinful.</span>
+<span class="sd">        The dimension of the Hilbert space will be doubled. See :class:`topwave.model.TightBindingModel.check_if_spinful`.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        We assign a single-ion anisotropy of strength A = 0.1 along the 111-direction. See the</span>
+<span class="sd">        onsite vector column in the output.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.set_onsite_vector(0, [1, 1, 1], 0.1)</span>
+<span class="sd">            model.show_site_properties()</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">input_vector</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">format_input_vector</span><span class="p">(</span><span class="n">orientation</span><span class="o">=</span><span class="n">vector</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">strength</span><span class="p">)</span>
+        <span class="n">space_group</span> <span class="o">=</span> <span class="n">SpaceGroup</span><span class="o">.</span><span class="n">from_int_number</span><span class="p">(</span><span class="n">space_group</span><span class="p">)</span>
+        <span class="n">coordinates</span><span class="p">,</span> <span class="n">operations</span> <span class="o">=</span> <span class="n">space_group</span><span class="o">.</span><span class="n">get_orbit_and_generators</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">coordinate</span><span class="p">,</span> <span class="n">operation</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">operations</span><span class="p">):</span>
+            <span class="n">cartesian_coordinate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_cartesian_coords</span><span class="p">(</span><span class="n">coordinate</span><span class="p">)</span>
+            <span class="n">site</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">get_sites_in_sphere</span><span class="p">(</span><span class="n">cartesian_coordinate</span><span class="p">,</span> <span class="mf">1e-06</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">]</span> <span class="o">=</span> <span class="n">operation</span><span class="o">.</span><span class="n">apply_rotation_only</span><span class="p">(</span><span class="n">input_vector</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.set_open_boundaries"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_open_boundaries">[docs]</a>    <span class="k">def</span> <span class="nf">set_open_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                            <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'xyz'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Sets the exchange/hopping and DM/SOC at the chosen boundary to zero.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        direction: str</span>
+<span class="sd">            The directions in lattice vectors along which the boundary conditions are set to open.</span>
+<span class="sd">            'x' is along the direction of the first lattice vector. 'yz' along the other two, and 'xyz/ in all directions.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Set open boundaries in y- and z-direction so that we have a one-dimensional chain along x. See the strength column</span>
+<span class="sd">        in the output.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.set_open_boundaries('yz')</span>
+<span class="sd">            model.show_couplings()</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :class:`topwave.util.get_boundary_couplings`</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">boundary_indices</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">get_boundary_couplings</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">boundary_indices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unset_coupling</span><span class="p">(</span><span class="n">attribute_value</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="s1">'index'</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.set_spin_orbit"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_spin_orbit">[docs]</a>    <span class="k">def</span> <span class="nf">set_spin_orbit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                       <span class="n">attribute_value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
+                       <span class="n">vector</span><span class="p">:</span> <span class="n">Vector</span><span class="p">,</span>
+                       <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                       <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'index'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Assigns spin dependent hopping/antisymmetric exchange to a selection of couplings.</span>
+
+<span class="sd">        If the couplings are grouped by symmetry, the assigned exchanges will be rotated automatically according to</span>
+<span class="sd">        space group symmetry.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attribute_value: int | float</span>
+<span class="sd">            The value of the selected attribute.</span>
+<span class="sd">        vector: Vector</span>
+<span class="sd">            Orientation of the term.</span>
+<span class="sd">        strength: float</span>
+<span class="sd">            Strength of the term. If None, the length of the orientation is used. Default is None.</span>
+<span class="sd">        attribute: str</span>
+<span class="sd">            The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        Assign antisymmetric exchange with finite z-component along nearest neighbor in the x-direction.</span>
+<span class="sd">        See the 'spin-orbit vector' column in the output.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.set_spin_orbit(0, [0, 0, 0.05])</span>
+<span class="sd">            model.show_couplings()</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">input_vector</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">format_input_vector</span><span class="p">(</span><span class="n">orientation</span><span class="o">=</span><span class="n">vector</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">strength</span><span class="p">)</span>
+        <span class="n">couplings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_couplings</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">attribute_value</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="n">couplings</span><span class="p">:</span>
+            <span class="n">spin_orbit</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">symmetry_op</span><span class="o">.</span><span class="n">apply_rotation_only</span><span class="p">(</span><span class="n">input_vector</span><span class="p">)</span> <span class="k">if</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s1">'symmetry_id'</span> <span class="k">else</span> <span class="n">input_vector</span>
+            <span class="n">coupling</span><span class="o">.</span><span class="n">set_spin_orbit</span><span class="p">(</span><span class="n">spin_orbit</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.set_zeeman"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_zeeman">[docs]</a>    <span class="k">def</span> <span class="nf">set_zeeman</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                   <span class="n">orientation</span><span class="p">:</span> <span class="n">Vector</span><span class="p">,</span>
+                   <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Sets a global Zeeman term.</span>
+
+<span class="sd">        .. admonition:: Tip</span>
+<span class="sd">            :class: tip</span>
+
+<span class="sd">            For ferromagnetic systems a small Zeeman term is recommended to lift the soft mode above zero energy.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        orientation: Vector</span>
+<span class="sd">            The orientation of the Zeeman term.</span>
+<span class="sd">        strength: float</span>
+<span class="sd">            The strength of the Zeeman term in units of **Tesla**. If None, the length of the orientation is used. Default is None.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If the model is a :class:`topwave.model.TightBindingModel` calling this method will make the model spinful.</span>
+<span class="sd">        The dimension of the Hilbert space will be doubled. See :class:`topwave.model.TightBindingModel.check_if_spinful`.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        We set a Zeeman field of 0.2 Tesla in the 111-direction.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.set_zeeman([1, 1, 1], 0.2)</span>
+<span class="sd">            model.show_site_properties()</span>
+
+<span class="sd">        """</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">zeeman</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">format_input_vector</span><span class="p">(</span><span class="n">orientation</span><span class="o">=</span><span class="n">orientation</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">strength</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.show_couplings"><a class="viewcode-back" href="../../api.html#topwave.model.Model.show_couplings">[docs]</a>    <span class="k">def</span> <span class="nf">show_couplings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Prints the couplings."""</span>
+
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'index'</span><span class="p">,</span> <span class="s1">'symmetry index'</span><span class="p">,</span> <span class="s1">'symmetry operation'</span><span class="p">,</span> <span class="s1">'distance'</span><span class="p">,</span> <span class="s1">'lattice_vector'</span><span class="p">,</span> <span class="s1">'sublattice_vector'</span><span class="p">,</span>
+                  <span class="s1">'site1'</span><span class="p">,</span> <span class="s1">'orbital1'</span><span class="p">,</span> <span class="s1">'site2'</span><span class="p">,</span> <span class="s1">'orbital2'</span><span class="p">,</span> <span class="s1">'strength'</span><span class="p">,</span> <span class="s1">'spin-orbit vector'</span><span class="p">]</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">:</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">coupling</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">symmetry_id</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">symmetry_op</span><span class="o">.</span><span class="n">as_xyz_string</span><span class="p">(),</span> <span class="n">coupling</span><span class="o">.</span><span class="n">distance</span><span class="p">,</span>
+                          <span class="n">coupling</span><span class="o">.</span><span class="n">lattice_vector</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">sublattice_vector</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">],</span>
+                          <span class="n">coupling</span><span class="o">.</span><span class="n">orbital1</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">orbital2</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span>
+                          <span class="n">coupling</span><span class="o">.</span><span class="n">spin_orbit</span><span class="p">])</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">'fancy_grid'</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Model.show_site_properties"><a class="viewcode-back" href="../../api.html#topwave.model.Model.show_site_properties">[docs]</a>    <span class="k">def</span> <span class="nf">show_site_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Prints the site properties."""</span>
+
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'index'</span><span class="p">,</span> <span class="s1">'species'</span><span class="p">,</span> <span class="s1">'orbitals'</span><span class="p">,</span> <span class="s1">'coordinates (latt.)'</span><span class="p">,</span> <span class="s1">'coordinates (cart.)'</span><span class="p">,</span> <span class="s1">'magmom'</span><span class="p">,</span>
+                  <span class="s1">'onsite scalar'</span><span class="p">,</span> <span class="s1">'onsite vector'</span><span class="p">,</span> <span class="s1">'unit cell index'</span><span class="p">,</span> <span class="s1">'supercell vector'</span><span class="p">,</span> <span class="s1">'layer'</span><span class="p">]</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">:</span>
+            <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">species</span><span class="p">,</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">,</span>
+                          <span class="n">site</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'magmom'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">],</span>
+                          <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'uc_site_index'</span><span class="p">],</span>
+                          <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'cell_vector'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'layer'</span><span class="p">]])</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">'fancy_grid'</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Zeeman: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">zeeman</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Supercell Size: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scaling_factors</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.unset_coupling"><a class="viewcode-back" href="../../api.html#topwave.model.Model.unset_coupling">[docs]</a>    <span class="k">def</span> <span class="nf">unset_coupling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                       <span class="n">attribute_value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
+                       <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'index'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Removes exchanges from a coupling and makes it unset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attribute: str</span>
+<span class="sd">            The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.</span>
+<span class="sd">        value: int | float</span>
+<span class="sd">            The value of the selected attribute.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        We unset the coupling along the x-direction.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            print(model.couplings[0].is_set)</span>
+<span class="sd">            model.unset_coupling(0)</span>
+<span class="sd">            model.couplings[0].is_set</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">coupling_selector</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">attribute_value</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">.</span><span class="n">unset</span><span class="p">()</span></div>
+
+    <span class="c1"># TODO: write unset_onsite_scalar and unset_onsite_vector (and maybe unset_all_site_properties?)</span>
+<div class="viewcode-block" id="Model.unset_moments"><a class="viewcode-back" href="../../api.html#topwave.model.Model.unset_moments">[docs]</a>    <span class="k">def</span> <span class="nf">unset_moments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Unsets all magnetic moments of the structure.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        We set the magnetic moment on all sites to zero.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.unset_moments()</span>
+<span class="sd">            model.show_site_properties()</span>
+
+<span class="sd">        """</span>
+
+        <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">:</span>
+            <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'magmom'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Model.write_cif"><a class="viewcode-back" href="../../api.html#topwave.model.Model.write_cif">[docs]</a>    <span class="k">def</span> <span class="nf">write_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                  <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                  <span class="n">write_magmoms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Saves the structure to a .mcif file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path: str</span>
+<span class="sd">            Where to save the structure.</span>
+<span class="sd">        write_magmoms: bool</span>
+<span class="sd">            If true the magnetic moments are written into the mcif file. Default is True.</span>
+
+<span class="sd">        """</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'tightbinding'</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">:</span>
+                <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'magmom'</span><span class="p">]</span> <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">]</span>
+                <span class="n">CifWriter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span> <span class="n">write_magmoms</span><span class="o">=</span><span class="n">write_magmoms</span><span class="p">)</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">unset_moments</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">CifWriter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span> <span class="n">write_magmoms</span><span class="o">=</span><span class="n">write_magmoms</span><span class="p">)</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SpinWaveModel"><a class="viewcode-back" href="../../api.html#topwave.model.SpinWaveModel">[docs]</a><span class="k">class</span> <span class="nc">SpinWaveModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">"""Class for Linear Spinwave models.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Create a ferromagnetic chain of cobalt atoms.</span>
+
+<span class="sd">    .. ipython:: python</span>
+
+<span class="sd">        # Create a three-dimensional cubic structure.</span>
+<span class="sd">        from pymatgen.core.structure import Structure</span>
+<span class="sd">        structure = Structure.from_spacegroup(sg=1, lattice=np.eye(3), species=['Co'], coords=[[0, 0, 0]])</span>
+
+<span class="sd">        # Create a SpinWaveModel.</span>
+<span class="sd">        model = tp.model.SpinWaveModel(structure)</span>
+
+<span class="sd">        # Put a ferromagnetic configuration of local moments.</span>
+<span class="sd">        model.set_moments([[0, 0, 1]])</span>
+
+<span class="sd">        # Couple the local moments ferromagnetically along the x-direction.</span>
+<span class="sd">        model.generate_couplings(1, 1)</span>
+<span class="sd">        model.set_coupling(0, strength=-1)</span>
+
+<span class="sd">        # Put local mom</span>
+<span class="sd">        model.show_couplings()</span>
+<span class="sd">        model.show_site_properties()</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`topwave.model.Model`, IntroductionToSpinWaveModel</span>
+
+<span class="sd">    """</span>
+
+
+
+    <span class="c1"># NOTE: if I can make the multiple inheritance with the abstract get-type method work, delete this again.</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
+                 <span class="n">import_site_properties</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">import_site_properties</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">'spinwave'</span>
+
+<div class="viewcode-block" id="SpinWaveModel.get_classical_energy"><a class="viewcode-back" href="../../api.html#topwave.model.SpinWaveModel.get_classical_energy">[docs]</a>    <span class="k">def</span> <span class="nf">get_classical_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">per_spin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">"""Computes the classical ground state energy of the model with its current orientation of local moments.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        per_spin: bool</span>
+<span class="sd">            If true, the energy is divided by the number of local moments in the model. Default is True.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The classical energy.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        Compute the classical energy of the ferromagnetic Heisenberg chain with J=-1 meV.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.get_classical_energy()</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">energy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># exchange energy</span>
+        <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">:</span>
+            <span class="n">energy</span> <span class="o">+=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">get_energy</span><span class="p">()</span>
+
+        <span class="c1"># Zeeman energy and anisotropies</span>
+        <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">:</span>
+            <span class="n">magmom</span> <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'magmom'</span><span class="p">]</span>
+            <span class="n">vector</span> <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">]</span>
+            <span class="n">energy</span> <span class="o">+=</span> <span class="n">magmom</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span> <span class="o">@</span> <span class="n">magmom</span>
+            <span class="n">energy</span> <span class="o">-=</span> <span class="n">MU_BOHR</span> <span class="o">*</span> <span class="n">G_LANDE</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zeeman</span> <span class="o">@</span> <span class="n">magmom</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">per_spin</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">energy</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">energy</span></div>
+
+<div class="viewcode-block" id="SpinWaveModel.get_type"><a class="viewcode-back" href="../../api.html#topwave.model.SpinWaveModel.get_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Returns the type of the Model.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Returns 'spinwave'.</span>
+
+<span class="sd">        """</span>
+
+        <span class="k">return</span> <span class="s1">'spinwave'</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__get_classical_energy_wrapper</span><span class="p">(</span><span class="n">directions</span><span class="p">:</span> <span class="n">VectorList</span><span class="p">,</span>
+                                       <span class="n">magnitudes</span><span class="p">:</span> <span class="n">RealList</span><span class="p">,</span>
+                                       <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">"""Private method that is passed as a function to the minimizer."""</span>
+
+        <span class="n">directions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">directions</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">set_moments</span><span class="p">(</span><span class="n">directions</span><span class="p">,</span> <span class="n">magnitudes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">get_classical_energy</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SpinWaveModel.get_classical_groundstate"><a class="viewcode-back" href="../../api.html#topwave.model.SpinWaveModel.get_classical_groundstate">[docs]</a>    <span class="k">def</span> <span class="nf">get_classical_groundstate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                  <span class="n">random_init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Minimize the classical energy by changing the orientation of the magnetic moments.</span>
+
+<span class="sd">        This method can be used to find the classical groundstate configuration of a model. The magnitude of the</span>
+<span class="sd">        local moments is fixed, and only their orientation is adjusted. Scipy's minimize function is used.</span>
+
+<span class="sd">        .. admonition:: Frustration and (In)Commensurability</span>
+<span class="sd">            :class: tip</span>
+
+<span class="sd">            If the classical ground state is frustrated, there might not be a unique configuration that minimizes</span>
+<span class="sd">            the classical energy. Consider putting an external magnetic field or single-ion anisotropies in that case.</span>
+<span class="sd">            If the system is incommensurable consider minimizing the energy of a supercell and play around with open</span>
+<span class="sd">            and periodic boundary conditions.</span>
+
+<span class="sd">        .. admonition:: Todo</span>
+<span class="sd">            :class: todo</span>
+
+<span class="sd">            Add example and references to supercell and set_open_boundaries.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        random_init: bool</span>
+<span class="sd">            If True, the orientation of magnetic moments is randomly initialized. The moments need to be set before</span>
+<span class="sd">            regardless to extract their magnitudes. If false the set orientations are used. Default is False.</span>
+<span class="sd">        """</span>
+
+        <span class="n">moments</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'magmom'</span><span class="p">]</span> <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">magnitudes</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">moments</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># get initial moments</span>
+        <span class="n">x_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">num_sites</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="k">if</span> <span class="n">random_init</span> <span class="k">else</span> <span class="n">moments</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">SpinWaveModel</span><span class="o">.</span><span class="n">__get_classical_energy_wrapper</span><span class="p">,</span> <span class="n">x_0</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">magnitudes</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+
+        <span class="c1"># normalize the final configuration</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s1">'F'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="SpinWaveModel.set_single_ion_anisotropy"><a class="viewcode-back" href="../../api.html#topwave.model.SpinWaveModel.set_single_ion_anisotropy">[docs]</a>    <span class="k">def</span> <span class="nf">set_single_ion_anisotropy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                  <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                                  <span class="n">vector</span><span class="p">:</span> <span class="n">Vector</span><span class="p">,</span>
+                                  <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                  <span class="n">space_group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Sets a single-ion anisotropy to a given site. Same as Model.set_onsite_vector.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index: int</span>
+<span class="sd">            The index of the site.</span>
+<span class="sd">        vector: Vector</span>
+<span class="sd">            The orientation of the term.</span>
+<span class="sd">        strength: float</span>
+<span class="sd">            The strength of the onsite term. If None, the length of the input vector is used. Default is None.</span>
+<span class="sd">        space_group: int</span>
+<span class="sd">            If a compatible space group symmetry is selected, the term will automatically be assigned to all</span>
+<span class="sd">            symmetrically equivalent sites and the assigned vector will be rotated accordingly. Default is None.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        We assign a single-ion anisotropy of strength A = 0.1 along the 001-direction. See the</span>
+<span class="sd">        onsite vector column in the output.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.set_onsite_vector(0, [0, 0, 1], 0.1)</span>
+<span class="sd">            model.show_site_properties()</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :class:`topwave.model.Model.set_onsite_vector`</span>
+
+<span class="sd">        """</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_onsite_vector</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="n">vector</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="n">strength</span><span class="p">,</span> <span class="n">space_group</span><span class="o">=</span><span class="n">space_group</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TightBindingModel"><a class="viewcode-back" href="../../api.html#topwave.model.TightBindingModel">[docs]</a><span class="k">class</span> <span class="nc">TightBindingModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">"""Class for Linear Spinwave models.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Create a tightbinding model of graphene.</span>
+
+<span class="sd">    .. ipython:: python</span>
+
+<span class="sd">        from pymatgen.core.structure import Lattice, Structure</span>
+<span class="sd">        lattice = Lattice.hexagonal(1.42, 10)</span>
+<span class="sd">        structure = Structure.from_spacegroup(sg=191, lattice=lattice, species=['C'], coords=[[1 / 3, 2 / 3, 0]])</span>
+<span class="sd">        print(structure)</span>
+
+<span class="sd">        graphene = tp.model.TightBindingModel(structure)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`topwave.model.Model`, IntroductionToTightBindingModel</span>
+
+<span class="sd">    """</span>
+
+    <span class="c1"># NOTE: if I can make the multiple inheritance with the abstract get-type method work, delete this again.</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
+                 <span class="n">import_site_properties</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">import_site_properties</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">'tightbinding'</span>
+
+<div class="viewcode-block" id="TightBindingModel.check_if_spinful"><a class="viewcode-back" href="../../api.html#topwave.model.TightBindingModel.check_if_spinful">[docs]</a>    <span class="k">def</span> <span class="nf">check_if_spinful</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">"""Checks whether the model is spinful or spinless (polarized).</span>
+
+<span class="sd">        This method checks whether there are any terms set that are spin dependent. This includes Zeeman terms,</span>
+<span class="sd">        spin-orbit coupling, or local magnetic field (onsite vector terms).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the system is spinful, False if not.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If the model is a :class:`topwave.model.TightBindingModel` calling this method will make the model spinful.</span>
+<span class="sd">        The dimension of the Hilbert space will be doubled. See :class:`topwave.model.TightBindingModel.check_if_spinful`.</span>
+
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            graphene.check_if_spinful()</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :class:`topwave.model.Model.set_zeeman`, :class:`topwave.model.Model.set_spin_orbit`, :class:`topwave.model.Model.set_onsite_vector`</span>
+<span class="sd">        """</span>
+
+        <span class="n">couplings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_set_couplings</span><span class="p">()</span>
+        <span class="n">has_spin_orbit</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">coupling</span><span class="o">.</span><span class="n">spin_orbit</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span> <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="n">couplings</span><span class="p">)</span>
+        <span class="n">has_onsite_vector</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">]</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span> <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">)</span>
+        <span class="n">has_zeeman</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zeeman</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">([</span><span class="n">has_spin_orbit</span><span class="p">,</span> <span class="n">has_onsite_vector</span><span class="p">,</span> <span class="n">has_zeeman</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TightBindingModel.get_type"><a class="viewcode-back" href="../../api.html#topwave.model.TightBindingModel.get_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">"""Overrides the 'get_type'-method to return the tightbinding type."""</span>
+
+        <span class="k">return</span> <span class="s1">'tightbinding'</span></div>
+
+<div class="viewcode-block" id="TightBindingModel.set_orbitals"><a class="viewcode-back" href="../../api.html#topwave.model.TightBindingModel.set_orbitals">[docs]</a>    <span class="k">def</span> <span class="nf">set_orbitals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                     <span class="n">num_orbitals</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">"""Sets the number of orbitals on a given site.</span>
+
+<span class="sd">        .. admonition:: Coming soon!</span>
+<span class="sd">            :class: warning</span>
+
+<span class="sd">            Still in Development. So far this only sets the number of orbitals as a site property, but it doesn't</span>
+<span class="sd">            influence the spectrum.</span>
+
+<span class="sd">        """</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">]</span> <span class="o">=</span> <span class="n">num_orbitals</span></div></div>
+</pre></div>
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2023, Niclas Heinsdorf.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 7.0.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

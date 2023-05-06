@@ -1,3 +1,4 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from itertools import product
 
@@ -12,10 +13,11 @@ from tabulate import tabulate
 
 from topwave.constants import G_LANDE, MU_BOHR
 from topwave.coupling import Coupling
-from topwave.types import Vector, VectorList
+from topwave.types import RealList, Vector, VectorList
 from topwave import util
 
 __all__ = ["Model", "SpinWaveModel", "TightBindingModel"]
+
 class Model(ABC):
     """Base class that is used to build a model.
 
@@ -235,14 +237,14 @@ class Model(ABC):
 
     def set_moments(self,
                     orientations: VectorList,
-                    magnitudes: list[float] = None) -> None:
+                    magnitudes: RealList = None) -> None:
         """Sets the magnetic moments on each site of the structure given in lattice coordinates.
 
         Parameters
         ----------
         orientations: VectorList
             A list of three-dimensional vectors that specify the direction of local magnetic moment on each site.
-        magnitudes: list[float]
+        magnitudes: RealList
             A list of floats that specifies the magnitude of the local moment for each site. If None, the length
             of the input vector is used. Default is None.
 
@@ -309,7 +311,7 @@ class Model(ABC):
                           vector: Vector,
                           strength: float = None,
                           space_group: int = 1) -> None:
-        """Sets a scalar onsite energy to a given site.
+        """Sets an onsite vector to a given site.
 
         For a SpinWaveModel this corresponds to a single-ion anisotropy. For a TightBindingModel to a local magnetic field.
 
@@ -324,6 +326,11 @@ class Model(ABC):
         space_group: int
             If a compatible space group symmetry is selected, the term will automatically be assigned to all
             symmetrically equivalent sites and the assigned vector will be rotated accordingly. Default is None.
+
+        Notes
+        -----
+        If the model is a :class:`topwave.model.TightBindingModel` calling this method will make the model spinful.
+        The dimension of the Hilbert space will be doubled. See :class:`topwave.model.TightBindingModel.check_if_spinful`.
 
         Examples
         --------
@@ -431,6 +438,11 @@ class Model(ABC):
             The orientation of the Zeeman term.
         strength: float
             The strength of the Zeeman term in units of **Tesla**. If None, the length of the orientation is used. Default is None.
+
+        Notes
+        -----
+        If the model is a :class:`topwave.model.TightBindingModel` calling this method will make the model spinful.
+        The dimension of the Hilbert space will be doubled. See :class:`topwave.model.TightBindingModel.check_if_spinful`.
 
         Examples
         --------
@@ -549,19 +561,35 @@ class Model(ABC):
 class SpinWaveModel(Model):
     """Class for Linear Spinwave models.
 
-
     Examples
     --------
 
-    Create a one-dimensional chain of Cobalt atoms with pymatgen and use it to create a SpinWaveModel.
+    Create a ferromagnetic chain of cobalt atoms.
 
     .. ipython:: python
 
+        # Create a three-dimensional cubic structure.
         from pymatgen.core.structure import Structure
         structure = Structure.from_spacegroup(sg=1, lattice=np.eye(3), species=['Co'], coords=[[0, 0, 0]])
-        print(structure)
 
+        # Create a SpinWaveModel.
         model = tp.model.SpinWaveModel(structure)
+
+        # Put a ferromagnetic configuration of local moments.
+        model.set_moments([[0, 0, 1]])
+
+        # Couple the local moments ferromagnetically along the x-direction.
+        model.generate_couplings(1, 1)
+        model.set_coupling(0, strength=-1)
+
+        # Put local mom
+        model.show_couplings()
+        model.show_site_properties()
+
+    See Also
+    --------
+    :class:`topwave.model.Model`, IntroductionToSpinWaveModel
+
     """
 
 
@@ -575,7 +603,28 @@ class SpinWaveModel(Model):
 
     def get_classical_energy(self,
                              per_spin: bool = True) -> float:
-        """Computes the classical ground state energy of the model."""
+        """Computes the classical ground state energy of the model with its current orientation of local moments.
+
+        Parameters
+        ----------
+        per_spin: bool
+            If true, the energy is divided by the number of local moments in the model. Default is True.
+
+        Returns
+        -------
+        float
+            The classical energy.
+
+        Examples
+        --------
+
+        Compute the classical energy of the ferromagnetic Heisenberg chain with J=-1 meV.
+
+        .. ipython:: python
+
+            model.get_classical_energy()
+
+        """
 
         energy = 0
         # exchange energy
@@ -585,7 +634,7 @@ class SpinWaveModel(Model):
         # Zeeman energy and anisotropies
         for site in self.structure:
             magmom = site.properties['magmom']
-            vector = site.properties['single_ion_anisotropy']
+            vector = site.properties['onsite_vector']
             energy += magmom @ np.diag(vector) @ magmom
             energy -= MU_BOHR * G_LANDE * (self.zeeman @ magmom)
 
@@ -606,26 +655,41 @@ class SpinWaveModel(Model):
         return 'spinwave'
 
     @staticmethod
-    def __get_classical_energy_wrapper(directions,
-                                       magnitudes,
-                                       model):
-        """Private method that is used for the minimization of classical energy in 'get_classical_groundstate.
-
-        Parameters
-        ----------
-        directions : list
-            3N list of floats containing the components of magnetic moments in the cell which are optimized.
-        moments : list
-            List of N (positive) floats that give the magnitude of the magnetic moments
-        """
+    def __get_classical_energy_wrapper(directions: VectorList,
+                                       magnitudes: RealList,
+                                       model: Model) -> float:
+        """Private method that is passed as a function to the minimizer."""
 
         directions = np.array(directions, dtype=float).reshape((-1, 3))
         model.set_moments(directions, magnitudes)
         return model.get_classical_energy()
 
     def get_classical_groundstate(self,
-                                  random_init=False):
-        """Minimize the classical energy by changing the orientation of the magnetic moments."""
+                                  random_init=False) -> None:
+        """Minimize the classical energy by changing the orientation of the magnetic moments.
+
+        This method can be used to find the classical groundstate configuration of a model. The magnitude of the
+        local moments is fixed, and only their orientation is adjusted. Scipy's minimize function is used.
+
+        .. admonition:: Frustration and (In)Commensurability
+            :class: tip
+
+            If the classical ground state is frustrated, there might not be a unique configuration that minimizes
+            the classical energy. Consider putting an external magnetic field or single-ion anisotropies in that case.
+            If the system is incommensurable consider minimizing the energy of a supercell and play around with open
+            and periodic boundary conditions.
+
+        .. admonition:: Todo
+            :class: todo
+
+            Add example and references to supercell and set_open_boundaries.
+
+        Parameters
+        ----------
+        random_init: bool
+            If True, the orientation of magnetic moments is randomly initialized. The moments need to be set before
+            regardless to extract their magnitudes. If false the set orientations are used. Default is False.
+        """
 
         moments = np.array([site.properties['magmom'] for site in self.structure], dtype=float)
         magnitudes = norm(moments, axis=1)
@@ -644,13 +708,61 @@ class SpinWaveModel(Model):
                                   vector: Vector,
                                   strength: float = None,
                                   space_group: int = 1) -> None:
-        """Assigns single-ion anisotropy to a given site (same as 'set_onsite_vector'-method)."""
+        """Sets a single-ion anisotropy to a given site. Same as Model.set_onsite_vector.
+
+        Parameters
+        ----------
+        index: int
+            The index of the site.
+        vector: Vector
+            The orientation of the term.
+        strength: float
+            The strength of the onsite term. If None, the length of the input vector is used. Default is None.
+        space_group: int
+            If a compatible space group symmetry is selected, the term will automatically be assigned to all
+            symmetrically equivalent sites and the assigned vector will be rotated accordingly. Default is None.
+
+        Examples
+        --------
+        We assign a single-ion anisotropy of strength A = 0.1 along the 001-direction. See the
+        onsite vector column in the output.
+
+        .. ipython:: python
+
+            model.set_onsite_vector(0, [0, 0, 1], 0.1)
+            model.show_site_properties()
+
+        See Also
+        --------
+        :class:`topwave.model.Model.set_onsite_vector`
+
+        """
 
         self.set_onsite_vector(index=index, vector=vector, strength=strength, space_group=space_group)
 
 
 class TightBindingModel(Model):
-    """Child class of Model for Tight-Binding models."""
+    """Class for Linear Spinwave models.
+
+    Examples
+    --------
+
+    Create a tightbinding model of graphene.
+
+    .. ipython:: python
+
+        from pymatgen.core.structure import Lattice, Structure
+        lattice = Lattice.hexagonal(1.42, 10)
+        structure = Structure.from_spacegroup(sg=191, lattice=lattice, species=['C'], coords=[[1 / 3, 2 / 3, 0]])
+        print(structure)
+
+        graphene = tp.model.TightBindingModel(structure)
+
+    See Also
+    --------
+    :class:`topwave.model.Model`, IntroductionToTightBindingModel
+
+    """
 
     # NOTE: if I can make the multiple inheritance with the abstract get-type method work, delete this again.
     def __init__(self,
@@ -659,8 +771,34 @@ class TightBindingModel(Model):
         super().__init__(structure, import_site_properties)
         self.type = 'tightbinding'
 
-    def check_if_spinful(self):
-        """Checks whether the model is spinful or spinless (polarized)."""
+    def check_if_spinful(self) -> bool:
+        """Checks whether the model is spinful or spinless (polarized).
+
+        This method checks whether there are any terms set that are spin dependent. This includes Zeeman terms,
+        spin-orbit coupling, or local magnetic field (onsite vector terms).
+
+        Returns
+        -------
+        bool
+            True if the system is spinful, False if not.
+
+        Notes
+        -----
+        If the model is a :class:`topwave.model.TightBindingModel` calling this method will make the model spinful.
+        The dimension of the Hilbert space will be doubled. See :class:`topwave.model.TightBindingModel.check_if_spinful`.
+
+
+        Examples
+        --------
+
+        .. ipython:: python
+
+            graphene.check_if_spinful()
+
+        See Also
+        --------
+        :class:`topwave.model.Model.set_zeeman`, :class:`topwave.model.Model.set_spin_orbit`, :class:`topwave.model.Model.set_onsite_vector`
+        """
 
         couplings = self.get_set_couplings()
         has_spin_orbit = any(any(coupling.spin_orbit != np.zeros(3, dtype=float)) for coupling in couplings)
@@ -676,6 +814,14 @@ class TightBindingModel(Model):
     def set_orbitals(self,
                      index: int,
                      num_orbitals: int):
-        """Sets the number of orbitals on a given site."""
+        """Sets the number of orbitals on a given site.
+
+        .. admonition:: Coming soon!
+            :class: warning
+
+            Still in Development. So far this only sets the number of orbitals as a site property, but it doesn't
+            influence the spectrum.
+
+        """
 
         self.structure[index].properties['orbitals'] = num_orbitals

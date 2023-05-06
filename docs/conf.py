@@ -61,6 +61,8 @@ autodoc_type_aliases = {'ComplexVector': 'ComplexVector',
                         'Matrix': 'Matrix',
                         'PeriodicSite': 'PeriodicSite', # this is because for dataclasses it's weird with typehints
                         'Real3x3': 'Real3x3',
+                        'RealList': 'RealList',
+                        'SquareMatrix': 'SquareMatrix',
                         'Vector': 'Vector',
                         'VectorList': 'VectorList'}
 

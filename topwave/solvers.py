@@ -1,36 +1,47 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jan  7 15:44:41 2022
+from __future__ import annotations
 
-@author: niclas
-"""
 import numpy as np
 from numpy.linalg import eigh, inv
 from scipy.linalg import block_diag, cholesky, sqrtm
 
+from topwave.types import RealList, SquareMatrix
+
 __all__ = ["colpa"]
 
-def colpa(H):
-    """Diagonalizes the Hamiltonian using the algorithm by Colpa.
+def colpa(H: SquareMatrix) -> tuple[RealList, SquareMatrix]:
+    """Diagonalizes a bosonic Hamiltonian.
     
+
+    .. admonition:: Caution!
+        :class: caution
+
+        This routine relies on the Hamiltonian to be positive (semi)definite. If the magnetic configuration in the model
+        does not minimize the classical energy (e.g. in frustrated systems) that is not the case.
 
     Parameters
     ----------
-    H : numpy.ndarray
-        Bosonic Hamiltonian that is diagonalized.
+    H : SquareMatrix
+        Bosonic positive (semi)definite Hamiltonian.
 
     Returns
     -------
-    Eigenvalues and Eigenvectors.
+    tuple[RealList, SquareMatrix]
+        Eigenvalues w and Eigenvectors v. The column v[:, i] corresponds to the eigenvalue w[i].
+
+    See Also
+    --------
+    :class:`topwave.spec.Spec`
+
+    References
+    ----------
+    The function uses the algorithm presented in https://doi.org/10.1016/0378-4371(86)90056-7.
 
     """
     
     K = cholesky(H)
 
         
-    # build commuation relation matrix and construct commutation relation
-    # preserving auxilary Hamiltonian
+    # build commuation relation matrix and construct commutation-relation preserving auxilary Hamiltonian
     bos = block_diag(np.eye(H.shape[0]//2), -np.eye(H.shape[0]//2))
     L = K @ bos @ K.T.conj()
     

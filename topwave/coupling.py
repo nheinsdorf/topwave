@@ -55,7 +55,7 @@ class Coupling:
 
         return np.array([[self.strength, self.spin_orbit[2], -self.spin_orbit[1]],
                          [-self.spin_orbit[2], self.strength, self.spin_orbit[0]],
-                         [self.spin_orbit[1], -self.spin_orbit[0], self.strength]], dtype=complex)
+                         [self.spin_orbit[1], -self.spin_orbit[0], self.strength]], dtype=np.float64)
 
     def get_fourier_coefficients(
             self,
