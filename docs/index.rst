@@ -79,8 +79,8 @@ If this library was useful to you in your research, please cite us::
 
    Contact me and we can include your work as an example file in the documentation.
 
-Topwave in Papers
------------------
+Topwave in Research
+-------------------
 
 **IrF4: From tetrahedral compass model to topological semimetal**
 
