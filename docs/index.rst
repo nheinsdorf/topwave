@@ -62,8 +62,8 @@ Acknowledgements
 ----------------
 
 This library is being developed within my research as a joint PhD student of the Max Planck Institute for Solid State
-Research in Stuttgart, Germany and the University of British Columbia, Canada. I would like to thank Xianxin Wu, Jean-Claude Pussy and
-my supervisor Andreas Schnyder.
+Research in Stuttgart, Germany and the University of British Columbia, Canada. I would like to thank Xianxin Wu, Jean-Claude Passy and
+my supervisor Andreas Schnyder. Also thanks to Luis Mantilla who helped me setting up the documentation.
 
 I used the `PythTB <https://www.physics.rutgers.edu/pythtb/>`_ and `SpinW <https://spinw.org/>`_ libraries for testing and
 to get an idea of what kind of user interface I want.
