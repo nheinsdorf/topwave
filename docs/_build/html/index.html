@@ -266,7 +266,7 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <img alt="_images/topwave-heading.png" class="align-center" src="_images/topwave-heading.png"/>
-<p>The topwave library is a python package to quickly set up single-particle models and calculate their topological invariants.</p>
+<p>The <cite>topwave</cite> library is a python package to quickly set up single-particle models and calculate their topological invariants.</p>
 <p>Topwave interfaces with the <a class="reference external" href="https://pymatgen.org/">Python Materials Genomic library</a>. You can use either crystallographic
 data formats like .cif directly or build your own crystal structures using pymatgen’s functionality. The crystal can then
 be populated with bosonic or fermionic degrees of freedom. The interactions can be generated to automatically
@@ -293,8 +293,8 @@ effective lattice models is what provided the code base of this package.</p>
 <li><p>Fast-assembly of crystal structures using crystallographic data or pymatgen</p></li>
 <li><p>Use of space group symmetries to quickly create models and interactions</p></li>
 <li><p>Magnon Dispersion and Neutron Scattering using linear spin wave theory</p></li>
-<li><p>Electronic band structures of tight binding models.</p></li>
-<li><p>Computation of topological invariants using Wilson loops.</p></li>
+<li><p>Electronic band structures of tight binding models</p></li>
+<li><p>Computation of topological invariants using Wilson loops</p></li>
 <li><p>Supercell calculations for magnetic relaxation and topological surface states</p></li>
 <li><p>Easy construction of twisted structures</p></li>
 </ul>
@@ -302,23 +302,35 @@ effective lattice models is what provided the code base of this package.</p>
 <section id="roadmap">
 <h1 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permalink to this heading">¶</a></h1>
 <ul class="simple">
-<li><p>Multi Orbital</p></li>
-<li><p>Higher order invariants</p></li>
+<li><p>Multi Orbital Tight Binding Models</p></li>
+<li><p>Higher Order Topological Invariants</p></li>
 <li><p>BdG Hamiltonians</p></li>
-<li><p>Mean Field</p></li>
-<li><p>Wannier90 interface</p></li>
-<li><p>Construction of Hamiltonians using irreducible representations.</p></li>
+<li><p>Consistent Mean Field Calculations</p></li>
+<li><p>Wannier90 Interface</p></li>
+<li><p>Model Construction based on Irreducible Representations.</p></li>
 </ul>
 </section>
 <section id="acknowledgements">
 <h1 id="acknowledgements">Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this heading">¶</a></h1>
-<p>Thanks to Jean-Claude and Lucy and Xianxin (explaining Wilson loops)</p>
-<p><a class="reference external" href="https://spinw.org/">SpinW</a> for comparison</p>
-<p><a class="reference external" href="https://pymatgen.org/">Python Materials Genomic library</a> so nice</p>
+<p>This library is being developed within my research as a joint PhD student of the Max Planck Institute for Solid State
+Research in Stuttgart, Germany and the University of British Columbia, Canada. I would like to thank Xianxin Wu, Jean-Claude Pussy and
+my supervisor Andreas Schnyder.</p>
+<p>I used the <a class="reference external" href="https://www.physics.rutgers.edu/pythtb/">PythTB</a> and <a class="reference external" href="https://spinw.org/">SpinW</a> libraries for testing and
+to get an idea of what kind of user interface I want.</p>
+<p>Topwave interfaces with <a class="reference external" href="https://pymatgen.org/">Python Materials Genomic library</a> which provides an extensive toolbox
+for everything related to crystallography.</p>
 </section>
 <section id="citation">
 <h1 id="citation">Citation<a class="headerlink" href="#citation" title="Permalink to this heading">¶</a></h1>
-<p>If this library was useful to you in your research, please cite us. Following the <a class="reference external" href="https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-citation-files">GitHub citation standards</a>, here is the recommended citation.</p>
+<p>If this library was useful to you in your research, please cite us:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@software</span><span class="p">{</span><span class="n">Heinsdorf_Topwave_2023</span><span class="p">,</span>
+   <span class="n">title</span> <span class="o">=</span> <span class="p">{{</span><span class="n">topwave</span><span class="p">:</span> <span class="n">Toolbox</span> <span class="k">for</span> <span class="n">Topology</span> <span class="n">of</span> <span class="n">Single</span><span class="o">-</span><span class="n">Particle</span> <span class="n">Spectra</span><span class="p">}},</span>
+   <span class="n">author</span> <span class="o">=</span> <span class="p">{</span><span class="n">Heinsdorf</span><span class="p">,</span> <span class="n">Niclas</span><span class="p">},</span>
+   <span class="n">year</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2023</span><span class="p">},</span>
+   <span class="n">url</span> <span class="o">=</span> <span class="p">{</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">nheinsdorf</span><span class="o">/</span><span class="n">topwave</span><span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">

@@ -7,7 +7,7 @@
 .. image:: ./_static/topwave-heading.png
    :align: center
 
-The topwave library is a python package to quickly set up single-particle models and calculate their topological invariants.
+The `topwave` library is a python package to quickly set up single-particle models and calculate their topological invariants.
 
 Topwave interfaces with the `Python Materials Genomic library <https://pymatgen.org/>`_. You can use either crystallographic
 data formats like .cif directly or build your own crystal structures using pymatgen's functionality. The crystal can then
@@ -43,34 +43,46 @@ Features
 - Fast-assembly of crystal structures using crystallographic data or pymatgen
 - Use of space group symmetries to quickly create models and interactions
 - Magnon Dispersion and Neutron Scattering using linear spin wave theory
-- Electronic band structures of tight binding models.
-- Computation of topological invariants using Wilson loops.
+- Electronic band structures of tight binding models
+- Computation of topological invariants using Wilson loops
 - Supercell calculations for magnetic relaxation and topological surface states
 - Easy construction of twisted structures
 
 Roadmap
 -------
 
-- Multi Orbital
-- Higher order invariants
+- Multi Orbital Tight Binding Models
+- Higher Order Topological Invariants
 - BdG Hamiltonians
-- Mean Field
-- Wannier90 interface
-- Construction of Hamiltonians using irreducible representations.
+- Consistent Mean Field Calculations
+- Wannier90 Interface
+- Model Construction based on Irreducible Representations.
 
 Acknowledgements
 ----------------
 
-Thanks to Jean-Claude and Lucy and Xianxin (explaining Wilson loops)
+This library is being developed within my research as a joint PhD student of the Max Planck Institute for Solid State
+Research in Stuttgart, Germany and the University of British Columbia, Canada. I would like to thank Xianxin Wu, Jean-Claude Pussy and
+my supervisor Andreas Schnyder.
 
-`SpinW <https://spinw.org/>`_ for comparison
+I used the `PythTB <https://www.physics.rutgers.edu/pythtb/>`_ and `SpinW <https://spinw.org/>`_ libraries for testing and
+to get an idea of what kind of user interface I want.
 
-`Python Materials Genomic library <https://pymatgen.org/>`_ so nice
+Topwave interfaces with `Python Materials Genomic library <https://pymatgen.org/>`_ which provides an extensive toolbox
+for everything related to crystallography.
 
 Citation
 --------
 
-If this library was useful to you in your research, please cite us. Following the `GitHub citation standards <https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-on-github/about-citation-files>`_, here is the recommended citation.
+If this library was useful to you in your research, please cite us::
+
+   @software{Heinsdorf_Topwave_2023,
+      title = {{topwave: Toolbox for Topology of Single-Particle Spectra}},
+      author = {Heinsdorf, Niclas},
+      year = {2023},
+      url = {https://github.com/nheinsdorf/topwave},
+   }
+
 
 .. toctree::
    :maxdepth: 2
