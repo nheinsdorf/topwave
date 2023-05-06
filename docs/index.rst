@@ -7,30 +7,19 @@
 .. image:: ./_static/topwave-heading.png
    :align: center
 
-The `topwave` library is a python package to quickly set up single-particle models and calculate their topological invariants.
+The `topwave` library is a python package to quickly set up single-particle models and classify their band topological phases.
 
-Topwave interfaces with the `Python Materials Genomic library <https://pymatgen.org/>`_. You can use either crystallographic
-data formats like .cif directly or build your own crystal structures using pymatgen's functionality. The crystal can then
-be populated with bosonic or fermionic degrees of freedom. The interactions can be generated to automatically
-respect space group symmetries. It's also super easy to construct supercell and even twisted structures.
+The library is designed to be easy to use *and read*. It allows even new-comers to calculate topological properties
+of e.g. electron or magnon spectra with only a few lines of code. The package interfaces with the extensive
+`Python Materials Genomic library <https://pymatgen.org/>`_  helping the user to quickly set up both easy toy models
+and more realistic simulations for materials respecting the symmetries of the crystal structure.
 
-Quasi-particle spectra and quantities derived thereof can easily be calculated. Electronic band structures,
-magnon dispersion, magnetization, surface states and some response functions are just a few examples.
-
-Using Wilson loops the Berry curvature and band topological invariants can be efficiently evaluated.
 
 .. admonition:: Disclaimer
    :class: warning
 
    Topwave is still under development. This is only an alpha version. Please report bugs.
 
-
-
-Topological classification of single-particle band structures have become a standard procedure in many branches of
-condensed matter physics. Many libraries to compute topological invariants, and even more to produce band structures exist.
-In my research as a PhD student I was playing around with a lot of effective models for many different types of materials.
-Topwave uses mostly well-known standard procedures. My attempt to streamline the process of creating and classifying
-effective lattice models is what provided the code base of this package.
 
 .. admonition:: Do you like topwave?
    :class: seealso
@@ -54,16 +43,18 @@ Roadmap
 - Multi Orbital Tight Binding Models
 - Higher Order Topological Invariants
 - BdG Hamiltonians
-- Consistent Mean Field Calculations
+- Self-Consistent Mean Field Calculations
 - Wannier90 Interface
 - Model Construction based on Irreducible Representations.
 
 Acknowledgements
 ----------------
 
-This library is being developed within my research as a joint PhD student of the Max Planck Institute for Solid State
-Research in Stuttgart, Germany and the University of British Columbia, Canada. I would like to thank Xianxin Wu, Jean-Claude Passy and
-my supervisor Andreas Schnyder. Also thanks to Luis Mantilla who helped me setting up the documentation.
+This library is being developed within my research as a PhD student of the Max Planck Institute for Solid State
+Research in Stuttgart, Germany and the University of British Columbia, Canada within the
+`International PhD Program in Quantum Materials <https://www.fkf.mpg.de/7021396/60_Joint_PhD>`_.
+I would like to thank Xianxin Wu, Jean-Claude Passy and my supervisor Andreas Schnyder.
+Also thanks to Luis Mantilla who helped me setting up the documentation.
 
 I used the `PythTB <https://www.physics.rutgers.edu/pythtb/>`_ and `SpinW <https://spinw.org/>`_ libraries for testing and
 to get an idea of what kind of user interface I want.
@@ -83,6 +74,23 @@ If this library was useful to you in your research, please cite us::
       url = {https://github.com/nheinsdorf/topwave},
    }
 
+.. admonition:: Used topwave in a paper?
+   :class: warning
+
+   Contact me and we can include your work as an example file in the documentation.
+
+Topwave in Papers
+-----------------
+
+**IrF4: From tetrahedral compass model to topological semimetal**
+
+C Shang, O. Ganter, N. Heinsdorf, SM. Winter - Phys. Rev. B, 2023 - APS
+
+https://doi.org/10.1103/PhysRevB.107.125111
+
+.. image:: ./_static/papers_that_use_topwave/irf4_paper_2000width.jpg
+   :align: center
+
 
 .. toctree::
    :maxdepth: 2
@@ -93,7 +101,9 @@ If this library was useful to you in your research, please cite us::
    :hidden:
    :maxdepth: 2
 
-   tutorials/intro-to-coupling.rst
+   tutorials/intro-to-spinwave.rst
+
+   tutorials/intro-to-tightbinding.rst
 
 .. toctree::
    :caption: Examples
@@ -103,7 +113,7 @@ If this library was useful to you in your research, please cite us::
    examples/breathing_pyrochlore.rst
 
 .. toctree::
-   :caption: Reference
+   :caption: API Reference
    :hidden:
    :maxdepth: 2
 

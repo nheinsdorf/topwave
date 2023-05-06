@@ -56,7 +56,7 @@
     <link rel="icon" href="_static/favicon-32x32.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Introduction to Couplings" href="tutorials/intro-to-coupling.html" />
+    <link rel="next" title="Introduction to SpinWaveModel" href="tutorials/intro-to-spinwave.html" />
   
    
 
@@ -206,7 +206,14 @@
     <li class="md-nav__item">
     
     
-      <a href="tutorials/intro-to-coupling.html" class="md-nav__link">Introduction to Couplings</a>
+      <a href="tutorials/intro-to-spinwave.html" class="md-nav__link">Introduction to SpinWaveModel</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="tutorials/intro-to-tightbinding.html" class="md-nav__link">Introduction to TightBindingModel</a>
       
     
     </li>
@@ -224,7 +231,7 @@
     </li>
     <li class="md-nav__item">
     
-      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+      <span class="md-nav__link caption"><span class="caption-text">API Reference</span></span>
     
     </li>
     <li class="md-nav__item">
@@ -256,6 +263,8 @@
         </li>
         <li class="md-nav__item"><a href="#citation" class="md-nav__link">Citation</a>
         </li>
+        <li class="md-nav__item"><a href="#topwave-in-papers" class="md-nav__link">Topwave in Papers</a>
+        </li>
   </ul>
 </nav>
               </div>
@@ -266,23 +275,15 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <img alt="_images/topwave-heading.png" class="align-center" src="_images/topwave-heading.png"/>
-<p>The <cite>topwave</cite> library is a python package to quickly set up single-particle models and calculate their topological invariants.</p>
-<p>Topwave interfaces with the <a class="reference external" href="https://pymatgen.org/">Python Materials Genomic library</a>. You can use either crystallographic
-data formats like .cif directly or build your own crystal structures using pymatgen’s functionality. The crystal can then
-be populated with bosonic or fermionic degrees of freedom. The interactions can be generated to automatically
-respect space group symmetries. It’s also super easy to construct supercell and even twisted structures.</p>
-<p>Quasi-particle spectra and quantities derived thereof can easily be calculated. Electronic band structures,
-magnon dispersion, magnetization, surface states and some response functions are just a few examples.</p>
-<p>Using Wilson loops the Berry curvature and band topological invariants can be efficiently evaluated.</p>
+<p>The <cite>topwave</cite> library is a python package to quickly set up single-particle models and classify their band topological phases.</p>
+<p>The library is designed to be easy to use <em>and read</em>. It allows even new-comers to calculate topological properties
+of e.g. electron or magnon spectra with only a few lines of code. The package interfaces with the extensive
+<a class="reference external" href="https://pymatgen.org/">Python Materials Genomic library</a>  helping the user to quickly set up both easy toy models
+and more realistic simulations for materials respecting the symmetries of the crystal structure.</p>
 <div class="warning admonition">
 <p class="admonition-title">Disclaimer</p>
 <p>Topwave is still under development. This is only an alpha version. Please report bugs.</p>
 </div>
-<p>Topological classification of single-particle band structures have become a standard procedure in many branches of
-condensed matter physics. Many libraries to compute topological invariants, and even more to produce band structures exist.
-In my research as a PhD student I was playing around with a lot of effective models for many different types of materials.
-Topwave uses mostly well-known standard procedures. Me tyring to streamline the process of creating and classifying
-effective lattice models is what provided the code base of this package.</p>
 <div class="seealso admonition">
 <p class="admonition-title">Do you like topwave?</p>
 <p>Give us a star on GitHub! Tell you friends and colleagues!</p>
@@ -305,16 +306,18 @@ effective lattice models is what provided the code base of this package.</p>
 <li><p>Multi Orbital Tight Binding Models</p></li>
 <li><p>Higher Order Topological Invariants</p></li>
 <li><p>BdG Hamiltonians</p></li>
-<li><p>Consistent Mean Field Calculations</p></li>
+<li><p>Self-Consistent Mean Field Calculations</p></li>
 <li><p>Wannier90 Interface</p></li>
 <li><p>Model Construction based on Irreducible Representations.</p></li>
 </ul>
 </section>
 <section id="acknowledgements">
 <h1 id="acknowledgements">Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this heading">¶</a></h1>
-<p>This library is being developed within my research as a joint PhD student of the Max Planck Institute for Solid State
-Research in Stuttgart, Germany and the University of British Columbia, Canada. I would like to thank Xianxin Wu, Jean-Claude Pussy and
-my supervisor Andreas Schnyder.</p>
+<p>This library is being developed within my research as a PhD student of the Max Planck Institute for Solid State
+Research in Stuttgart, Germany and the University of British Columbia, Canada within the
+<a class="reference external" href="https://www.fkf.mpg.de/7021396/60_Joint_PhD">International PhD Program in Quantum Materials</a>.
+I would like to thank Xianxin Wu, Jean-Claude Passy and my supervisor Andreas Schnyder.
+Also thanks to Luis Mantilla who helped me setting up the documentation.</p>
 <p>I used the <a class="reference external" href="https://www.physics.rutgers.edu/pythtb/">PythTB</a> and <a class="reference external" href="https://spinw.org/">SpinW</a> libraries for testing and
 to get an idea of what kind of user interface I want.</p>
 <p>Topwave interfaces with <a class="reference external" href="https://pymatgen.org/">Python Materials Genomic library</a> which provides an extensive toolbox
@@ -331,6 +334,17 @@ for everything related to crystallography.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+<div class="warning admonition">
+<p class="admonition-title">Used topwave in a paper?</p>
+<p>Contact me and we can include your work as an example file in the documentation.</p>
+</div>
+</section>
+<section id="topwave-in-papers">
+<h1 id="topwave-in-papers">Topwave in Papers<a class="headerlink" href="#topwave-in-papers" title="Permalink to this heading">¶</a></h1>
+<p><strong>IrF4: From tetrahedral compass model to topological semimetal</strong></p>
+<p>C Shang, O. Ganter, N. Heinsdorf, SM. Winter - Phys. Rev. B, 2023 - APS</p>
+<p><a class="reference external" href="https://doi.org/10.1103/PhysRevB.107.125111">https://doi.org/10.1103/PhysRevB.107.125111</a></p>
+<img alt="_images/irf4_paper_2000width.jpg" class="align-center" src="_images/irf4_paper_2000width.jpg"/>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
@@ -352,12 +366,12 @@ for everything related to crystallography.</p>
       <nav class="md-footer-nav__inner md-grid">
           
           
-            <a href="tutorials/intro-to-coupling.html" title="Introduction to Couplings"
+            <a href="tutorials/intro-to-spinwave.html" title="Introduction to SpinWaveModel"
                class="md-flex md-footer-nav__link md-footer-nav__link--next"
                rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
                 class="md-flex__ellipsis"> <span
-                class="md-footer-nav__direction"> Next </span> Introduction to Couplings </span>
+                class="md-footer-nav__direction"> Next </span> Introduction to SpinWaveModel </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink"><i
                 class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
