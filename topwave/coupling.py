@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -6,6 +8,7 @@ from numpy.linalg import norm
 from pymatgen.core.operations import SymmOp
 from pymatgen.core.sites import PeriodicSite
 
+from topwave.types import ComplexVector, Complex2x2, IntVector, Real3x3, Vector
 from topwave.util import format_input_vector, pauli
 
 __all__ = ["Coupling"]
@@ -15,20 +18,14 @@ __all__ = ["Coupling"]
 class Coupling:
     """Coupling of two sites.
 
-    Parameters
-    ----------
-
     Examples
     --------
 
-    Group
-    -----
-    coupling
 
     """
 
     index: int
-    lattice_vector: npt.NDArray[np.int64]
+    lattice_vector: IntVector
     site1: PeriodicSite
     orbital1: int
     site2: PeriodicSite
@@ -36,9 +33,9 @@ class Coupling:
     symmetry_id: int
     symmetry_op: SymmOp
     distance: float = field(init=False)
-    sublattice_vector: npt.NDArray[np.float64] = field(init=False)
+    sublattice_vector: Vector = field(init=False)
     is_set: bool = False
-    spin_orbit: npt.NDArray[np.float64] = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
+    spin_orbit: Vector = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
     strength: float = 0.
 
     def __post_init__(self) -> None:
@@ -53,7 +50,7 @@ class Coupling:
 
         return spin1 @ exchange_matrix @ spin2
 
-    def get_exchange_matrix(self) -> np.ndarray:
+    def get_exchange_matrix(self) -> Real3x3:
         """Returns the exchange matrix."""
 
         return np.array([[self.strength, self.spin_orbit[2], -self.spin_orbit[1]],
@@ -62,14 +59,25 @@ class Coupling:
 
     def get_fourier_coefficients(
             self,
-            k_point: npt.ArrayLike) -> tuple[complex, npt.NDArray[np.complex128]]:
-        """Returns the Fourier coefficient and its inner derivatives at k_point."""
+            k_point: Vector) -> tuple[complex, ComplexVector]:
+        """Returns the Fourier coefficient and its inner derivatives at k_point.
+
+        Parameters
+        ----------
+        k_point : np.ndarray((3,), np.float64)
+            Input k_point
+
+        Returns
+        -------
+        Tuple[complex, np.ndarray[(3,), np.complex128)]
+
+        """
 
         return np.exp(-2j * np.pi * np.dot(self.lattice_vector, k_point)), -2j * np.pi * self.lattice_vector
 
     def get_spinwave_matrix_elements(
             self,
-            k_point: npt.ArrayLike) -> tuple[complex, complex, complex, complex, complex, complex, np.ndarray]:
+            k_point: npt.ArrayLike) -> tuple[complex, complex, complex, complex, complex, complex, ComplexVector]:
         """Constructs the matrix elements for the Spinwave Hamiltonian at a given k-point."""
 
         # the local spin reference frames
@@ -105,14 +113,14 @@ class Coupling:
 
         return A, Abar, CI, CJ, B, Bbar, inner
 
-    def get_tightbinding_matrix_elements(self, k_point: npt.ArrayLike) -> tuple[complex, npt.NDArray[np.complex128]]:
+    def get_tightbinding_matrix_elements(self, k_point: Vector) -> tuple[complex, ComplexVector]:
         """Constructs the matrix elements for the TightBinding Hamiltonian at a given k-point."""
 
         c_k, inner = self.get_fourier_coefficients(k_point)
         matrix_element = c_k * self.strength
         return matrix_element, inner
 
-    def get_spin_orbit_matrix_elements(self, k_point: npt.ArrayLike) -> tuple[npt.NDArray[np.complex128], npt.NDArray[np.complex128]]:
+    def get_spin_orbit_matrix_elements(self, k_point: Vector) -> tuple[Complex2x2, ComplexVector]:
         """Creates the matrix elements of the tight-binding Hamiltonian that come from spin-orbit interation."""
 
         c_k, inner = self.get_fourier_coefficients(k_point)
@@ -126,10 +134,10 @@ class Coupling:
         self.strength = strength
         self.is_set = True
 
-    def set_spin_orbit(self, vector: list[float] | npt.NDArray[np.float64], strength: float = None) -> None:
+    def set_spin_orbit(self, input_vector: Vector, strength: float = None) -> None:
         """Sets the spin-orbit coupling."""
 
-        input_vector = format_input_vector(orientation=vector, length=strength)
+        input_vector = format_input_vector(orientation=input_vector, length=strength)
         self.spin_orbit = input_vector
         self.is_set = True
 

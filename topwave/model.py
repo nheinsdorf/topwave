@@ -12,11 +12,32 @@ from tabulate import tabulate
 
 from topwave.constants import G_LANDE, MU_BOHR
 from topwave.coupling import Coupling
+from topwave.types import Vector, VectorList
 from topwave import util
 
 __all__ = ["Model", "SpinWaveModel", "TightBindingModel"]
 class Model(ABC):
-    """Base class that contains the physical model. """
+    """Base class that is used to build a model.
+
+    This is an **abstract** base class. Use its child classes to instantiate a model.
+
+    Examples
+    --------
+
+    Create a cubic lattice of cobalt atoms and space group symmetry P23 (#195) with pymatgen and use it to create a SpinWaveModel.
+
+    .. ipython:: python
+
+        from pymatgen.core.structure import Structure
+        structure = Structure.from_spacegroup(sg=195, lattice=np.eye(3), species=['Co'], coords=[[0, 0, 0]])
+        print(structure)
+
+        model = tp.model.SpinWaveModel(structure)
+
+    See Also
+    --------
+    :class:`topwave.model.SpinWaveModel`, :class:`topwave.model.TightBindingModel`
+    """
 
     def __init__(self,
                  structure: Structure,
@@ -57,7 +78,25 @@ class Model(ABC):
     def generate_couplings(self,
                            max_distance: float,
                            space_group: int) -> None:
-        """Generates couplings up to a distance and groups them based on the spacegroup."""
+        """Generates couplings up to a distance and groups them based on the space group symmetry.
+
+        Parameters
+        ----------
+        max_distance: float
+            The distance up to which the couplings are generated.
+        space_group: int
+            The international number of the space group (1 to 230) that is used to group the couplings.
+
+        Examples
+        --------
+        Find and create the nearest-neighbors and group them by space group symmetry P23 (#195).
+
+        .. ipython:: python
+
+            model.generate_couplings(max_distance=1, space_group=195)
+            model.show_couplings()
+
+        """
 
         neighbors = self.structure.get_symmetric_neighbor_list(max_distance, sg=space_group, unique=True)
         self.delete_all_couplings()
@@ -73,14 +112,57 @@ class Model(ABC):
     def get_couplings(self,
                       attribute: str,
                       value: int | float) -> list[Coupling]:
-        """Returns couplings selected by some attribute"""
+        """Return couplings selected by some attribute.
+
+        Parameters
+        ----------
+        attribute: str
+            The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.
+        value: int | float
+            The value of the selected attribute.
+
+        Returns
+        -------
+        list[Coupling]
+            A list that contains the couplings that match the value of the selected attribute.
+
+        Examples
+        --------
+        Select one of the couplings based on its index.
+
+        .. ipython:: python
+
+            model.get_couplings('index', 1)
+
+        Select all the couplings based on their symmetry.
+
+        .. ipython:: python
+
+            model.get_couplings('symmetry_id', 0)
+
+        See Also
+        --------
+        :class:`topwave.util.coupling_selector`
+
+        """
 
         indices = util.coupling_selector(attribute=attribute, value=value, model=self)
         return [self.couplings[index] for index in indices]
 
     # NOTE: should I get rid of this and just replace it with get_couplings in spec?
     def get_set_couplings(self) -> list[Coupling]:
-        """Returns couplings that have been assigned some exchange."""
+        """Returns couplings that have been assigned some exchange.
+
+        Returns
+        -------
+        list[Coupling]
+            A list that contains the couplings that were assigned some exchange.
+
+        See Also
+        --------
+        :class:`topwave.model.Model.get_couplings`
+
+        """
 
         indices = util.coupling_selector(attribute='is_set', value=True, model=self)
         return [self.couplings[index] for index in indices]
@@ -91,7 +173,26 @@ class Model(ABC):
 
     def invert_coupling(self,
                         index: int) -> None:
-        """Inverts the orientation of a coupling."""
+        """Inverts the orientation of a coupling.
+
+        Parameters
+        ----------
+        index: int
+            The index of the coupling that is inverted.
+
+        Examples
+        --------
+
+        The lattice vector that connects a coupling before and after inversion:
+
+        .. ipython:: python
+
+            print(f'R = {model.couplings[0].lattice_vector}')
+            model.invert_coupling(0)
+            print(f'R = {model.couplings[0].lattice_vector}')
+
+
+        """
 
         coupling = self.couplings[index]
         site1, site2 = coupling.site1, coupling.site2
@@ -105,16 +206,56 @@ class Model(ABC):
                      attribute_value: int | float,
                      strength: float,
                      attribute: str = 'index') -> None:
-        """Assigns (scalar) hopping/exchange to a selection of couplings."""
+        """Assigns (scalar) hopping/exchange to a selection of couplings.
+
+        Parameters
+        ----------
+        attribute_value: int | float
+            The value of the selected attribute.
+        strength: float
+            Strength of the hopping/exchange.
+        attribute: str
+            The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.
+
+        Examples
+        --------
+
+        Assign ferromagnetic exchange with J=1 to all nearest neighbors. See the 'strength' column in the output.
+
+        .. ipython:: python
+
+            model.set_coupling(attribute_value=0, strength=1, attribute='symmetry_id')
+            model.show_couplings()
+
+        """
 
         couplings = self.get_couplings(attribute=attribute, value=attribute_value)
         for coupling in couplings:
             coupling.set_coupling(strength)
 
     def set_moments(self,
-                    orientations: list[npt.ArrayLike],
+                    orientations: VectorList,
                     magnitudes: list[float] = None) -> None:
-        """Sets the magnetic moments on each site of the structure given in lattice coordinates."""
+        """Sets the magnetic moments on each site of the structure given in lattice coordinates.
+
+        Parameters
+        ----------
+        orientations: VectorList
+            A list of three-dimensional vectors that specify the direction of local magnetic moment on each site.
+        magnitudes: list[float]
+            A list of floats that specifies the magnitude of the local moment for each site. If None, the length
+            of the input vector is used. Default is None.
+
+        Examples
+        --------
+        Put spin-1/2 moments on the site that point into the 111-direction.
+
+        .. ipython:: python
+
+            model.set_moments([[1, 1, 1]], [0.5])
+            model.show_site_properties()
+
+        """
 
         for _, (orientation, site) in enumerate(zip(orientations, self.structure)):
             # compute or save the magnitude (in lattice coordinates!).
@@ -131,7 +272,30 @@ class Model(ABC):
                           index: int,
                           strength: float,
                           space_group: int = 1) -> None:
-        """Sets a scalar onsite energy to a given site."""
+        """Sets a scalar onsite energy to a given site.
+
+        For a TightBindingModel this is a site or orbital dependent onsite energy. For SpinWaveModel this term is ignored.
+
+        Parameters
+        ----------
+        index: int
+            The index of the site.
+        strength: float
+            The strength of the onsite term.
+        space_group: int
+            If a compatible space group symmetry is selected, the term will automatically be assigned to all
+            symmetrically equivalent sites. Default is None.
+
+        Examples
+        --------
+        We assign a onsite energy of E = 0.25 to the zeroth site. See the onsite scalar column in the output.
+
+        .. ipython:: python
+
+            model.set_onsite_scalar(0, 0.25)
+            model.show_site_properties()
+
+        """
 
         space_group = SpaceGroup.from_int_number(space_group)
         coordinates = space_group.get_orbit(self.structure[index].frac_coords)
@@ -141,10 +305,37 @@ class Model(ABC):
             site.properties['onsite_scalar'] = float(strength)
 
     def set_onsite_vector(self,
-                          index: int, vector: list[float] | npt.NDArray[np.float64],
+                          index: int,
+                          vector: Vector,
                           strength: float = None,
                           space_group: int = 1) -> None:
-        """Sets a local Zeeman field/single-ion anisotropy to a given site."""
+        """Sets a scalar onsite energy to a given site.
+
+        For a SpinWaveModel this corresponds to a single-ion anisotropy. For a TightBindingModel to a local magnetic field.
+
+        Parameters
+        ----------
+        index: int
+            The index of the site.
+        vector: Vector
+            The orientation of the term.
+        strength: float
+            The strength of the onsite term. If None, the length of the input vector is used. Default is None.
+        space_group: int
+            If a compatible space group symmetry is selected, the term will automatically be assigned to all
+            symmetrically equivalent sites and the assigned vector will be rotated accordingly. Default is None.
+
+        Examples
+        --------
+        We assign a single-ion anisotropy of strength A = 0.1 along the 111-direction. See the
+        onsite vector column in the output.
+
+        .. ipython:: python
+
+            model.set_onsite_vector(0, [1, 1, 1], 0.1)
+            model.show_site_properties()
+
+        """
 
         input_vector = util.format_input_vector(orientation=vector, length=strength)
         space_group = SpaceGroup.from_int_number(space_group)
@@ -156,7 +347,29 @@ class Model(ABC):
 
     def set_open_boundaries(self,
                             direction: str = 'xyz') -> None:
-        """Sets the exchange/hopping and DM/SOC at the chosen boundary to zero."""
+        """Sets the exchange/hopping and DM/SOC at the chosen boundary to zero.
+
+        Parameters
+        ----------
+        direction: str
+            The directions in lattice vectors along which the boundary conditions are set to open.
+            'x' is along the direction of the first lattice vector. 'yz' along the other two, and 'xyz/ in all directions.
+
+        Examples
+        --------
+        Set open boundaries in y- and z-direction so that we have a one-dimensional chain along x. See the strength column
+        in the output.
+
+        .. ipython:: python
+
+            model.set_open_boundaries('yz')
+            model.show_couplings()
+
+        See Also
+        --------
+        :class:`topwave.util.get_boundary_couplings`
+
+        """
 
         boundary_indices = util.get_boundary_couplings(model=self, direction=direction)
         for index in boundary_indices:
@@ -164,10 +377,37 @@ class Model(ABC):
 
     def set_spin_orbit(self,
                        attribute_value: int | float,
-                       vector: list[float] | npt.NDArray[np.float64],
+                       vector: Vector,
                        strength: float = None,
                        attribute: str = 'index') -> None:
-        """Assigns spin dependent hopping/DM exchange to a selection of couplings."""
+        """Assigns spin dependent hopping/antisymmetric exchange to a selection of couplings.
+
+        If the couplings are grouped by symmetry, the assigned exchanges will be rotated automatically according to
+        space group symmetry.
+
+        Parameters
+        ----------
+        attribute_value: int | float
+            The value of the selected attribute.
+        vector: Vector
+            Orientation of the term.
+        strength: float
+            Strength of the term. If None, the length of the orientation is used. Default is None.
+        attribute: str
+            The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.
+
+        Examples
+        --------
+
+        Assign antisymmetric exchange with finite z-component along nearest neighbor in the x-direction.
+        See the 'spin-orbit vector' column in the output.
+
+        .. ipython:: python
+
+            model.set_spin_orbit(0, [0, 0, 0.05])
+            model.show_couplings()
+
+        """
 
         input_vector = util.format_input_vector(orientation=vector, length=strength)
         couplings = self.get_couplings(attribute=attribute, value=attribute_value)
@@ -176,9 +416,34 @@ class Model(ABC):
             coupling.set_spin_orbit(spin_orbit)
 
     def set_zeeman(self,
-                   orientation: list[float] | npt.NDArray[np.float64],
+                   orientation: Vector,
                    strength: float = None) -> None:
-        """Sets a global Zeeman term."""
+        """Sets a global Zeeman term.
+
+        .. admonition:: Tip
+            :class: tip
+
+            For ferromagnetic systems a small Zeeman term is recommended to lift the soft mode above zero energy.
+
+        Parameters
+        ----------
+        orientation: Vector
+            The orientation of the Zeeman term.
+        strength: float
+            The strength of the Zeeman term in units of **Tesla**. If None, the length of the orientation is used. Default is None.
+
+        Examples
+        --------
+
+        We set a Zeeman field of 0.2 Tesla in the 111-direction.
+
+        .. ipython:: python
+
+            model.set_zeeman([1, 1, 1], 0.2)
+            model.show_site_properties()
+
+        """
+
 
         self.zeeman = util.format_input_vector(orientation=orientation, length=strength)
 
@@ -215,14 +480,45 @@ class Model(ABC):
     def unset_coupling(self,
                        attribute_value: int | float,
                        attribute: str = 'index') -> None:
-        """Removes exchanges from a coupling and makes it unset."""
+        """Removes exchanges from a coupling and makes it unset.
+
+        Parameters
+        ----------
+        attribute: str
+            The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.
+        value: int | float
+            The value of the selected attribute.
+
+        Examples
+        --------
+        We unset the coupling along the x-direction.
+
+        .. ipython:: python
+
+            print(model.couplings[0].is_set)
+            model.unset_coupling(0)
+            model.couplings[0].is_set
+
+        """
 
         indices = util.coupling_selector(attribute=attribute, value=attribute_value, model=self)
         for _ in indices:
             self.couplings[_].unset()
 
+    # TODO: write unset_onsite_scalar and unset_onsite_vector (and maybe unset_all_site_properties?)
     def unset_moments(self):
-        """Unsets all magnetic moments of the structure."""
+        """Unsets all magnetic moments of the structure.
+
+        Examples
+        --------
+        We set the magnetic moment on all sites to zero.
+
+        .. ipython:: python
+
+            model.unset_moments()
+            model.show_site_properties()
+
+        """
 
         for site in self.structure:
             site.properties['magmom'] = None
@@ -230,7 +526,16 @@ class Model(ABC):
     def write_cif(self,
                   path: str,
                   write_magmoms: bool = True) -> None:
-        """Saves the structure to a .mcif file."""
+        """Saves the structure to a .mcif file.
+
+        Parameters
+        ----------
+        path: str
+            Where to save the structure.
+        write_magmoms: bool
+            If true the magnetic moments are written into the mcif file. Default is True.
+
+        """
 
         if self.type == 'tightbinding':
             for site in self.structure:
@@ -242,22 +547,23 @@ class Model(ABC):
 
 
 class SpinWaveModel(Model):
-    """Class for Spinwave models.
+    """Class for Linear Spinwave models.
 
-    Parameters
-    ----------
 
     Examples
     --------
-    lolol
 
-    Group
-    -----
-    model
+    Create a one-dimensional chain of Cobalt atoms with pymatgen and use it to create a SpinWaveModel.
 
+    .. ipython:: python
 
+        from pymatgen.core.structure import Structure
+        structure = Structure.from_spacegroup(sg=1, lattice=np.eye(3), species=['Co'], coords=[[0, 0, 0]])
+        print(structure)
 
+        model = tp.model.SpinWaveModel(structure)
     """
+
 
 
     # NOTE: if I can make the multiple inheritance with the abstract get-type method work, delete this again.
@@ -288,7 +594,14 @@ class SpinWaveModel(Model):
         return energy
 
     def get_type(self) -> str:
-        """Overrides the 'get_type'-method to return the spinwave type."""
+        """Returns the type of the Model.
+
+        Returns
+        -------
+        str
+            Returns 'spinwave'.
+
+        """
 
         return 'spinwave'
 
@@ -328,7 +641,7 @@ class SpinWaveModel(Model):
 
     def set_single_ion_anisotropy(self,
                                   index: int,
-                                  vector: list[float] | npt.NDArray[np.float64],
+                                  vector: Vector,
                                   strength: float = None,
                                   space_group: int = 1) -> None:
         """Assigns single-ion anisotropy to a given site (same as 'set_onsite_vector'-method)."""

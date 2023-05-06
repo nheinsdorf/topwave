@@ -14,10 +14,13 @@
 import os
 import sys
 
+
 import sphinx_material
 
 sys.path.insert(0, os.path.abspath(".."))
 import topwave
+
+
 
 
 
@@ -48,7 +51,18 @@ extensions = [
     "sphinx.ext.viewcode",
     "IPython.sphinxext.ipython_console_highlighting",
     "IPython.sphinxext.ipython_directive",
+    # "numpydoc",
 ]
+
+autodoc_type_aliases = {'ComplexVector': 'ComplexVector',
+                        'Complex2x2': 'Complex2x2',
+                        'Coupling': 'Coupling',
+                        'IntVector': 'IntVector',
+                        'Matrix': 'Matrix',
+                        'PeriodicSite': 'PeriodicSite', # this is because for dataclasses it's weird with typehints
+                        'Real3x3': 'Real3x3',
+                        'Vector': 'Vector',
+                        'VectorList': 'VectorList'}
 
 autosummary_generate = True
 autoclass_content = "class"
@@ -122,6 +136,7 @@ html_theme = "sphinx_material"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_css_files = ['custom.css']
 
 html_title = "topwave"
 html_short_title = "topwave"
@@ -142,7 +157,7 @@ html_theme_options = {
     "repo_name": "nheinsdorf/topwave",
     "repo_type": "github",
     "globaltoc_collapse": True,
-    "globaltoc_depth": 2,
+    "globaltoc_depth": 3,
     "version_dropdown": True,
     "color_primary": "pink",
     "color_accent": "red",

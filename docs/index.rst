@@ -10,9 +10,11 @@
 The topwave library is a Python 3 package to quickly set up single-particle models and calculate their topological invariants.
 
 .. admonition:: Do you like topwave?
-   :class: custom
+   :class: seealso
 
-   Give us a star on GitHub! Tell your friends!
+   Give us a star on GitHub!
+
+
 
 The user creates interfaces with pymatgen and then blabla
 
