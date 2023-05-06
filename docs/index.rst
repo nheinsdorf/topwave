@@ -29,7 +29,7 @@ Using Wilson loops the Berry curvature and band topological invariants can be ef
 Topological classification of single-particle band structures have become a standard procedure in many branches of
 condensed matter physics. Many libraries to compute topological invariants, and even more to produce band structures exist.
 In my research as a PhD student I was playing around with a lot of effective models for many different types of materials.
-Topwave uses mostly well-known standard procedures. Me tyring to streamline the process of creating and classifying
+Topwave uses mostly well-known standard procedures. My attempt to streamline the process of creating and classifying
 effective lattice models is what provided the code base of this package.
 
 .. admonition:: Do you like topwave?
