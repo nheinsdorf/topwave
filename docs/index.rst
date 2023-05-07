@@ -97,6 +97,13 @@ https://doi.org/10.1103/PhysRevB.107.125111
    :caption: Contents:
 
 .. toctree::
+   :caption: Getting Started
+   :hidden:
+   :maxdepth: 2
+
+   getting-started
+
+.. toctree::
    :caption: Tutorials
    :hidden:
    :maxdepth: 2
