@@ -11,6 +11,19 @@ of e.g. electron or magnon spectra with only a few lines of code. The package in
 Python Materials Genomic library helping the user to quickly set up both easy toy models and more realistic simulations 
 for materials respecting the symmetries of the crystal structure.
 
+## Installation
+
+The `MentPy` library can be installed using `pip` with
+
+```bash
+pip install topwave
+```
+
+or directly from the source code for the latest version with
+
+```bash
+pip install git+https://github.com/nheinsdorf/topwave.git
+```
 
 ## Documentation
 
