@@ -1,21 +1,25 @@
-# Topwave
+:warning: **This library is under development.**
 
-Topwave is a Python library for the calculation of Tight Binding (TB) or Linear Spin Wave Theory (LSWT) spectra and their topological properties. 
+<p align="center">
+  <img src="./docs/_static/topwave-heading.png" alt="topwave: Toolbox for Topology of Single-Particle Spectra" width="70%">
+</p>
 
-The library is designed to be easy to read and use and should enable even new-comers to calculate topological properties of electron or magnon spectra with only a few lines of code. The package makes use of the extensive functionality of the Python Materials Genomics (Pymatgen) software package (https://github.com/materialsproject/pymatgen) helping the user to quickly set up both easy toy models and more realistic simulations for real materials respecting the symmetries of the provided space group. 
+The `topwave` library is an open-source software for simulations of single-particle models and the classification of their band topological phases.
 
-## Installation Instructions
-Pip or Conda soon
+The library is designed to be easy to use and read. It allows even new-comers to calculate topological properties 
+of e.g. electron or magnon spectra with only a few lines of code. The package interfaces with the extensive 
+Python Materials Genomic library helping the user to quickly set up both easy toy models and more realistic simulations 
+for materials respecting the symmetries of the crystal structure.
+
 
 ## Documentation
-Extensive documentation available at
 
-## I found a bug
+The documentation for `topwave` can be found <a href="https://topwave.readthedocs.io/en/latest/" target="_blank">here</a>.
 
-## Requesting Features and contributing
+## Contributing
 
-## Citing Topwave
-please cite
+We welcome contributions to `topwave`! Please see our [contributing guidelines](./CONTRIBUTING.md) for more information.
 
 ## License
-The code is licensed under given in the LICENSE of the repository.
+
+`topwave` is licensed under the [BSD 3-Clause License](./LICENSE).
