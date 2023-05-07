@@ -13,7 +13,7 @@ for materials respecting the symmetries of the crystal structure.
 
 ## Installation
 
-The `MentPy` library can be installed using `pip` with
+The `topwave` library can be installed using `pip` with
 
 ```bash
 pip install topwave
