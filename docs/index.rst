@@ -74,10 +74,17 @@ If this library was useful to you in your research, please cite us::
       url = {https://github.com/nheinsdorf/topwave},
    }
 
+
+Contributing
+------------
+If you would like to contribute to this project, please feel free to open an issue or pull request.
+
 .. admonition:: Used topwave in a paper?
    :class: warning
 
    Contact me and we can include your work as an example file in the documentation.
+
+Please see the `contributing guidelines <https://github.com/nheinsdorf/topwave/blob/master/CONTRIBUTING.md>`_ for more information.
 
 Topwave in Research
 -------------------

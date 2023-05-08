@@ -29,5 +29,6 @@ Import the :obj:`topwave` package and verify that it was installed correctly
 
 .. ipython:: python
 
-    print('rofl')
+    import topwave as tp
+    tp.__version__
 
