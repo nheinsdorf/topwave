@@ -124,6 +124,7 @@ https://doi.org/10.1103/PhysRevB.107.125111
    :hidden:
    :maxdepth: 2
 
+   examples/graphene.rst
    examples/breathing_pyrochlore.rst
 
 .. toctree::

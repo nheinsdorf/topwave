@@ -1,44 +1,80 @@
+from __future__ import annotations
+from abc import ABC, abstractmethod
+
 import numpy as np
+from pymatgen.core.structure import Structure
 
-class SetOfKPoints:
-    """Parent class for all SetOfKPoint objects
+from topwave.types import IntVector, VectorList
 
-    Parameters
-    ----------
-    kpoints : numpy.ndarray
-        Array of shape (num_kpoints x 3) specifying num_kpoints k-points in fractional, reciprocal coordinates.
-    shape : tuple
-        The shape of the kpoints in each direction, e.g. a grid or a plane. Default is None.
+__all__ = ["SetOfKPoints", "Path"]
+
+class SetOfKPoints(ABC):
+    """Base class that is used to parameterize paths and manifolds in reciprocal space.
+
+    This is an **abstract** base class. Use its child classes to instantiate a model.
+
     Attributes
     ----------
-    kpoints : numpy.ndarray
-        This is where kpoints is stored.
+    kpoints : VectorList
+        List of points in reciprocal space in reduced coordinates.
     num_kpoints : int
         Number of kpoints.
-    shape : tuple
-        This is where shape is stored. If None, it is set to (num_kpoints, 3)
-    """
-    def __init__(self, kpoints, shape=None):
-        try:
-            self.kpoints = np.array(kpoints, dtype=float).reshape((len(kpoints), 3))
-        except:
-            raise TypeError('SetOfKPoints needs to be a list (or array) of three-dimensional kpoints.')
-        if shape is not None:
-            try:
-                self.kpoints.reshape((*shape, 3))
-            except:
-                raise ValueError('Shape does not match the number of provided kpoints.')
 
-class Grid(SetOfKPoints):
-    """Grid of kpoints that span the whole three-dimensional Brillouin Zone.
+    """
+
+    def __init__(self):
+        self.kpoints = self.get_kpoints()
+        self.num_kpoints = len(self.kpoints)
+
+    @abstractmethod
+    def _get_kpoints(self) -> VectorList:
+        return self.kpoints
+
+
+class Path(SetOfKPoints):
+    """Path through reciprocal space.
 
     Parameters
     ----------
-    shape : tuple
-        Tuple of three integers that specify the number of kpoints in each direction of the reciprocal lattice.
-    struc : pymatgen.core.Structure
-        Pymatgen Structure that is used to construct the irreducible grid of kpoints.
-    space_group : int
-        International space group number. If None, the space group symmetry is determined from struc.
-        Default is None.
+    nodes: VectorList
+        List of (high-symmetry) points between which a path is created.
+    segment_lengths: IntVector
+        Number of points for each segment along the path. If None, its 100 points per segment. Default is None.
+
+    Examples
+    --------
+
+    Let's create a path
+
+    .. ipython:: python
+
+        print('lol')
+
     """
+
+    # TODO: put this into a static method and convert to dataclass
+    def __init__(self, nodes: VectorList, segment_lengths: list[int] = None):
+
+        self.kpoints = np.array([], dtype=np.float64).reshape((0, 3))
+        num_nodes = len(nodes)
+        self.nodes = np.array(nodes, dtype=np.float64).reshape((num_nodes, 3))
+
+        if segment_lengths is None:
+            self.segment_lengths = np.array([100] * (num_nodes - 1), dtype=np.int64)
+        else:
+            self.segment_lengths = np.array(segment_lengths, dtype=np.int64).reshape((num_nodes - 1,))
+        self.node_indices = np.concatenate(([0], np.cumsum(self.segment_lengths)), dtype=np.int64)
+
+        for start_point, end_point, segment_length in zip(self.nodes[:-1], self.nodes[1:], self.segment_lengths):
+            kpoints_segment = np.linspace(start_point, end_point, segment_length, endpoint=False)
+            self.kpoints = np.concatenate((self.kpoints, kpoints_segment), axis=0)
+        self.kpoints = np.concatenate((self.kpoints, self.nodes[-1].reshape((1, 3))), axis=0)
+
+    def _get_kpoints(self) -> VectorList:
+        return self.kpoints
+
+
+
+
+
+

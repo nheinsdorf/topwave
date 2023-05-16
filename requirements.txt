@@ -1,7 +1,7 @@
 numpy
 pandas
 pymatgen
+scikit-image
 scipy
 sympy
 tabulate
-

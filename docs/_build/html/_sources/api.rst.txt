@@ -5,6 +5,21 @@ Topwave
 
 ``Topwave`` is composed of the following modules:
 
+k_space_utils
+-------------
+
+.. automodule:: topwave.k_space_utils
+    :members:
+    :undoc-members:
+
+
+set_of_kpoints
+--------------
+
+.. automodule:: topwave.set_of_kpoints
+    :members:
+    :undoc-members:
+
 
 model
 -----

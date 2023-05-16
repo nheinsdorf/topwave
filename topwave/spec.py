@@ -8,6 +8,7 @@ from numpy.linalg import eigh, eigvals, inv, multi_dot
 
 from topwave import solvers
 from topwave.constants import G_LANDE, MU_BOHR
+from topwave.set_of_kpoints import SetOfKPoints
 from topwave.model import Model, SpinWaveModel, TightBindingModel
 from topwave.util import pauli
 
@@ -25,8 +26,13 @@ class Spec:
     k_points_xyz: npt.NDArray[np.float64] = field(init=False)
     psi: npt.NDArray[np.float64] = field(init=False)
 
+    # TODO: refactor k_points to kpoints
     def __post_init__(self) -> None:
-        self.k_points = np.array(self.k_points, dtype=np.float64).reshape((-1, 3))
+        if isinstance(self.k_points, SetOfKPoints):
+            self.k_points = self.k_points.kpoints
+        else:
+            self.k_points = np.array(self.k_points, dtype=np.float64).reshape((-1, 3))
+
         self.k_points_xyz = 2 * np.pi * np.einsum('ka, ab -> kb', self.k_points, inv(self.model.structure.lattice.matrix))
 
         if self.model.type == 'spinwave':
