@@ -104,6 +104,14 @@ def get_elevation_angle(vector: npt.ArrayLike,
         return np.rad2deg(angle)
     return angle
 
+def get_plaquette_indices(normal: str) -> tuple[int, int, int]:
+    match normal:
+        case 'x':
+            return 2, 0, 1
+        case 'y':
+            return 0, 2, 1
+        case 'z':
+            return 0, 1, 2
 
 def get_span_indices(normal: str) -> tuple[int, int, int]:
     match normal:

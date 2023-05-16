@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
+from skimage.util import view_as_windows
 
 from topwave.types import IntVector, VectorList
 from topwave.util import get_span_indices
@@ -56,11 +57,14 @@ def PlaquetteCover(normal: str,
 
     """
 
-    x = np.linspace(x_min, x_max, num_x, endpoint=False)
-    y = np.linspace(y_min, y_max, num_y, endpoint=False)
+    x = np.linspace(x_min, x_max, num_x + 1, endpoint=True)
+    y = np.linspace(y_min, y_max, num_y + 1, endpoint=True)
     xx, yy = np.meshgrid(x, y, indexing='ij')
-    zz = np.zeros(xx.shape, dtype=np.float64)
-
 
     id_x, id_y, id_z = get_span_indices(normal)
+    plaquettes = [view_as_windows(xx, (2, 2)),
+                  view_as_windows(yy, (2, 2)),
+                  np.zeros((num_x, num_y, 2, 2), dtype=np.float64)][]
+
+
 
