@@ -205,13 +205,32 @@
   <ul class="md-nav__list">
     <li class="md-nav__item">
     
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../getting-started.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
       <span class="md-nav__link caption"><span class="caption-text">Tutorials</span></span>
     
     </li>
     <li class="md-nav__item">
     
     
-      <a href="../../tutorials/intro-to-coupling.html" class="md-nav__link">Introduction to Couplings</a>
+      <a href="../../tutorials/intro-to-spinwave.html" class="md-nav__link">Spin-Wave Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../tutorials/intro-to-tightbinding.html" class="md-nav__link">Tight-Binding Models</a>
       
     
     </li>
@@ -223,13 +242,20 @@
     <li class="md-nav__item">
     
     
+      <a href="../../examples/graphene.html" class="md-nav__link">Graphene</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="../../examples/breathing_pyrochlore.html" class="md-nav__link">Magnon Weyl Nodes</a>
       
     
     </li>
     <li class="md-nav__item">
     
-      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+      <span class="md-nav__link caption"><span class="caption-text">API Reference</span></span>
     
     </li>
     <li class="md-nav__item">
@@ -368,6 +394,14 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">angle</span></div>
 
+<div class="viewcode-block" id="get_plaquette_indices"><a class="viewcode-back" href="../../api.html#topwave.util.get_plaquette_indices">[docs]</a><span class="k">def</span> <span class="nf">get_plaquette_indices</span><span class="p">(</span><span class="n">normal</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">match</span> <span class="n">normal</span><span class="p">:</span>
+        <span class="k">case</span> <span class="s1">'x'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="k">case</span> <span class="s1">'y'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span>
+        <span class="k">case</span> <span class="s1">'z'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span></div>
 
 <div class="viewcode-block" id="get_span_indices"><a class="viewcode-back" href="../../api.html#topwave.util.get_span_indices">[docs]</a><span class="k">def</span> <span class="nf">get_span_indices</span><span class="p">(</span><span class="n">normal</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
     <span class="k">match</span> <span class="n">normal</span><span class="p">:</span>

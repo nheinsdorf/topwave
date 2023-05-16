@@ -41,14 +41,35 @@ class Path(SetOfKPoints):
     segment_lengths: IntVector
         Number of points for each segment along the path. If None, its 100 points per segment. Default is None.
 
+    Attributes
+    ----------
+    kpoints: VectorList
+        List of points in reciprocal space in reduced coordinates.
+    nodes: VectorList
+        This is where nodes is saved.
+    node_indices: IntVector
+        Indices of the kpoints that correspond to the nodes.
+    num_kpoints : int
+        Number of kpoints.
+    segment_lenghts: IntVector
+        Number of kpoints between each node.
+
     Examples
     --------
 
-    Let's create a path
+    Let's create a path from Gamma to M to K and back to Gamma.
 
     .. ipython:: python
 
-        print('lol')
+        path = tp.Path([[0, 0, 0],
+                        [1 / 2, 0, 0],
+                        [1 / 3, 1 / 3, 0],
+                        [0, 0, 0]])
+
+        fig, ax = plt.subplots()
+        ax.plot(*path.kpoints[:, :2].T)
+        @savefig path.png
+        ax.scatter(*path.nodes[:, :2].T)
 
     """
 

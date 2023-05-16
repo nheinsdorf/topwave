@@ -269,13 +269,25 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#module-topwave.k_space_utils" class="md-nav__link">k_space_utils</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#topwave.k_space_utils.PlaquetteCover" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PlaquetteCover()</span></code></a>
+        <li class="md-nav__item"><a href="#topwave.k_space_utils.get_plaquette_cover" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_plaquette_cover()</span></code></a>
         </li></ul>
             </nav>
         </li>
         <li class="md-nav__item"><a href="#module-topwave.set_of_kpoints" class="md-nav__link">set_of_kpoints</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path</span></code></a>
+        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path.kpoints" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path.kpoints</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path.nodes" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path.nodes</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path.node_indices" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path.node_indices</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path.num_kpoints" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path.num_kpoints</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path.segment_lenghts" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path.segment_lenghts</span></code></a>
+        </li></ul>
+            </nav>
         </li>
         <li class="md-nav__item"><a href="#topwave.set_of_kpoints.SetOfKPoints" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SetOfKPoints</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
@@ -415,6 +427,8 @@
         </li>
         <li class="md-nav__item"><a href="#topwave.util.get_elevation_angle" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_elevation_angle()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#topwave.util.get_plaquette_indices" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_plaquette_indices()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#topwave.util.get_span_indices" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_span_indices()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.util.pauli" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">pauli()</span></code></a>
@@ -438,7 +452,7 @@
     <li class="md-nav__item">
     
     
-      <a href="#topwave.k_space_utils.PlaquetteCover" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PlaquetteCover()</span></code></a>
+      <a href="#topwave.k_space_utils.get_plaquette_cover" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_plaquette_cover()</span></code></a>
       
     
     </li></ul>
@@ -599,6 +613,13 @@
     <li class="md-nav__item">
     
     
+      <a href="#topwave.util.get_plaquette_indices" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_plaquette_indices()</span></code></a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="#topwave.util.get_span_indices" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_span_indices()</span></code></a>
       
     
@@ -646,13 +667,25 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#module-topwave.k_space_utils" class="md-nav__link">k_space_utils</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#topwave.k_space_utils.PlaquetteCover" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">PlaquetteCover()</span></code></a>
+        <li class="md-nav__item"><a href="#topwave.k_space_utils.get_plaquette_cover" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_plaquette_cover()</span></code></a>
         </li></ul>
             </nav>
         </li>
         <li class="md-nav__item"><a href="#module-topwave.set_of_kpoints" class="md-nav__link">set_of_kpoints</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path</span></code></a>
+        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path.kpoints" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path.kpoints</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path.nodes" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path.nodes</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path.node_indices" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path.node_indices</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path.num_kpoints" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path.num_kpoints</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.set_of_kpoints.Path.segment_lenghts" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Path.segment_lenghts</span></code></a>
+        </li></ul>
+            </nav>
         </li>
         <li class="md-nav__item"><a href="#topwave.set_of_kpoints.SetOfKPoints" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">SetOfKPoints</span></code></a><nav class="md-nav">
               <ul class="md-nav__list">
@@ -792,6 +825,8 @@
         </li>
         <li class="md-nav__item"><a href="#topwave.util.get_elevation_angle" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_elevation_angle()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#topwave.util.get_plaquette_indices" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_plaquette_indices()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#topwave.util.get_span_indices" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_span_indices()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.util.pauli" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">pauli()</span></code></a>
@@ -819,14 +854,15 @@
 <section id="module-topwave.k_space_utils">
 <span id="k-space-utils"></span><h2 id="module-topwave.k_space_utils">k_space_utils<a class="headerlink" href="#module-topwave.k_space_utils" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="topwave.k_space_utils.PlaquetteCover">
-<span class="sig-prename descclassname"><span class="pre">topwave.k_space_utils.</span></span><span class="sig-name descname"><span class="pre">PlaquetteCover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">VectorList</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/k_space_utils.html#PlaquetteCover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.k_space_utils.PlaquetteCover" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="topwave.k_space_utils.get_plaquette_cover">
+<span class="sig-prename descclassname"><span class="pre">topwave.k_space_utils.</span></span><span class="sig-name descname"><span class="pre">get_plaquette_cover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">VectorList</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/k_space_utils.html#get_plaquette_cover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.k_space_utils.get_plaquette_cover" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds a rectangular cover of a plane through the Brillouin zone.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>normal</strong> (<em>str</em>) – A string indicating the normal of the plane in units of reciprocal lattice vectors.
 Options are ‘x’, ‘y’ or ‘z’.</p></li>
+<li><p><strong>anchor</strong> (<em>float</em>) – Where along the normal the plane is anchored. Default is 0.</p></li>
 <li><p><strong>num_x</strong> (<em>int</em>) – Number of plaquettes along the first vector that spans the plane.</p></li>
 <li><p><strong>num_y</strong> (<em>int</em>) – Number of plaquettes along the second vector that spans the plane.</p></li>
 <li><p><strong>x_min</strong> (<em>float</em>) – First component of the origin of the cover.</p></li>
@@ -847,11 +883,48 @@ Options are ‘x’, ‘y’ or ‘z’.</p></li>
 make sure that the cover spans the <strong>whole Brillouin zone</strong> exactly once. In other words,
 do not touch <cite>x_min</cite>, <cite>x_max</cite>, <cite>y_min</cite> and <cite>y_max</cite>.</p>
 <p class="rubric">Examples</p>
-<p>We create a 10-by-10 cover of the xy-plane.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="nb">print</span><span class="p">(</span><span class="s1">'lol'</span><span class="p">)</span>
-<span class="go">lol</span>
+<p>We create a 10-by-10 cover of the xy-plane anchored at z = 0.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="gp">In [2]: </span><span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Polygon</span>
+
+<span class="gp">In [3]: </span><span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">PatchCollection</span>
+
+<span class="gp">In [4]: </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="go"># Create the cover.</span>
+<span class="gp">In [5]: </span><span class="n">cover</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">get_plaquette_cover</span><span class="p">(</span><span class="s1">'z'</span><span class="p">)</span>
+
+<span class="go"># We plot each plaquette as a polygon and give it a random color.</span>
+<span class="gp">In [6]: </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">188</span><span class="p">)</span>
+
+<span class="gp">In [7]: </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="gp">In [8]: </span><span class="n">patches</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="gp">In [9]: </span><span class="k">for</span> <span class="n">plaquette</span> <span class="ow">in</span> <span class="n">cover</span><span class="p">:</span>
+<span class="gp">   ...: </span>    <span class="n">patches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Polygon</span><span class="p">(</span><span class="n">plaquette</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">closed</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="gp">   ...: </span>
+
+<span class="gp">In [10]: </span><span class="n">colors</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">patches</span><span class="p">))</span>
+
+<span class="gp">In [11]: </span><span class="n">p</span> <span class="o">=</span> <span class="n">PatchCollection</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">hsv</span><span class="p">)</span>
+
+<span class="gp">In [12]: </span><span class="n">p</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
+
+<span class="gp">In [13]: </span><span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="gh">Out[13]: </span><span class="go">&lt;matplotlib.collections.PatchCollection at 0x16b909750&gt;</span>
+
+<span class="gp">In [14]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="gh">Out[14]: </span><span class="go">(-0.5, 0.5)</span>
+
+<span class="gp">In [15]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="gh">Out[15]: </span><span class="go">(-0.5, 0.5)</span>
+
+<span class="gp">In [16]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">'equal'</span><span class="p">)</span>
 </pre></div>
 </div>
+<img alt="_images/plaquette_cover.png" src="_images/plaquette_cover.png"/>
 </dd></dl>
 </section>
 <section id="module-topwave.set_of_kpoints">
@@ -868,12 +941,77 @@ do not touch <cite>x_min</cite>, <cite>x_max</cite>, <cite>y_min</cite> and <cit
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="topwave.set_of_kpoints.Path.kpoints">
+<span class="sig-name descname"><span class="pre">kpoints</span></span><a class="headerlink" href="#topwave.set_of_kpoints.Path.kpoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of points in reciprocal space in reduced coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>VectorList</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="topwave.set_of_kpoints.Path.nodes">
+<span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#topwave.set_of_kpoints.Path.nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is where nodes is saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>VectorList</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="topwave.set_of_kpoints.Path.node_indices">
+<span class="sig-name descname"><span class="pre">node_indices</span></span><a class="headerlink" href="#topwave.set_of_kpoints.Path.node_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indices of the kpoints that correspond to the nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>IntVector</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="topwave.set_of_kpoints.Path.num_kpoints">
+<span class="sig-name descname"><span class="pre">num_kpoints</span></span><a class="headerlink" href="#topwave.set_of_kpoints.Path.num_kpoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of kpoints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="topwave.set_of_kpoints.Path.segment_lenghts">
+<span class="sig-name descname"><span class="pre">segment_lenghts</span></span><a class="headerlink" href="#topwave.set_of_kpoints.Path.segment_lenghts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of kpoints between each node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>IntVector</p>
+</dd>
+</dl>
+</dd></dl>
 <p class="rubric">Examples</p>
-<p>Let’s create a path</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="nb">print</span><span class="p">(</span><span class="s1">'lol'</span><span class="p">)</span>
-<span class="go">lol</span>
+<p>Let’s create a path from Gamma to M to K and back to Gamma.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">path</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">Path</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+<span class="gp">   ...: </span>                <span class="p">[</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+<span class="gp">   ...: </span>                <span class="p">[</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+<span class="gp">   ...: </span>                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="gp">   ...: </span>
+
+<span class="gp">In [2]: </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="gp">In [3]: </span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="gh">Out[3]: </span><span class="go">[&lt;matplotlib.lines.Line2D at 0x16b66be10&gt;]</span>
+
+<span class="gp">In [4]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="o">.</span><span class="n">nodes</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="gh">Out[4]: </span><span class="go">&lt;matplotlib.collections.PathCollection at 0x16bafad10&gt;</span>
+
+<span class="gp">In [5]: </span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s1">'Gamma'</span><span class="p">)</span>
+<span class="gh">Out[5]: </span><span class="go">Text(0.0, 0.0, 'Gamma')</span>
 </pre></div>
 </div>
+<img alt="_images/path.png" src="_images/path.png"/>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="topwave.set_of_kpoints.SetOfKPoints">
@@ -1719,6 +1857,10 @@ does not minimize the classical energy (e.g. in frustrated systems) that is not 
 <span class="sig-prename descclassname"><span class="pre">topwave.util.</span></span><span class="sig-name descname"><span class="pre">get_elevation_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/topwave/util.html#get_elevation_angle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.util.get_elevation_angle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the elevation angle of a three component vector w.r.t. [0, 0, 1].</p>
 </dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="topwave.util.get_plaquette_indices">
+<span class="sig-prename descclassname"><span class="pre">topwave.util.</span></span><span class="sig-name descname"><span class="pre">get_plaquette_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/util.html#get_plaquette_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.util.get_plaquette_indices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="topwave.util.get_span_indices">
 <span class="sig-prename descclassname"><span class="pre">topwave.util.</span></span><span class="sig-name descname"><span class="pre">get_span_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/util.html#get_span_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.util.get_span_indices" title="Permalink to this definition">¶</a></dt>
