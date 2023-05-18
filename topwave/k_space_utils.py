@@ -10,13 +10,14 @@ from topwave.util import get_plaquette_indices
 __all__ = ["get_plaquette_cover"]
 
 def get_plaquette_cover(normal: str,
+                        num_x: int,
+                        num_y: int,
                         anchor: float = 0.0,
-                        num_x: int = 10,
-                        num_y: int = 10,
                         x_min: float = -0.5,
                         x_max: float = 0.5,
                         y_min: float = -0.5,
-                        y_max: float = 0.5) -> list[VectorList]:
+                        y_max: float = 0.5,
+                        closed: bool = True) -> list[VectorList]:
     """Builds a rectangular cover of a plane through the Brillouin zone.
 
     Parameters
@@ -24,12 +25,12 @@ def get_plaquette_cover(normal: str,
     normal: str
         A string indicating the normal of the plane in units of reciprocal lattice vectors.
         Options are 'x', 'y' or 'z'.
-    anchor: float
-        Where along the normal the plane is anchored. Default is 0.
     num_x: int
         Number of plaquettes along the first vector that spans the plane.
     num_y: int
         Number of plaquettes along the second vector that spans the plane.
+    anchor: float
+        Where along the normal the plane is anchored. Default is 0.
     x_min: float
         First component of the origin of the cover.
     x_max: float
@@ -38,6 +39,9 @@ def get_plaquette_cover(normal: str,
         Second component of the origin of the cover.
     y_max: float
         Second component of the end point of the cover.
+    closed: bool
+        If True, the first and last k-point of the plaquette are identified with each other by adding a fifth point,
+        e.g. for the calculation of Wilson loops. Default is True.
 
     Returns
     -------
@@ -63,7 +67,7 @@ def get_plaquette_cover(normal: str,
         import matplotlib.pyplot as plt
 
         # Create the cover.
-        cover = tp.get_plaquette_cover('z')
+        cover = tp.get_plaquette_cover('z', 10, 10, closed=False)
 
         # We plot each plaquette as a polygon and give it a random color.
         np.random.seed(188)
@@ -92,7 +96,10 @@ def get_plaquette_cover(normal: str,
     plaquettes = np.array([view_as_windows(xx, (2, 2)),
                            view_as_windows(yy, (2, 2)),
                            zz], dtype=np.float64)[[id_x, id_y, id_z]]
-    return list(plaquettes.reshape((3, num_x * num_y, 4))[:, :, [0, 1, 3, 2]].transpose(1, 2, 0))
+    plaquettes = plaquettes.reshape((3, num_x * num_y, 4))[:, :, [0, 1, 3, 2]].transpose(1, 2, 0)
+    if closed:
+        return list(np.concatenate((plaquettes, plaquettes[:, 0, :].reshape((num_x * num_y, 1, 3))), axis=1))
+    return list(plaquettes)
 
 
 

@@ -4,9 +4,10 @@ from abc import ABC, abstractmethod
 import numpy as np
 from pymatgen.core.structure import Structure
 
-from topwave.types import IntVector, VectorList
+from topwave.types import Vector, VectorList
+from topwave.util import rotate_vector_to_ez
 
-__all__ = ["SetOfKPoints", "Path"]
+__all__ = ["Circle", "SetOfKPoints", "Path"]
 
 class SetOfKPoints(ABC):
     """Base class that is used to parameterize paths and manifolds in reciprocal space.
@@ -27,6 +28,70 @@ class SetOfKPoints(ABC):
         self.num_kpoints = len(self.kpoints)
 
     @abstractmethod
+    def _get_kpoints(self) -> VectorList:
+        return self.kpoints
+
+class Circle(SetOfKPoints):
+    """A circle through reciprocal space.
+
+    Parameters
+    ----------
+    radius: float
+        Radius in reduced reciprocal lattice units of the circle.
+    center: Vector
+        Where in reciprocal space the circle is centered.
+    normal: Vector
+        The normal of the plane the circle lies in.
+    num_kpoints: int
+        The number of k-points used to parameterize the circle. Default is 100.
+    endpoint: bool
+        If True, the first and last point are identified, e.g. for Wilson loop calculations.
+        Default is True.
+
+    Attributes
+    ----------
+    kpoints: VectorList
+        List of points in reciprocal space in reduced coordinates.
+    normal: Vector
+        This is where normal is saved.
+    num_kpoints : int
+        Number of k-points.
+
+    Examples
+    --------
+
+    Let's create a path from Gamma to M to K and back to Gamma.
+
+    .. ipython:: python
+
+        circle = tp.Circle(radius=0.2, center=[0, 0, 0], normal=[1, 0, 1])
+
+        fig = plt.figure()
+        ax = plt.axes(projection='3d')
+        ax.scatter(*circle.kpoints.T)
+        ax.set_xlabel(r'$k_x$')
+        ax.set_ylabel(r'$k_y$')
+        @savefig circle.png
+        ax.set_zlabel(r'$k_z$')
+
+    """
+
+    def __init__(self,
+                 radius: float,
+                 center: Vector,
+                 normal: Vector,
+                 num_kpoints: int = 100,
+                 endpoint: bool = True) -> None:
+
+
+        angles = np.linspace(0, 2 * np.pi, num_kpoints, endpoint=endpoint)
+        kpoints = np.array([radius * np.cos(angles),
+                            radius * np.sin(angles),
+                            np.zeros(num_kpoints)], dtype=np.float64).T
+
+        inverse_rotation = rotate_vector_to_ez(normal).T
+        self.kpoints = np.einsum('nm, kn -> km', inverse_rotation, kpoints) + center
+
     def _get_kpoints(self) -> VectorList:
         return self.kpoints
 
@@ -68,13 +133,15 @@ class Path(SetOfKPoints):
 
         fig, ax = plt.subplots()
         ax.plot(*path.kpoints[:, :2].T)
-        @savefig path.png
         ax.scatter(*path.nodes[:, :2].T)
+        ax.set_xlabel(r'$k_x$')
+        @savefig path.png
+        ax.set_ylabel(r'$k_y$')
 
     """
 
     # TODO: put this into a static method and convert to dataclass
-    def __init__(self, nodes: VectorList, segment_lengths: list[int] = None):
+    def __init__(self, nodes: VectorList, segment_lengths: list[int] = None) -> None:
 
         self.kpoints = np.array([], dtype=np.float64).reshape((0, 3))
         num_nodes = len(nodes)

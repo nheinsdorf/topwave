@@ -49,6 +49,13 @@ supercell
     :members:
     :undoc-members:
 
+topology
+--------
+
+.. automodule:: topwave.topology
+    :members:
+    :undoc-members:
+
 util
 ----
 
