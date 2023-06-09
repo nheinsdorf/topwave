@@ -4,10 +4,10 @@ from abc import ABC, abstractmethod
 import numpy as np
 from pymatgen.core.structure import Structure
 
-from topwave.types import Vector, VectorList
+from topwave.types import RealList, Vector, VectorList
 from topwave.util import rotate_vector_to_ez
 
-__all__ = ["Circle", "SetOfKPoints", "Path"]
+__all__ = ["Circle", "SetOfKPoints", "Path", "Plane"]
 
 class SetOfKPoints(ABC):
     """Base class that is used to parameterize paths and manifolds in reciprocal space.
@@ -141,7 +141,9 @@ class Path(SetOfKPoints):
     """
 
     # TODO: put this into a static method and convert to dataclass
-    def __init__(self, nodes: VectorList, segment_lengths: list[int] = None) -> None:
+    def __init__(self,
+                 nodes: VectorList,
+                 segment_lengths: list[int] = None) -> None:
 
         self.kpoints = np.array([], dtype=np.float64).reshape((0, 3))
         num_nodes = len(nodes)
@@ -161,28 +163,39 @@ class Path(SetOfKPoints):
     def _get_kpoints(self) -> VectorList:
         return self.kpoints
 
-
 class Plane(SetOfKPoints):
-    """A Plane in reciprocal space.
+    """A plane through the Brillouin zone.
+
 
     Parameters
     ----------
-    x_min: float
-        Radius in reduced reciprocal lattice units of the circle.
-    center: Vector
-        Where in reciprocal space the plane is centered.
     normal: Vector
-        The normal of the plane the circle lies in.
-    num_kpoints_x: int
-        The number of k-points along the first direction of the plane. Default is 100.
-    num_kpoints_y: int
-        The number of k-points along the second direction of the plane. Default is 100.
-    endpoint: bool
-        If True, the first and last point are identified, e.g. for Wilson loop calculations.
-        Default is True.
+        The normal of the plane.
+    num_x: int
+        Number of points along the first vector that spans the plane.
+    num_y: int
+        Number of points along the second vector that spans the plane.
+    anchor: float
+        Where along the normal the plane is anchored. Default is 0.
+    x_min: float
+        First component of the first point of the plane. Default is -0.5.
+    x_max: float
+        First component of the end point of the plane. Default is 0.5.
+    y_min: float
+        Second component of the first point of the plane. Default is -0.5.
+    y_max: float
+        Second component of the end point of the plane. Default is 0.5.
+    endpoint_x: bool
+        If True, x_max is the boundary of the plane in the first direction. Default is False.
+    endpoint_y: bool
+        If True, x_max is the boundary of the plane in the first direction. Default is False.
 
     Attributes
     ----------
+    anchor: float
+        This is where anchor is saved.
+    extent: tuple[float, float, float, float]
+        This is where x_min, x_max, y_min and y_max are stored.
     kpoints: VectorList
         List of points in reciprocal space in reduced coordinates.
     normal: Vector
@@ -190,44 +203,64 @@ class Plane(SetOfKPoints):
     num_kpoints : int
         Number of k-points.
 
+    Notes
+    -----
+    If the plane is used to compute quantities that are obtained by integrating over the Brillouin zone in
+    two-dimensions, e.g. the density of states of graphene, set `closed` to False to avoid double counting the points
+    on the boundaries of the plane and leave `x_min`, `x_max`, `y_min` and `y_max` to their default values.
+
+
     Examples
     --------
 
-    Let's create a path from Gamma to M to K and back to Gamma.
+    We construct three planes and plot them.
 
     .. ipython:: python
 
-        circle = tp.Circle(radius=0.2, center=[0, 0, 0], normal=[1, 0, 1])
+        import matplotlib.pyplot as plt
+
+        # Create the planes.
+        num_x, num_y = 31, 31
+        plane_xy = tp.Plane([0, 0, 1], num_x, num_y, endpoint_x=True, endpoint_y=True)
+        plane_xy_shifted = tp.Plane([0, 0, 1], num_x, num_y, anchor=0.1, endpoint_x=True, endpoint_y=True)
+        plane_101 = tp.Plane([1, 0, 1], num_x, num_y, endpoint_x=True, endpoint_y=True)
 
         fig = plt.figure()
         ax = plt.axes(projection='3d')
-        ax.scatter(*circle.kpoints.T)
-        ax.set_xlabel(r'$k_x$')
-        ax.set_ylabel(r'$k_y$')
-        @savefig circle.png
-        ax.set_zlabel(r'$k_z$')
+        for plane in [plane_xy, plane_xy_shifted, plane_011]:
+            ax.scatter(*plane.kpoints.T)
+        ax.set_xlabel(r'$k_x$');
+        ax.set_ylabel(r'$k_y$');
+        @savefig plane.png
+        ax.set_zlabel(r'$k_z$');
 
     """
 
     def __init__(self,
-                 radius: float,
-                 center: Vector,
                  normal: Vector,
-                 num_kpoints: int = 100,
-                 endpoint: bool = True) -> None:
+                 num_x: int,
+                 num_y: int,
+                 anchor: float = 0.0,
+                 x_min: float = -0.5,
+                 x_max: float = 0.5,
+                 y_min: float = -0.5,
+                 y_max: float = 0.5,
+                 endpoint_x: bool = False,
+                 endpoint_y: bool = False) -> None:
 
+        self.anchor = anchor
+        self.extent = (x_min, x_max, y_min, y_max)
+        self.normal = np.array(normal, dtype=np.float64)
+        self.num_kpoints = num_x * num_y
 
-        angles = np.linspace(0, 2 * np.pi, num_kpoints, endpoint=endpoint)
-        kpoints = np.array([radius * np.cos(angles),
-                            radius * np.sin(angles),
-                            np.zeros(num_kpoints)], dtype=np.float64).T
+        span_x = np.linspace(x_min, x_max, num_x, endpoint=endpoint_x)
+        span_y = np.linspace(y_min, y_max, num_y, endpoint=endpoint_y)
+        kxs, kys = np.meshgrid(span_x, span_y, indexing='ij')
+        kpoints = np.array([kxs.flatten(), kys.flatten(), np.zeros(self.num_kpoints)], dtype=np.float64).T
 
         inverse_rotation = rotate_vector_to_ez(normal).T
-        self.kpoints = np.einsum('nm, kn -> km', inverse_rotation, kpoints) + center
+        self.kpoints = np.einsum('nm, kn -> km', inverse_rotation, kpoints) + anchor * self.normal
 
     def _get_kpoints(self) -> VectorList:
         return self.kpoints
-
-
-
 

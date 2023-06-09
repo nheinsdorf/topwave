@@ -32,11 +32,11 @@ def get_plaquette_cover(normal: str,
     anchor: float
         Where along the normal the plane is anchored. Default is 0.
     x_min: float
-        First component of the origin of the cover.
+        First component of the first point of the cover.
     x_max: float
         First component of the end point of the cover.
     y_min: float
-        Second component of the origin of the cover.
+        Second component of the first point of the cover.
     y_max: float
         Second component of the end point of the cover.
     closed: bool
