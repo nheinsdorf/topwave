@@ -2,13 +2,15 @@ from itertools import product
 
 import numpy as np
 import numpy.typing as npt
-from pymatgen.core.structure import Structure
+from pymatgen.core.structure import Lattice, Structure
 from topwave.coupling import Coupling
 from topwave.model import Model, SpinWaveModel, TightBindingModel
 from topwave import util
+from topwave.types import RealList
 
-__all__ = ["Supercell"]
+#__all__ = ["Supercell"]
 
+# TODO: rewrite this into a method
 class Supercell(SpinWaveModel, TightBindingModel):
     """Supercell of a given model."""
 
@@ -81,6 +83,125 @@ class Supercell(SpinWaveModel, TightBindingModel):
                 self.couplings.append(new_coupling)
                 self.set_coupling(new_coupling_index, coupling.strength, attribute='index')
                 self.set_spin_orbit(new_coupling_index, coupling.spin_orbit, attribute='index')
+
+def stack(layers: list[Model],
+          spacings: RealList,
+          direction: str = 'z',
+          vacuum: float = 10) -> Model:
+    """Creates stacks of models in a given stacking direction.
+
+    This function creates stacked models. Onsite properties and intralayer couplings are transferred to the new model.
+    Because the resulting model is usually treated as two-dimensional, the method adds vacuum to the new unit cell.
+
+    .. admonition:: Compatible Lattices
+            :class: warning
+
+            This method assumes that the models have the same lattice structure, i.e. the unit cell area within
+            the plane is not increased by the stacking.
+
+
+    Parameters
+    ----------
+    layers: list[Model]
+        A list of models that are stacked on top of each other.
+    spacings: RealList
+        List of floats that specify the interlayer distances in Angstrom. Length should be the number of models minus 1.
+    direction: str
+        A string indicating along which lattice vector the models are stacked. Options are 'x', 'y' and 'z'.
+        Default is 'z'.
+    vacuum: float
+        How much vacuum in Angstrom is added to the stacked unit cell. Default is 10.
+
+    Returns
+    -------
+    Model
+        The stacked model.
+
+    Examples
+    --------
+
+    Create an bernal bilayer of graphene.
+
+    .. ipython:: python
+
+        # build two graphene models with staggered displacement fields (onsite terms)
+        lattice = Lattice.hexagonal(1.42, 1)
+        layer_A = Structure.from_spacegroup(sg=191, lattice=lattice, species=['C'], coords=[[1 / 3, 2 / 3, 0]])
+        layer_B = layer_A.copy()
+        # shift layer_B to get bernal-type stacking
+        layer_B.translate_sites(indices=[0, 1], vector=layer_A.frac_coords[0])
+        model_A, model_B = tp.TightBindingModel(layer_A), tp.TightBindingModel(layer_B)
+
+        displacement_field = 0.2
+        model_A.set_onsite_scalar(1, displacement_field)
+        model_B.set_onsite_scalar(0, -displacement_field)
+
+        # stack the models with interlayer distance 3.44 Angstrom
+        model_bernal = tp.stack([model_A, model_B], [3.44])
+
+        # the onsite terms have been transferred (see column 'onsite scalar')
+        model_bernal.show_site_properties()
+        # plot the supercell when supercell is updated
+
+    """
+
+    structures = [layer.structure.copy() for layer in layers]
+    stacked_structure = _get_stacked_structure(structures, spacings, direction, vacuum)
+    stacked_model = object.__new__(type(layers[0]), stacked_structure)
+    stacked_model.__init__(stacked_structure, import_site_properties=True)
+
+    return stacked_model
+
+def _get_stacked_structure(layers: list[Structure],
+                           spacings: RealList,
+                           direction: str = 'z',
+                           vacuum: float = 10) -> Structure:
+    """Creates a stacked structure in a given stacking direction.
+
+
+    Parameters
+    ----------
+    layers: list[Structure]
+        A list of structures that are stacked on top of each other.
+    spacings: RealList
+        List of floats that specify the interlayer distances in Angstrom. Length should be the number of models minus 1.
+    direction: str
+        A string indicating along which lattice vector the models are stacked. Options are 'x', 'y' and 'z'.
+        Default is 'z'.
+    vacuum: float
+        How much vacuum in Angstrom is added to the stacked unit cell. Default is 10.
+
+    Returns
+    -------
+    Structure
+        The stacked structure.
+
+    """
+
+
+    normal_index = 'xyz'.find(direction)
+    plane_indices = np.delete(np.arange(3), normal_index)
+    stack_height = np.array(spacings, dtype=np.float64).sum()
+    layer_positions = np.concatenate(([0], np.cumsum(spacings)), dtype=np.float64, axis=0)
+    lattice_parameters = list(layers[0].lattice.parameters)
+    lattice_parameters[normal_index] = stack_height + vacuum
+    new_lattice = Lattice.from_parameters(*lattice_parameters)
+    structure = Structure.from_spacegroup(sg=1, lattice=new_lattice, species=[], coords=[])
+
+    for layer_index, (layer, layer_position) in enumerate(zip(layers, layer_positions)):
+        for site_index, site in enumerate(layer):
+            site.properties['layer'] = layer_index
+            layer_shift = np.zeros(3)
+            layer_shift[normal_index] = layer_position
+            structure.append(site.species_string, site.coords + layer_shift,
+                             properties=site.properties, coords_are_cartesian=True)
+
+    for new_site_index, site in enumerate(structure):
+        site.properties['index'] = new_site_index
+
+    return structure
+
+
 #
 # class Twist(SpinWaveModel, TightBindingModel):
 #     """Adds a twisted layer to a given model."""

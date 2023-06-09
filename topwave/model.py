@@ -45,7 +45,8 @@ class Model(ABC):
                  structure: Structure,
                  import_site_properties: bool = False) -> None:
 
-        self.structure = structure
+        # NOTE: should I copy?
+        self.structure = structure.copy()
         self.type = self.get_type()
 
         # allocate site properties and enumerate them by an index

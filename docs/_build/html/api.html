@@ -417,6 +417,8 @@
         <li class="md-nav__item"><a href="#topwave.supercell.Supercell.get_supercell_structure" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Supercell.get_supercell_structure()</span></code></a>
         </li></ul>
             </nav>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.supercell.stack" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">stack()</span></code></a>
         </li></ul>
             </nav>
         </li>
@@ -572,6 +574,13 @@
     
     
       <a href="#topwave.supercell.Supercell" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Supercell</span></code></a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#topwave.supercell.stack" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">stack()</span></code></a>
       
     
     </li></ul>
@@ -870,6 +879,8 @@
         <li class="md-nav__item"><a href="#topwave.supercell.Supercell.get_supercell_structure" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Supercell.get_supercell_structure()</span></code></a>
         </li></ul>
             </nav>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.supercell.stack" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">stack()</span></code></a>
         </li></ul>
             </nav>
         </li>
@@ -991,7 +1002,7 @@ do not touch <cite>x_min</cite>, <cite>x_max</cite>, <cite>y_min</cite> and <cit
 <span class="gp">In [12]: </span><span class="n">p</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
 
 <span class="gp">In [13]: </span><span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-<span class="gh">Out[13]: </span><span class="go">&lt;matplotlib.collections.PatchCollection at 0x1325f7c50&gt;</span>
+<span class="gh">Out[13]: </span><span class="go">&lt;matplotlib.collections.PatchCollection at 0x16b759b10&gt;</span>
 
 <span class="gp">In [14]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="gh">Out[14]: </span><span class="go">(-0.5, 0.5)</span>
@@ -1062,7 +1073,7 @@ Default is True.</p></li>
 <span class="gp">In [3]: </span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">'3d'</span><span class="p">)</span>
 
 <span class="gp">In [4]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">circle</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[4]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x132763190&gt;</span>
+<span class="gh">Out[4]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x16be02090&gt;</span>
 
 <span class="gp">In [5]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_x$'</span><span class="p">)</span>
 <span class="gh">Out[5]: </span><span class="go">Text(0.5, 0, '$k_x$')</span>
@@ -1149,10 +1160,10 @@ Default is True.</p></li>
 <span class="gp">In [2]: </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 
 <span class="gp">In [3]: </span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[3]: </span><span class="go">[&lt;matplotlib.lines.Line2D at 0x137858050&gt;]</span>
+<span class="gh">Out[3]: </span><span class="go">[&lt;matplotlib.lines.Line2D at 0x16bec1b90&gt;]</span>
 
 <span class="gp">In [4]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="o">.</span><span class="n">nodes</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[4]: </span><span class="go">&lt;matplotlib.collections.PathCollection at 0x137849b50&gt;</span>
+<span class="gh">Out[4]: </span><span class="go">&lt;matplotlib.collections.PathCollection at 0x16bec2350&gt;</span>
 
 <span class="gp">In [5]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_x$'</span><span class="p">)</span>
 <span class="gh">Out[5]: </span><span class="go">Text(0.5, 0, '$k_x$')</span>
@@ -1961,6 +1972,77 @@ does not minimize the classical energy (e.g. in frustrated systems) that is not 
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_supercell_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#topwave.model.Model" title="topwave.model.Model"><span class="pre">Model</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Structure</span></span></span><a class="reference internal" href="_modules/topwave/supercell.html#Supercell.get_supercell_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.supercell.Supercell.get_supercell_structure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructs a supercell out of an existing model.</p>
 </dd></dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="topwave.supercell.stack">
+<span class="sig-prename descclassname"><span class="pre">topwave.supercell.</span></span><span class="sig-name descname"><span class="pre">stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#topwave.model.Model" title="topwave.model.Model"><span class="pre">topwave.model.Model</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vacuum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#topwave.model.Model" title="topwave.model.Model"><span class="pre">Model</span></a></span></span><a class="reference internal" href="_modules/topwave/supercell.html#stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.supercell.stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates stacks of models in a given stacking direction.</p>
+<p>This function creates stacked models. Onsite properties and intralayer couplings are transferred to the new model.
+Because the resulting model is usually treated as two-dimensional, the method adds vacuum to the new unit cell.</p>
+<div class="warning admonition">
+<p class="admonition-title">Compatible Lattices</p>
+<p>This method assumes that the models have the same lattice structure, i.e. the unit cell area within
+the plane is not increased by the stacking.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>layers</strong> (<em>list</em><em>[</em><a class="reference internal" href="#topwave.model.Model" title="topwave.model.Model"><em>Model</em></a><em>]</em>) – A list of models that are stacked on top of each other.</p></li>
+<li><p><strong>spacings</strong> (<em>RealList</em>) – List of floats that specify the interlayer distances in Angstrom. Length should be the number of models minus 1.</p></li>
+<li><p><strong>direction</strong> (<em>str</em>) – A string indicating along which lattice vector the models are stacked. Options are ‘x’, ‘y’ and ‘z’.
+Default is ‘z’.</p></li>
+<li><p><strong>vacuum</strong> (<em>float</em>) – How much vacuum in Angstrom is added to the stacked unit cell. Default is 10.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The stacked model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#topwave.model.Model" title="topwave.model.Model">Model</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Create an bernal bilayer of graphene.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="go"># build two graphene models with staggered displacement fields (onsite terms)</span>
+<span class="gp">In [1]: </span><span class="n">lattice</span> <span class="o">=</span> <span class="n">Lattice</span><span class="o">.</span><span class="n">hexagonal</span><span class="p">(</span><span class="mf">1.42</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="gp">In [2]: </span><span class="n">layer_A</span> <span class="o">=</span> <span class="n">Structure</span><span class="o">.</span><span class="n">from_spacegroup</span><span class="p">(</span><span class="n">sg</span><span class="o">=</span><span class="mi">191</span><span class="p">,</span> <span class="n">lattice</span><span class="o">=</span><span class="n">lattice</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="p">[</span><span class="s1">'C'</span><span class="p">],</span> <span class="n">coords</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+
+<span class="gp">In [3]: </span><span class="n">layer_B</span> <span class="o">=</span> <span class="n">layer_A</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="go"># shift layer_B to get bernal-type stacking</span>
+<span class="gp">In [4]: </span><span class="n">layer_B</span><span class="o">.</span><span class="n">translate_sites</span><span class="p">(</span><span class="n">indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">vector</span><span class="o">=</span><span class="n">layer_A</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="gp">In [5]: </span><span class="n">model_A</span><span class="p">,</span> <span class="n">model_B</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">TightBindingModel</span><span class="p">(</span><span class="n">layer_A</span><span class="p">),</span> <span class="n">tp</span><span class="o">.</span><span class="n">TightBindingModel</span><span class="p">(</span><span class="n">layer_B</span><span class="p">)</span>
+
+<span class="gp">In [6]: </span><span class="n">displacement_field</span> <span class="o">=</span> <span class="mf">0.2</span>
+
+<span class="gp">In [7]: </span><span class="n">model_A</span><span class="o">.</span><span class="n">set_onsite_scalar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">displacement_field</span><span class="p">)</span>
+
+<span class="gp">In [8]: </span><span class="n">model_B</span><span class="o">.</span><span class="n">set_onsite_scalar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">displacement_field</span><span class="p">)</span>
+
+<span class="go"># stack the models with interlayer distance 3.44 Angstrom</span>
+<span class="gp">In [9]: </span><span class="n">model_bernal</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">model_A</span><span class="p">,</span> <span class="n">model_B</span><span class="p">],</span> <span class="p">[</span><span class="mf">3.44</span><span class="p">])</span>
+
+<span class="go"># the onsite terms have been transferred (see column 'onsite scalar')</span>
+<span class="gp">In [10]: </span><span class="n">model_bernal</span><span class="o">.</span><span class="n">show_site_properties</span><span class="p">()</span>
+<span class="go">╒═════════╤═══════════╤════════════╤═══════════════════════════════════════════════════╤═══════════════════════════════════════════════════╤══════════╤═════════════════╤═════════════════╤═══════════════════╤════════════════════╤═════════╕</span>
+<span class="go">│   index │ species   │   orbitals │ coordinates (latt.)                               │ coordinates (cart.)                               │ magmom   │   onsite scalar │ onsite vector   │ unit cell index   │ supercell vector   │   layer │</span>
+<span class="go">╞═════════╪═══════════╪════════════╪═══════════════════════════════════════════════════╪═══════════════════════════════════════════════════╪══════════╪═════════════════╪═════════════════╪═══════════════════╪════════════════════╪═════════╡</span>
+<span class="go">│       0 │ C1        │          1 │ [ 3.33333333e-01  6.66666667e-01 -9.41449788e-35] │ [-7.09999093e-11  8.19837382e-01  8.69499227e-17] │          │             0   │ [0. 0. 0.]      │                   │                    │       0 │</span>
+<span class="go">├─────────┼───────────┼────────────┼───────────────────────────────────────────────────┼───────────────────────────────────────────────────┼──────────┼─────────────────┼─────────────────┼───────────────────┼────────────────────┼─────────┤</span>
+<span class="go">│       1 │ C1        │          1 │ [ 6.66666667e-01  3.33333333e-01 -9.41449788e-35] │ [7.10000000e-01 4.09918691e-01 8.69499227e-17]    │          │             0.2 │ [0. 0. 0.]      │                   │                    │       0 │</span>
+<span class="go">├─────────┼───────────┼────────────┼───────────────────────────────────────────────────┼───────────────────────────────────────────────────┼──────────┼─────────────────┼─────────────────┼───────────────────┼────────────────────┼─────────┤</span>
+<span class="go">│       2 │ C1        │          1 │ [0.66666667 0.33333333 0.25595238]                │ [0.71       0.40991869 3.44      ]                │          │            -0.2 │ [0. 0. 0.]      │                   │                    │       1 │</span>
+<span class="go">├─────────┼───────────┼────────────┼───────────────────────────────────────────────────┼───────────────────────────────────────────────────┼──────────┼─────────────────┼─────────────────┼───────────────────┼────────────────────┼─────────┤</span>
+<span class="go">│       3 │ C1        │          1 │ [0.         0.         0.25595238]                │ [0.   0.   3.44]                                  │          │             0   │ [0. 0. 0.]      │                   │                    │       1 │</span>
+<span class="go">╘═════════╧═══════════╧════════════╧═══════════════════════════════════════════════════╧═══════════════════════════════════════════════════╧══════════╧═════════════════╧═════════════════╧═══════════════════╧════════════════════╧═════════╛</span>
+<span class="go">Zeeman: [0. 0. 0.]</span>
+<span class="go">Supercell Size: None</span>
+
+<span class="go"># plot the supercell when supercell is updated</span>
+</pre></div>
+</div>
 </dd></dl>
 </section>
 <section id="module-topwave.topology">

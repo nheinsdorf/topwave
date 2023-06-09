@@ -205,13 +205,32 @@
   <ul class="md-nav__list">
     <li class="md-nav__item">
     
+      <span class="md-nav__link caption"><span class="caption-text">Getting Started</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../getting-started.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
       <span class="md-nav__link caption"><span class="caption-text">Tutorials</span></span>
     
     </li>
     <li class="md-nav__item">
     
     
-      <a href="../../tutorials/intro-to-coupling.html" class="md-nav__link">Introduction to Couplings</a>
+      <a href="../../tutorials/intro-to-spinwave.html" class="md-nav__link">Spin-Wave Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../tutorials/intro-to-tightbinding.html" class="md-nav__link">Tight-Binding Models</a>
       
     
     </li>
@@ -223,13 +242,20 @@
     <li class="md-nav__item">
     
     
+      <a href="../../examples/graphene.html" class="md-nav__link">Graphene</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="../../examples/breathing_pyrochlore.html" class="md-nav__link">Magnon Weyl Nodes</a>
       
     
     </li>
     <li class="md-nav__item">
     
-      <span class="md-nav__link caption"><span class="caption-text">Reference</span></span>
+      <span class="md-nav__link caption"><span class="caption-text">API Reference</span></span>
     
     </li>
     <li class="md-nav__item">
@@ -266,13 +292,15 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
-<span class="kn">from</span> <span class="nn">pymatgen.core.structure</span> <span class="kn">import</span> <span class="n">Structure</span>
+<span class="kn">from</span> <span class="nn">pymatgen.core.structure</span> <span class="kn">import</span> <span class="n">Lattice</span><span class="p">,</span> <span class="n">Structure</span>
 <span class="kn">from</span> <span class="nn">topwave.coupling</span> <span class="kn">import</span> <span class="n">Coupling</span>
 <span class="kn">from</span> <span class="nn">topwave.model</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">SpinWaveModel</span><span class="p">,</span> <span class="n">TightBindingModel</span>
 <span class="kn">from</span> <span class="nn">topwave</span> <span class="kn">import</span> <span class="n">util</span>
+<span class="kn">from</span> <span class="nn">topwave.types</span> <span class="kn">import</span> <span class="n">RealList</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Supercell"</span><span class="p">]</span>
+<span class="c1">#__all__ = ["Supercell"]</span>
 
+<span class="c1"># TODO: rewrite this into a method</span>
 <div class="viewcode-block" id="Supercell"><a class="viewcode-back" href="../../api.html#topwave.supercell.Supercell">[docs]</a><span class="k">class</span> <span class="nc">Supercell</span><span class="p">(</span><span class="n">SpinWaveModel</span><span class="p">,</span> <span class="n">TightBindingModel</span><span class="p">):</span>
     <span class="sd">"""Supercell of a given model."""</span>
 
@@ -345,6 +373,125 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_coupling</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set_coupling</span><span class="p">(</span><span class="n">new_coupling_index</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="s1">'index'</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set_spin_orbit</span><span class="p">(</span><span class="n">new_coupling_index</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">spin_orbit</span><span class="p">,</span> <span class="n">attribute</span><span class="o">=</span><span class="s1">'index'</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="stack"><a class="viewcode-back" href="../../api.html#topwave.supercell.stack">[docs]</a><span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="n">layers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Model</span><span class="p">],</span>
+          <span class="n">spacings</span><span class="p">:</span> <span class="n">RealList</span><span class="p">,</span>
+          <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'z'</span><span class="p">,</span>
+          <span class="n">vacuum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
+    <span class="sd">"""Creates stacks of models in a given stacking direction.</span>
+
+<span class="sd">    This function creates stacked models. Onsite properties and intralayer couplings are transferred to the new model.</span>
+<span class="sd">    Because the resulting model is usually treated as two-dimensional, the method adds vacuum to the new unit cell.</span>
+
+<span class="sd">    .. admonition:: Compatible Lattices</span>
+<span class="sd">            :class: warning</span>
+
+<span class="sd">            This method assumes that the models have the same lattice structure, i.e. the unit cell area within</span>
+<span class="sd">            the plane is not increased by the stacking.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    layers: list[Model]</span>
+<span class="sd">        A list of models that are stacked on top of each other.</span>
+<span class="sd">    spacings: RealList</span>
+<span class="sd">        List of floats that specify the interlayer distances in Angstrom. Length should be the number of models minus 1.</span>
+<span class="sd">    direction: str</span>
+<span class="sd">        A string indicating along which lattice vector the models are stacked. Options are 'x', 'y' and 'z'.</span>
+<span class="sd">        Default is 'z'.</span>
+<span class="sd">    vacuum: float</span>
+<span class="sd">        How much vacuum in Angstrom is added to the stacked unit cell. Default is 10.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Model</span>
+<span class="sd">        The stacked model.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    Create an bernal bilayer of graphene.</span>
+
+<span class="sd">    .. ipython:: python</span>
+
+<span class="sd">        # build two graphene models with staggered displacement fields (onsite terms)</span>
+<span class="sd">        lattice = Lattice.hexagonal(1.42, 1)</span>
+<span class="sd">        layer_A = Structure.from_spacegroup(sg=191, lattice=lattice, species=['C'], coords=[[1 / 3, 2 / 3, 0]])</span>
+<span class="sd">        layer_B = layer_A.copy()</span>
+<span class="sd">        # shift layer_B to get bernal-type stacking</span>
+<span class="sd">        layer_B.translate_sites(indices=[0, 1], vector=layer_A.frac_coords[0])</span>
+<span class="sd">        model_A, model_B = tp.TightBindingModel(layer_A), tp.TightBindingModel(layer_B)</span>
+
+<span class="sd">        displacement_field = 0.2</span>
+<span class="sd">        model_A.set_onsite_scalar(1, displacement_field)</span>
+<span class="sd">        model_B.set_onsite_scalar(0, -displacement_field)</span>
+
+<span class="sd">        # stack the models with interlayer distance 3.44 Angstrom</span>
+<span class="sd">        model_bernal = tp.stack([model_A, model_B], [3.44])</span>
+
+<span class="sd">        # the onsite terms have been transferred (see column 'onsite scalar')</span>
+<span class="sd">        model_bernal.show_site_properties()</span>
+<span class="sd">        # plot the supercell when supercell is updated</span>
+
+<span class="sd">    """</span>
+
+    <span class="n">structures</span> <span class="o">=</span> <span class="p">[</span><span class="n">layer</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">layers</span><span class="p">]</span>
+    <span class="n">stacked_structure</span> <span class="o">=</span> <span class="n">_get_stacked_structure</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="n">spacings</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">vacuum</span><span class="p">)</span>
+    <span class="n">stacked_model</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">stacked_structure</span><span class="p">)</span>
+    <span class="n">stacked_model</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">stacked_structure</span><span class="p">,</span> <span class="n">import_site_properties</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">stacked_model</span></div>
+
+<span class="k">def</span> <span class="nf">_get_stacked_structure</span><span class="p">(</span><span class="n">layers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Structure</span><span class="p">],</span>
+                           <span class="n">spacings</span><span class="p">:</span> <span class="n">RealList</span><span class="p">,</span>
+                           <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'z'</span><span class="p">,</span>
+                           <span class="n">vacuum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Structure</span><span class="p">:</span>
+    <span class="sd">"""Creates a stacked structure in a given stacking direction.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    layers: list[Structure]</span>
+<span class="sd">        A list of structures that are stacked on top of each other.</span>
+<span class="sd">    spacings: RealList</span>
+<span class="sd">        List of floats that specify the interlayer distances in Angstrom. Length should be the number of models minus 1.</span>
+<span class="sd">    direction: str</span>
+<span class="sd">        A string indicating along which lattice vector the models are stacked. Options are 'x', 'y' and 'z'.</span>
+<span class="sd">        Default is 'z'.</span>
+<span class="sd">    vacuum: float</span>
+<span class="sd">        How much vacuum in Angstrom is added to the stacked unit cell. Default is 10.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Structure</span>
+<span class="sd">        The stacked structure.</span>
+
+<span class="sd">    """</span>
+
+
+    <span class="n">normal_index</span> <span class="o">=</span> <span class="s1">'xyz'</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+    <span class="n">plane_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">normal_index</span><span class="p">)</span>
+    <span class="n">stack_height</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spacings</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">layer_positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">spacings</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">lattice_parameters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+    <span class="n">lattice_parameters</span><span class="p">[</span><span class="n">normal_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">stack_height</span> <span class="o">+</span> <span class="n">vacuum</span>
+    <span class="n">new_lattice</span> <span class="o">=</span> <span class="n">Lattice</span><span class="o">.</span><span class="n">from_parameters</span><span class="p">(</span><span class="o">*</span><span class="n">lattice_parameters</span><span class="p">)</span>
+    <span class="n">structure</span> <span class="o">=</span> <span class="n">Structure</span><span class="o">.</span><span class="n">from_spacegroup</span><span class="p">(</span><span class="n">sg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">lattice</span><span class="o">=</span><span class="n">new_lattice</span><span class="p">,</span> <span class="n">species</span><span class="o">=</span><span class="p">[],</span> <span class="n">coords</span><span class="o">=</span><span class="p">[])</span>
+
+    <span class="k">for</span> <span class="n">layer_index</span><span class="p">,</span> <span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">layer_position</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">layer_positions</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">site_index</span><span class="p">,</span> <span class="n">site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layer</span><span class="p">):</span>
+            <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'layer'</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer_index</span>
+            <span class="n">layer_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="n">layer_shift</span><span class="p">[</span><span class="n">normal_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer_position</span>
+            <span class="n">structure</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">species_string</span><span class="p">,</span> <span class="n">site</span><span class="o">.</span><span class="n">coords</span> <span class="o">+</span> <span class="n">layer_shift</span><span class="p">,</span>
+                             <span class="n">properties</span><span class="o">=</span><span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">,</span> <span class="n">coords_are_cartesian</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">new_site_index</span><span class="p">,</span> <span class="n">site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">structure</span><span class="p">):</span>
+        <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_site_index</span>
+
+    <span class="k">return</span> <span class="n">structure</span>
+
+
 <span class="c1">#</span>
 <span class="c1"># class Twist(SpinWaveModel, TightBindingModel):</span>
 <span class="c1">#     """Adds a twisted layer to a given model."""</span>
