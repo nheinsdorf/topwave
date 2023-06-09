@@ -294,6 +294,7 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
+<span class="kn">from</span> <span class="nn">pymatgen.core.sites</span> <span class="kn">import</span> <span class="n">PeriodicSite</span>
 <span class="kn">from</span> <span class="nn">pymatgen.core.structure</span> <span class="kn">import</span> <span class="n">Structure</span>
 <span class="kn">from</span> <span class="nn">pymatgen.io.cif</span> <span class="kn">import</span> <span class="n">CifWriter</span>
 <span class="kn">from</span> <span class="nn">pymatgen.symmetry.groups</span> <span class="kn">import</span> <span class="n">SpaceGroup</span>
@@ -460,6 +461,41 @@
         <span class="n">indices</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">coupling_selector</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="s1">'is_set'</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span></div>
 
+<div class="viewcode-block" id="Model.get_sites"><a class="viewcode-back" href="../../api.html#topwave.model.Model.get_sites">[docs]</a>    <span class="k">def</span> <span class="nf">get_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                  <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                  <span class="n">value</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PeriodicSite</span><span class="p">]:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attribute: str</span>
+<span class="sd">            The attribute by which the couplings are selected. Options are 'index', 'onsite_scalar', 'layer' or 'uc_site_index'.</span>
+<span class="sd">        value: int | float</span>
+<span class="sd">            The value of the selected attribute.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[PeriodicSite]</span>
+<span class="sd">            A list that contains the sites that match the value of the selected attribute.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Select one of the couplings based on its index.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.get_sites('index', 0)</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :class:`topwave.util.site_selector`</span>
+
+
+<span class="sd">        """</span>
+
+
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">site_selector</span><span class="p">(</span><span class="n">attribute</span><span class="o">=</span><span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">]</span></div>
+
 <div class="viewcode-block" id="Model.get_type"><a class="viewcode-back" href="../../api.html#topwave.model.Model.get_type">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Returns the type of the model."""</span></div>
@@ -564,7 +600,8 @@
 <div class="viewcode-block" id="Model.set_onsite_scalar"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_onsite_scalar">[docs]</a>    <span class="k">def</span> <span class="nf">set_onsite_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                           <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                           <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                          <span class="n">space_group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                          <span class="n">space_group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                          <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Sets a scalar onsite energy to a given site.</span>
 
 <span class="sd">        For a TightBindingModel this is a site or orbital dependent onsite energy. For SpinWaveModel this term is ignored.</span>
@@ -578,6 +615,8 @@
 <span class="sd">        space_group: int</span>
 <span class="sd">            If a compatible space group symmetry is selected, the term will automatically be assigned to all</span>
 <span class="sd">            symmetrically equivalent sites. Default is None.</span>
+<span class="sd">        overwrite: bool</span>
+<span class="sd">            If true, any existing term is overwritten. If false, the term is added. Default is true.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -595,13 +634,15 @@
         <span class="k">for</span> <span class="n">coordinate</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="p">:</span>
             <span class="n">cartesian_coordinate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_cartesian_coords</span><span class="p">(</span><span class="n">coordinate</span><span class="p">)</span>
             <span class="n">site</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">get_sites_in_sphere</span><span class="p">(</span><span class="n">cartesian_coordinate</span><span class="p">,</span> <span class="mf">1e-06</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">strength</span><span class="p">)</span></div>
+            <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">strength</span><span class="p">)</span> <span class="k">if</span> <span class="n">overwrite</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">strength</span><span class="p">)</span> <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">]</span></div>
+
 
 <div class="viewcode-block" id="Model.set_onsite_vector"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_onsite_vector">[docs]</a>    <span class="k">def</span> <span class="nf">set_onsite_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                           <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                           <span class="n">vector</span><span class="p">:</span> <span class="n">Vector</span><span class="p">,</span>
                           <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                          <span class="n">space_group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                          <span class="n">space_group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                          <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Sets an onsite vector to a given site.</span>
 
 <span class="sd">        For a SpinWaveModel this corresponds to a single-ion anisotropy. For a TightBindingModel to a local magnetic field.</span>
@@ -617,6 +658,8 @@
 <span class="sd">        space_group: int</span>
 <span class="sd">            If a compatible space group symmetry is selected, the term will automatically be assigned to all</span>
 <span class="sd">            symmetrically equivalent sites and the assigned vector will be rotated accordingly. Default is None.</span>
+<span class="sd">        overwrite: bool</span>
+<span class="sd">            If true, any existing term is overwritten. If false, the term is added. Default is true.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -641,7 +684,8 @@
         <span class="k">for</span> <span class="n">coordinate</span><span class="p">,</span> <span class="n">operation</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">operations</span><span class="p">):</span>
             <span class="n">cartesian_coordinate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_cartesian_coords</span><span class="p">(</span><span class="n">coordinate</span><span class="p">)</span>
             <span class="n">site</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">get_sites_in_sphere</span><span class="p">(</span><span class="n">cartesian_coordinate</span><span class="p">,</span> <span class="mf">1e-06</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">]</span> <span class="o">=</span> <span class="n">operation</span><span class="o">.</span><span class="n">apply_rotation_only</span><span class="p">(</span><span class="n">input_vector</span><span class="p">)</span></div>
+            <span class="n">onsite_vector</span> <span class="o">=</span> <span class="n">operation</span><span class="o">.</span><span class="n">apply_rotation_only</span><span class="p">(</span><span class="n">input_vector</span><span class="p">)</span>
+            <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">]</span> <span class="o">=</span> <span class="n">onsite_vector</span> <span class="k">if</span> <span class="n">overwrite</span> <span class="k">else</span> <span class="n">onsite_vector</span> <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="Model.set_open_boundaries"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_open_boundaries">[docs]</a>    <span class="k">def</span> <span class="nf">set_open_boundaries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                             <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'xyz'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

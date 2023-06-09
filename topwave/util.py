@@ -174,16 +174,20 @@ def rotate_vector_to_ez(vector: npt.ArrayLike) -> npt.NDArray[np.float64]:
 
 
 def site_selector(attribute: str,
-                  value: int,
+                  value: int | str | float,
                   model: Model) -> list[int]:
     """Selects sites based on a given attribute."""
 
-    # NOTE: add more critera to select the sites
-    if not isinstance(value, Iterable):
-        match attribute:
-            case 'layer':
-                indices = [site.properties['index'] for site in model.structure if site.properties['layer'] == value]
-            case 'uc_site_index':
-                indices = [site.properties['index'] for site in model.structure if site.properties['uc_site_index'] == value]
-        return indices
-    return []
+    match attribute:
+        case 'index':
+            indices = [site.properties['index'] for site in model.structure if site.properties['index'] == value]
+        case 'label':
+            indices = [site.properties['index'] for site in model.structure if site.properties['label'] == value]
+        case 'onsite_scalar':
+            indices = [site.properties['index'] for site in model.structure if np.isclose(site.properties['onsite_scalar'], value, atol=1e-5)]
+        case 'layer':
+            indices = [site.properties['index'] for site in model.structure if site.properties['layer'] == value]
+        case 'uc_site_index':
+            indices = [site.properties['index'] for site in model.structure if site.properties['uc_site_index'] == value]
+    return indices
+

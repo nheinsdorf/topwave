@@ -4,6 +4,7 @@ from itertools import product
 
 import numpy as np
 import numpy.typing as npt
+from pymatgen.core.sites import PeriodicSite
 from pymatgen.core.structure import Structure
 from pymatgen.io.cif import CifWriter
 from pymatgen.symmetry.groups import SpaceGroup
@@ -53,6 +54,7 @@ class Model(ABC):
         if not import_site_properties:
             for _, site in enumerate(self.structure):
                 site.properties['index'] = _
+                site.properties['label'] = None
                 site.properties['magmom'] = None
                 site.properties['onsite_scalar'] = 0.
                 site.properties['onsite_vector'] = np.zeros(3, dtype=float)
@@ -170,6 +172,40 @@ class Model(ABC):
         indices = util.coupling_selector(attribute='is_set', value=True, model=self)
         return [self.couplings[index] for index in indices]
 
+    def get_sites(self,
+                  attribute: str,
+                  value: int | str | float) -> list[PeriodicSite]:
+        """
+        Parameters
+        ----------
+        attribute: str
+            The attribute by which the couplings are selected. Options are 'index', 'onsite_scalar', 'layer' or 'uc_site_index'.
+        value: int | float
+            The value of the selected attribute.
+
+        Returns
+        -------
+        list[PeriodicSite]
+            A list that contains the sites that match the value of the selected attribute.
+
+        Examples
+        --------
+        Select one of the couplings based on its index.
+
+        .. ipython:: python
+
+            model.get_sites('index', 0)
+
+        See Also
+        --------
+        :class:`topwave.util.site_selector`
+
+
+        """
+
+        indices = util.site_selector(attribute=attribute, value=value, model=self)
+        return [self.structure[index] for index in indices]
+
     @abstractmethod
     def get_type(self) -> str:
         """Returns the type of the model."""
@@ -235,6 +271,33 @@ class Model(ABC):
         couplings = self.get_couplings(attribute=attribute, value=attribute_value)
         for coupling in couplings:
             coupling.set_coupling(strength)
+
+    def set_label(self,
+                  index: int,
+                  label: str) -> None:
+        """Sets a custom label to a given site.
+
+        This is just for custom labels and has no effect on any calculation.
+
+        Parameters
+        ----------
+        index: int
+            The index of the site.
+        label: str
+            The label.
+
+        Examples
+        --------
+        We assign the label 'A' to the site.
+
+        .. ipython:: python
+
+            model.set_label(0, 'A')
+            model.show_site_properties()
+
+        """
+
+        self.structure[index].properties['label'] = label
 
     def set_moments(self,
                     orientations: VectorList,
@@ -485,12 +548,12 @@ class Model(ABC):
     def show_site_properties(self) -> None:
         """Prints the site properties."""
 
-        header = ['index', 'species', 'orbitals', 'coordinates (latt.)', 'coordinates (cart.)', 'magmom',
+        header = ['index', 'species', 'label', 'orbitals', 'coordinates (latt.)', 'coordinates (cart.)', 'magmom',
                   'onsite scalar', 'onsite vector', 'unit cell index', 'supercell vector', 'layer']
         table = []
         for site in self.structure:
-            table.append([site.properties['index'], site.species, site.properties['orbitals'], site.frac_coords,
-                          site.coords, site.properties['magmom'], site.properties['onsite_scalar'],
+            table.append([site.properties['index'], site.species, site.properties['label'], site.properties['orbitals'],
+                          site.frac_coords, site.coords, site.properties['magmom'], site.properties['onsite_scalar'],
                           site.properties['onsite_vector'], site.properties['uc_site_index'],
                           site.properties['cell_vector'], site.properties['layer']])
 
