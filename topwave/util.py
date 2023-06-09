@@ -24,7 +24,7 @@ def bose_distribution(energies: float | npt.ArrayLike,
 def coupling_selector(attribute: str,
                       value: int | float,
                       model: Model) -> list[int]:
-    """Selects a couplings based on a given attribute."""
+    """Selects couplings based on a given attribute."""
 
     if not isinstance(value, Iterable):
         match attribute:
@@ -38,6 +38,7 @@ def coupling_selector(attribute: str,
                 indices = [coupling.index for coupling in model.couplings if np.isclose(coupling.distance, value, atol=1e-5)]
         return indices
     return []
+
 
 def format_input_vector(orientation: list[float] | npt.NDArray[np.float64],
                         length: Optional[float] = None) -> npt.NDArray[np.float64]:
@@ -170,3 +171,19 @@ def rotate_vector_to_ez(vector: npt.ArrayLike) -> npt.NDArray[np.float64]:
     column1 = np.cross(column2, column3)
 
     return np.array([column1, column2, column3]).T
+
+
+def site_selector(attribute: str,
+                  value: int,
+                  model: Model) -> list[int]:
+    """Selects sites based on a given attribute."""
+
+    # NOTE: add more critera to select the sites
+    if not isinstance(value, Iterable):
+        match attribute:
+            case 'layer':
+                indices = [site.properties['index'] for site in model.structure if site.properties['layer'] == value]
+            case 'uc_site_index':
+                indices = [site.properties['index'] for site in model.structure if site.properties['uc_site_index'] == value]
+        return indices
+    return []

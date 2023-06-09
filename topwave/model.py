@@ -274,7 +274,8 @@ class Model(ABC):
     def set_onsite_scalar(self,
                           index: int,
                           strength: float,
-                          space_group: int = 1) -> None:
+                          space_group: int = 1,
+                          overwrite: bool = True) -> None:
         """Sets a scalar onsite energy to a given site.
 
         For a TightBindingModel this is a site or orbital dependent onsite energy. For SpinWaveModel this term is ignored.
@@ -288,6 +289,8 @@ class Model(ABC):
         space_group: int
             If a compatible space group symmetry is selected, the term will automatically be assigned to all
             symmetrically equivalent sites. Default is None.
+        overwrite: bool
+            If true, any existing term is overwritten. If false, the term is added. Default is true.
 
         Examples
         --------
@@ -305,13 +308,15 @@ class Model(ABC):
         for coordinate in coordinates:
             cartesian_coordinate = self.structure.lattice.get_cartesian_coords(coordinate)
             site = self.structure.get_sites_in_sphere(cartesian_coordinate, 1e-06)[0]
-            site.properties['onsite_scalar'] = float(strength)
+            site.properties['onsite_scalar'] = float(strength) if overwrite else float(strength) + site.properties['onsite_scalar']
+
 
     def set_onsite_vector(self,
                           index: int,
                           vector: Vector,
                           strength: float = None,
-                          space_group: int = 1) -> None:
+                          space_group: int = 1,
+                          overwrite: bool = True) -> None:
         """Sets an onsite vector to a given site.
 
         For a SpinWaveModel this corresponds to a single-ion anisotropy. For a TightBindingModel to a local magnetic field.
@@ -327,6 +332,8 @@ class Model(ABC):
         space_group: int
             If a compatible space group symmetry is selected, the term will automatically be assigned to all
             symmetrically equivalent sites and the assigned vector will be rotated accordingly. Default is None.
+        overwrite: bool
+            If true, any existing term is overwritten. If false, the term is added. Default is true.
 
         Notes
         -----
@@ -351,7 +358,8 @@ class Model(ABC):
         for coordinate, operation in zip(coordinates, operations):
             cartesian_coordinate = self.structure.lattice.get_cartesian_coords(coordinate)
             site = self.structure.get_sites_in_sphere(cartesian_coordinate, 1e-06)[0]
-            site.properties['onsite_vector'] = operation.apply_rotation_only(input_vector)
+            onsite_vector = operation.apply_rotation_only(input_vector)
+            site.properties['onsite_vector'] = onsite_vector if overwrite else onsite_vector + site.properties['onsite_vector']
 
     def set_open_boundaries(self,
                             direction: str = 'xyz') -> None:
