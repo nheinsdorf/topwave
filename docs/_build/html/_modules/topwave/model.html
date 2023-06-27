@@ -915,7 +915,7 @@
             <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">:</span>
                 <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'magmom'</span><span class="p">]</span> <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">]</span>
                 <span class="n">CifWriter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span> <span class="n">write_magmoms</span><span class="o">=</span><span class="n">write_magmoms</span><span class="p">)</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">unset_moments</span><span class="p">()</span>
+                <span class="c1"># self.unset_moments()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">CifWriter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span> <span class="n">write_magmoms</span><span class="o">=</span><span class="n">write_magmoms</span><span class="p">)</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div></div>
 
@@ -957,11 +957,11 @@
 
 
     <span class="c1"># NOTE: if I can make the multiple inheritance with the abstract get-type method work, delete this again.</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
-                 <span class="n">import_site_properties</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">import_site_properties</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">'spinwave'</span>
+    <span class="c1"># def __init__(self,</span>
+    <span class="c1">#              structure: Structure,</span>
+    <span class="c1">#              import_site_properties: bool = False) -&gt; None:</span>
+    <span class="c1">#     super().__init__(structure, import_site_properties)</span>
+    <span class="c1">#     self.type = 'spinwave'</span>
 
 <div class="viewcode-block" id="SpinWaveModel.get_classical_energy"><a class="viewcode-back" href="../../api.html#topwave.model.SpinWaveModel.get_classical_energy">[docs]</a>    <span class="k">def</span> <span class="nf">get_classical_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                              <span class="n">per_spin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -1104,7 +1104,7 @@
 
 
 <div class="viewcode-block" id="TightBindingModel"><a class="viewcode-back" href="../../api.html#topwave.model.TightBindingModel">[docs]</a><span class="k">class</span> <span class="nc">TightBindingModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
-    <span class="sd">"""Class for Linear Spinwave models.</span>
+    <span class="sd">"""Class for Tight Binding models.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1127,11 +1127,11 @@
 <span class="sd">    """</span>
 
     <span class="c1"># NOTE: if I can make the multiple inheritance with the abstract get-type method work, delete this again.</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
-                 <span class="n">import_site_properties</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">import_site_properties</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">'tightbinding'</span>
+    <span class="c1"># def __init__(self,</span>
+    <span class="c1">#              structure: Structure,</span>
+    <span class="c1">#              import_site_properties: bool = False) -&gt; None:</span>
+    <span class="c1">#     super().__init__(structure, import_site_properties)</span>
+    <span class="c1">#     self.type = 'tightbinding'</span>
 
 <div class="viewcode-block" id="TightBindingModel.check_if_spinful"><a class="viewcode-back" href="../../api.html#topwave.model.TightBindingModel.check_if_spinful">[docs]</a>    <span class="k">def</span> <span class="nf">check_if_spinful</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">"""Checks whether the model is spinful or spinless (polarized).</span>

@@ -1,5 +1,4 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
 
 import numpy as np
 from pymatgen.core.structure import Structure
@@ -7,29 +6,29 @@ from pymatgen.core.structure import Structure
 from topwave.types import RealList, Vector, VectorList
 from topwave.util import rotate_vector_to_ez
 
-__all__ = ["Circle", "SetOfKPoints", "Path", "Plane"]
+__all__ = ["Circle", "Grid", "Path", "Plane", "SetOfKPoints"]
 
-class SetOfKPoints(ABC):
-    """Base class that is used to parameterize paths and manifolds in reciprocal space.
+class SetOfKPoints:
+    """Class that holds a number of k-points in three dimensional reciprocal space.
 
-    This is an **abstract** base class. Use its child classes to instantiate a model.
+    Parameters
+    ----------
+    kpoints : VectorList
+        List of points in reciprocal space in reduced coordinates.
 
     Attributes
     ----------
     kpoints : VectorList
-        List of points in reciprocal space in reduced coordinates.
+        This is where kpoints is stored.
     num_kpoints : int
         Number of kpoints.
 
     """
 
-    def __init__(self):
-        self.kpoints = self.get_kpoints()
+    def __init__(self, kpoints: VectorList):
+        self.kpoints = np.array(kpoints, dtype=np.float64).reshape((-1, 3))
         self.num_kpoints = len(self.kpoints)
 
-    @abstractmethod
-    def _get_kpoints(self) -> VectorList:
-        return self.kpoints
 
 class Circle(SetOfKPoints):
     """A circle through reciprocal space.
@@ -92,8 +91,105 @@ class Circle(SetOfKPoints):
         inverse_rotation = rotate_vector_to_ez(normal).T
         self.kpoints = np.einsum('nm, kn -> km', inverse_rotation, kpoints) + center
 
-    def _get_kpoints(self) -> VectorList:
-        return self.kpoints
+
+class Grid(SetOfKPoints):
+    """A grid through the Brillouin zone.
+
+
+    Parameters
+    ----------
+    num_x: int
+        Number of points along the first vector that spans the grid.
+    num_y: int
+        Number of points along the second vector that spans the grid.
+    num_z: int
+        Number of points along the third vector that spans the grid.
+    x_min: float
+        First component of the first point of the grid. Default is -0.5.
+    x_max: float
+        First component of the end point of the grid. Default is 0.5.
+    y_min: float
+        Second component of the first point of the grid. Default is -0.5.
+    y_max: float
+        Second component of the end point of the grid. Default is 0.5.
+    z_min: float
+        Third component of the first point of the grid. Default is -0.5.
+    z_max: float
+        Third component of the end point of the grid. Default is 0.5.
+    endpoint_x: bool
+        If True, x_max is the boundary of the plane in the first direction. Default is False.
+    endpoint_y: bool
+        If True, y_max is the boundary of the plane in the first direction. Default is False.
+    endpoint_z: bool
+        If True, z_max is the boundary of the plane in the first direction. Default is False.
+
+    Attributes
+    ----------
+    extent: tuple[float, float, float, float, float, float]
+        This is where x_min, x_max, y_min, y_max, z_min, z_max are stored.
+    kpoints: VectorList
+        List of points in reciprocal space in reduced coordinates.
+    num_kpoints: int
+        Number of k-points.
+    shape: tuple(int, int)
+        This is where num_x, num_y and num_z are saved.
+
+    Notes
+    -----
+    If the plane is used to compute quantities that are obtained by integrating over the Brillouin zone in
+    three-dimensions, e.g. the bare susceptibility, set `endpoint_x`, `endpoint_y` and `endpoint_z` to False to avoid
+    double counting the points on the boundaries of the plane and make sure that `x_min`, `x_max`, `y_min`, `y_max`,
+    `z_min` and `z_max` span the full Brillouin zone.
+
+
+    Examples
+    --------
+
+    We construct two grids and plot them.
+
+    .. ipython:: python
+
+        import matplotlib.pyplot as plt
+
+        # Create the grids.
+        num_x, num_y, num_z = 15, 15, 15
+        grid1 = tp.Grid(num_x, num_y, num_z)
+        grid2 = tp.Grid(num_x, num_y, num_z, x_min=0.75, x_max=1.25, y_min=0.75, y_max=1.25, z_min=0.75, z_max=1.25)
+
+        fig = plt.figure()
+        ax = plt.axes(projection='3d')
+        ax.scatter(*grid1.kpoints.T)
+        ax.scatter(*grid2.kpoints.T)
+        ax.set_xlabel(r'$k_x$');
+        ax.set_ylabel(r'$k_y$');
+        @savefig grid.png
+        ax.set_zlabel(r'$k_z$');
+
+    """
+
+    def __init__(self,
+                 num_x: int,
+                 num_y: int,
+                 num_z: int,
+                 x_min: float = -0.5,
+                 x_max: float = 0.5,
+                 y_min: float = -0.5,
+                 y_max: float = 0.5,
+                 z_min: float = -0.5,
+                 z_max: float = 0.5,
+                 endpoint_x: bool = False,
+                 endpoint_y: bool = False,
+                 endpoint_z: bool = False) -> None:
+
+        self.extent = (x_min, x_max, y_min, y_max, z_min, z_max)
+        self.num_kpoints = num_x * num_y * num_z
+        self.shape = (num_x, num_y, num_z)
+
+        span_x = np.linspace(x_min, x_max, num_x, endpoint=endpoint_x)
+        span_y = np.linspace(y_min, y_max, num_y, endpoint=endpoint_y)
+        span_z = np.linspace(z_min, z_max, num_z, endpoint=endpoint_z)
+        kxs, kys, kzs = np.meshgrid(span_x, span_y, span_z, indexing='ij')
+        self.kpoints = np.array([kxs.flatten(), kys.flatten(), kzs.flatten()], dtype=np.float64).T
 
 
 class Path(SetOfKPoints):
@@ -159,9 +255,8 @@ class Path(SetOfKPoints):
             kpoints_segment = np.linspace(start_point, end_point, segment_length, endpoint=False)
             self.kpoints = np.concatenate((self.kpoints, kpoints_segment), axis=0)
         self.kpoints = np.concatenate((self.kpoints, self.nodes[-1].reshape((1, 3))), axis=0)
+        self.num_kpoints = len(self.kpoints)
 
-    def _get_kpoints(self) -> VectorList:
-        return self.kpoints
 
 class Plane(SetOfKPoints):
     """A plane through the Brillouin zone.
@@ -176,7 +271,7 @@ class Plane(SetOfKPoints):
     num_y: int
         Number of points along the second vector that spans the plane.
     anchor: float
-        Where along the normal the plane is anchored. Default is 0.
+        Where along the normal the plane is anchored. Default is 0
     x_min: float
         First component of the first point of the plane. Default is -0.5.
     x_max: float
@@ -188,7 +283,7 @@ class Plane(SetOfKPoints):
     endpoint_x: bool
         If True, x_max is the boundary of the plane in the first direction. Default is False.
     endpoint_y: bool
-        If True, x_max is the boundary of the plane in the first direction. Default is False.
+        If True, y_max is the boundary of the plane in the first direction. Default is False.
 
     Attributes
     ----------
@@ -200,14 +295,17 @@ class Plane(SetOfKPoints):
         List of points in reciprocal space in reduced coordinates.
     normal: Vector
         This is where normal is saved.
-    num_kpoints : int
+    num_kpoints: int
         Number of k-points.
+    shape: tuple(int, int)
+        This is where num_x and num_y are saved.
 
     Notes
     -----
     If the plane is used to compute quantities that are obtained by integrating over the Brillouin zone in
-    two-dimensions, e.g. the density of states of graphene, set `closed` to False to avoid double counting the points
-    on the boundaries of the plane and leave `x_min`, `x_max`, `y_min` and `y_max` to their default values.
+    two-dimensions, e.g. the density of states of graphene, set `endpoint_x` and `endpoint_y` to False to avoid double
+    counting the points on the boundaries of the plane and leave make sure `x_min`, `x_max`, `y_min` and `y_max`
+    span the full Brillouin zone.
 
 
     Examples
@@ -227,7 +325,7 @@ class Plane(SetOfKPoints):
 
         fig = plt.figure()
         ax = plt.axes(projection='3d')
-        for plane in [plane_xy, plane_xy_shifted, plane_011]:
+        for plane in [plane_xy, plane_xy_shifted, plane_101]:
             ax.scatter(*plane.kpoints.T)
         ax.set_xlabel(r'$k_x$');
         ax.set_ylabel(r'$k_y$');
@@ -252,6 +350,7 @@ class Plane(SetOfKPoints):
         self.extent = (x_min, x_max, y_min, y_max)
         self.normal = np.array(normal, dtype=np.float64)
         self.num_kpoints = num_x * num_y
+        self.shape = (num_x, num_y)
 
         span_x = np.linspace(x_min, x_max, num_x, endpoint=endpoint_x)
         span_y = np.linspace(y_min, y_max, num_y, endpoint=endpoint_y)
@@ -260,7 +359,4 @@ class Plane(SetOfKPoints):
 
         inverse_rotation = rotate_vector_to_ez(normal).T
         self.kpoints = np.einsum('nm, kn -> km', inverse_rotation, kpoints) + anchor * self.normal
-
-    def _get_kpoints(self) -> VectorList:
-        return self.kpoints
 

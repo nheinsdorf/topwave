@@ -5,10 +5,34 @@ Topwave
 
 ``Topwave`` is composed of the following modules:
 
+fourier_coefficients
+--------------------
+
+.. automodule:: topwave.fourier_coefficients
+    :members:
+    :undoc-members:
+
+
+model
+-----
+
+.. automodule:: topwave.model
+    :members:
+    :undoc-members:
+
+
 k_space_utils
 -------------
 
 .. automodule:: topwave.k_space_utils
+    :members:
+    :undoc-members:
+
+
+response
+--------
+
+.. automodule:: topwave.response
     :members:
     :undoc-members:
 
@@ -20,13 +44,6 @@ set_of_kpoints
     :members:
     :undoc-members:
 
-
-model
------
-
-.. automodule:: topwave.model
-    :members:
-    :undoc-members:
 
 solvers
 -------

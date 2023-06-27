@@ -5,12 +5,55 @@ from typing import TYPE_CHECKING
 import numpy as np
 from scipy.linalg import det
 
-from topwave.types import IntVector, Matrix
+from topwave.types import IntVector, Matrix, RealList, SquareMatrixList
+from topwave.util import get_berry_curvature_indices
 
 if TYPE_CHECKING:
     from topwave.spec import Spec
 
-__all__ = ["get_berry_phase", "get_bosonic_wilson_loop", "get_fermionic_wilson_loop"]
+
+def get_berry_curvature(
+        spec: Spec,
+        component: str) -> list[RealList]:
+    r"""Computes the Berry curvature using
+
+    .. math:: \Omega_k = - \sum_{n ≠ m} \frac{\langle \psi_n \partial_\mu \hat{H} \psi_m \rangle}{(\epsilon_n - \epsilon_m)^2}
+
+
+    This is so far only for the fermionic berry curvature.
+
+    Examples
+    --------
+    we compute
+
+    """
+
+    index1, index2 = get_berry_curvature_indices(component)
+    partial_derivative_matrix1 = spec.get_tightbinding_hamiltonian(spec.model,
+                                                                   spec.kpoints.kpoints,
+                                                                   derivative='xyz'[index1])
+    partial_derivative_matrix2 = spec.get_tightbinding_hamiltonian(spec.model,
+                                                                   spec.kpoints.kpoints,
+                                                                   derivative='xyz'[index2])
+
+    num_bands = spec.energies.shape[1]
+
+    M_munu = np.einsum('lij, ljk -> lik',
+                   np.einsum('ikl, ikm -> ilm', spec.psi.conj(), partial_derivative_matrix1),
+                   spec.psi)
+    M_numu = np.einsum('lij, ljk -> lik',
+                     np.einsum('ikl, ikm -> ilm', spec.psi.conj(), partial_derivative_matrix2),
+                     spec.psi)
+
+    # calculate the square of all the energy differences
+    # and add a large number on the diagonal to make the diagonal terms vanish when taking the inverse.
+    very_large_number = 1e+28
+    index_span = np.arange(num_bands)
+    band_index1, band_index2 = np.meshgrid(index_span, index_span, indexing='ij')
+    Delta_E = np.square(spec.energies[:, band_index1] - spec.energies[:, band_index2]) \
+              + (np.eye(num_bands) * very_large_number)[None, ...]
+
+    return np.real(1j * (M_munu * M_numu.swapaxes(1, 2) - M_numu * M_munu.swapaxes(1, 2)) * np.reciprocal(Delta_E)).sum(axis=2)
 
 def get_berry_phase(loop_operator: Matrix) -> float:
     """Computes the Berry phase of a Wilson loop:
@@ -64,7 +107,8 @@ def get_fermionic_wilson_loop(spectrum: Spec, band_indices: IntVector) -> Matrix
     psi = spectrum.psi[:, :, band_indices]
 
     # check whether start and end k-point are the same and impose closed loop
-    if np.all(np.isclose(spectrum.kpoints[0], spectrum.kpoints[-1])):
+
+    if np.all(np.isclose(spectrum.kpoints.kpoints[0], spectrum.kpoints.kpoints[-1])):
         psi[0] = psi[-1]
     else:
         # implement the case where they are connected by a reciprocal vector

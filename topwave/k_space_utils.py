@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 from skimage.util import view_as_windows
 
+# from set_of_kpoints import SetOfKPoints
 from topwave.types import VectorList
 from topwave.util import get_plaquette_indices
 
@@ -101,6 +102,8 @@ def get_plaquette_cover(normal: str,
         return list(np.concatenate((plaquettes, plaquettes[:, 0, :].reshape((num_x * num_y, 1, 3))), axis=1))
     return list(plaquettes)
 
+# def get_scattering_indices(qpoints: SetOfKPoints | VectorList,
+#                            kpoints: SetOfKPoints | VectorList)
 
 
 

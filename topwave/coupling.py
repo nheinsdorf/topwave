@@ -59,12 +59,12 @@ class Coupling:
 
     def get_fourier_coefficients(
             self,
-            k_point: Vector) -> tuple[complex, ComplexVector]:
+            kpoint: Vector) -> tuple[complex, ComplexVector]:
         """Returns the Fourier coefficient and its inner derivatives at k_point.
 
         Parameters
         ----------
-        k_point : np.ndarray((3,), np.float64)
+        kpoint : np.ndarray((3,), np.float64)
             Input k_point
 
         Returns
@@ -73,7 +73,32 @@ class Coupling:
 
         """
 
-        return np.exp(-2j * np.pi * np.dot(self.lattice_vector, k_point)), -2j * np.pi * self.lattice_vector
+        return np.exp(-2j * np.pi * np.dot(self.lattice_vector, kpoint)), -2j * np.pi * self.lattice_vector
+
+    def get_fourier_derivative(self,
+                               kpoint: Vector,
+                               direction: str) -> complex:
+        """Returns the derivative of the Fourier coefficient with respect to one of the crystal momenta.
+
+
+        Parameters
+        ----------
+        kpoint: Vector
+            The k-point at which the derivative is evaluated.
+        direction: str
+            Which crystal momentum is used for the derivative. Options are 'x', 'y' and 'z'.
+
+        Returns
+        -------
+        complex
+            The derivative of the couplings Fourier coefficient.
+
+        """
+
+        index = 'xyz'.find(direction)
+        coefficient, _ = self.get_fourier_coefficients(kpoint)
+        inner_derivative = -2j * np.pi * self.lattice_vector[index]
+        return inner_derivative * coefficient
 
     def get_spinwave_matrix_elements(
             self,
@@ -113,19 +138,21 @@ class Coupling:
 
         return A, Abar, CI, CJ, B, Bbar, inner
 
-    def get_tightbinding_matrix_elements(self, k_point: Vector) -> tuple[complex, ComplexVector]:
+    def get_tightbinding_matrix_elements(self) -> float:
         """Constructs the matrix elements for the TightBinding Hamiltonian at a given k-point."""
 
-        c_k, inner = self.get_fourier_coefficients(k_point)
-        matrix_element = c_k * self.strength
-        return matrix_element, inner
+        # c_k, inner = self.get_fourier_coefficients(k_point)
+        # matrix_element = c_k * self.strength
+        # return matrix_element, inner
+        return self.strength
 
-    def get_spin_orbit_matrix_elements(self, k_point: Vector) -> tuple[Complex2x2, ComplexVector]:
+    def get_spin_orbit_matrix_elements(self) -> Complex2x2:
         """Creates the matrix elements of the tight-binding Hamiltonian that come from spin-orbit interation."""
 
-        c_k, inner = self.get_fourier_coefficients(k_point)
-        spin_orbit_term = 1j * c_k * pauli(self.spin_orbit, normalize=False)
-        return spin_orbit_term, inner
+        # c_k, inner = self.get_fourier_coefficients(k_point)
+        # spin_orbit_term = 1j * c_k * pauli(self.spin_orbit, normalize=False)
+        spin_orbit_term = 1j * pauli(self.spin_orbit, normalize=False)
+        return spin_orbit_term
 
     # NOTE: should I make this a property? Check how it works with dataclasses.
     def set_coupling(self, strength: float) -> None:

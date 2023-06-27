@@ -294,11 +294,13 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">linalg</span>
-<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span> <span class="c1"># change this</span>
 
 <span class="kn">from</span> <span class="nn">topwave.constants</span> <span class="kn">import</span> <span class="n">K_BOLTZMANN</span><span class="p">,</span> <span class="n">PAULI_VEC</span>
+<span class="kn">from</span> <span class="nn">topwave.types</span> <span class="kn">import</span> <span class="n">VectorList</span>
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">topwave.model</span> <span class="kn">import</span> <span class="n">Model</span>
+    <span class="kn">from</span> <span class="nn">topwave.set_of_kpoints</span> <span class="kn">import</span> <span class="n">SetOfKPoints</span>
 
 
 <div class="viewcode-block" id="bose_distribution"><a class="viewcode-back" href="../../api.html#topwave.util.bose_distribution">[docs]</a><span class="k">def</span> <span class="nf">bose_distribution</span><span class="p">(</span><span class="n">energies</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">npt</span><span class="o">.</span><span class="n">ArrayLike</span><span class="p">,</span>
@@ -338,6 +340,15 @@
     <span class="n">out</span> <span class="o">=</span> <span class="n">unscaled_vector</span> <span class="k">if</span> <span class="n">length</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">length</span> <span class="o">*</span> <span class="n">unscaled_vector</span> <span class="o">/</span> <span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">unscaled_vector</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">out</span></div>
 
+<div class="viewcode-block" id="format_kpoints"><a class="viewcode-back" href="../../api.html#topwave.util.format_kpoints">[docs]</a><span class="k">def</span> <span class="nf">format_kpoints</span><span class="p">(</span>
+        <span class="n">kpoints</span><span class="p">:</span> <span class="n">VectorList</span> <span class="o">|</span> <span class="n">SetOfKPoints</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SetOfKPoints</span><span class="p">:</span>
+    <span class="sd">"""Makes sure that either a list of k-points or a `SetOfKPoints` instance can be used."""</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">kpoints</span><span class="o">.</span><span class="n">kpoints</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kpoints</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="gaussian"><a class="viewcode-back" href="../../api.html#topwave.util.gaussian">[docs]</a><span class="k">def</span> <span class="nf">gaussian</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
              <span class="n">mean</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>

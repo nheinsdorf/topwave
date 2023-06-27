@@ -4,11 +4,13 @@ from typing import Optional, TYPE_CHECKING
 
 import numpy as np
 from numpy import linalg
-import numpy.typing as npt
+import numpy.typing as npt # change this
 
 from topwave.constants import K_BOLTZMANN, PAULI_VEC
+from topwave.types import VectorList
 if TYPE_CHECKING:
     from topwave.model import Model
+    from topwave.set_of_kpoints import SetOfKPoints
 
 
 def bose_distribution(energies: float | npt.ArrayLike,
@@ -48,6 +50,15 @@ def format_input_vector(orientation: list[float] | npt.NDArray[np.float64],
     out = unscaled_vector if length is None else length * unscaled_vector / linalg.norm(unscaled_vector)
     return out
 
+def format_kpoints(
+        kpoints: VectorList | SetOfKPoints) -> VectorList:
+    """Makes sure that either a list of k-points or a `SetOfKPoints` instance can be used."""
+
+    try:
+        return kpoints.kpoints
+    except:
+        pass
+    return np.array(kpoints, dtype=np.float64).reshape((-1, 3))
 
 def gaussian(x: int | float | npt.NDArray[np.float64],
              mean: float,
@@ -83,6 +94,16 @@ def get_azimuthal_angle(vector: npt.ArrayLike,
         return np.rad2deg(angle)
     return angle
 
+def get_berry_curvature_indices(
+        component: str) -> tuple[int, int]:
+    """Returns the indices of the crystal momenta needed to calculate the given component of the Berry Curvature."""
+    match component:
+        case 'x':
+            return 1, 2
+        case 'y':
+            return 2, 0
+        case 'z':
+            return 0, 1
 
 def get_boundary_couplings(model: Model,
                            direction: str = 'xyz') -> npt.NDArray[np.int64]:

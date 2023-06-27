@@ -625,7 +625,7 @@ class Model(ABC):
             for site in self.structure:
                 site.properties['magmom'] = site.properties['onsite_vector']
                 CifWriter(self.structure, write_magmoms=write_magmoms).write_file(path)
-                self.unset_moments()
+                # self.unset_moments()
         else:
             CifWriter(self.structure, write_magmoms=write_magmoms).write_file(path)
 
@@ -667,11 +667,11 @@ class SpinWaveModel(Model):
 
 
     # NOTE: if I can make the multiple inheritance with the abstract get-type method work, delete this again.
-    def __init__(self,
-                 structure: Structure,
-                 import_site_properties: bool = False) -> None:
-        super().__init__(structure, import_site_properties)
-        self.type = 'spinwave'
+    # def __init__(self,
+    #              structure: Structure,
+    #              import_site_properties: bool = False) -> None:
+    #     super().__init__(structure, import_site_properties)
+    #     self.type = 'spinwave'
 
     def get_classical_energy(self,
                              per_spin: bool = True) -> float:
@@ -814,7 +814,7 @@ class SpinWaveModel(Model):
 
 
 class TightBindingModel(Model):
-    """Class for Linear Spinwave models.
+    """Class for Tight Binding models.
 
     Examples
     --------
@@ -837,11 +837,11 @@ class TightBindingModel(Model):
     """
 
     # NOTE: if I can make the multiple inheritance with the abstract get-type method work, delete this again.
-    def __init__(self,
-                 structure: Structure,
-                 import_site_properties: bool = False) -> None:
-        super().__init__(structure, import_site_properties)
-        self.type = 'tightbinding'
+    # def __init__(self,
+    #              structure: Structure,
+    #              import_site_properties: bool = False) -> None:
+    #     super().__init__(structure, import_site_properties)
+    #     self.type = 'tightbinding'
 
     def check_if_spinful(self) -> bool:
         """Checks whether the model is spinful or spinless (polarized).

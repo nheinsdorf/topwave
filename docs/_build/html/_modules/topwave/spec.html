@@ -290,6 +290,7 @@
   <h1 id="modules-topwave-spec--page-root">Source code for topwave.spec</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -298,21 +299,26 @@
 
 <span class="kn">from</span> <span class="nn">topwave</span> <span class="kn">import</span> <span class="n">solvers</span>
 <span class="kn">from</span> <span class="nn">topwave.constants</span> <span class="kn">import</span> <span class="n">G_LANDE</span><span class="p">,</span> <span class="n">MU_BOHR</span>
+<span class="kn">from</span> <span class="nn">topwave.fourier_coefficients</span> <span class="kn">import</span> <span class="n">get_periodic_fourier_coefficient</span><span class="p">,</span> <span class="n">get_periodic_fourier_derivative</span>
 <span class="kn">from</span> <span class="nn">topwave.set_of_kpoints</span> <span class="kn">import</span> <span class="n">SetOfKPoints</span>
 <span class="kn">from</span> <span class="nn">topwave.model</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">SpinWaveModel</span><span class="p">,</span> <span class="n">TightBindingModel</span>
 <span class="kn">from</span> <span class="nn">topwave.topology</span> <span class="kn">import</span> <span class="n">get_berry_phase</span><span class="p">,</span> <span class="n">get_fermionic_wilson_loop</span>
-<span class="kn">from</span> <span class="nn">topwave.types</span> <span class="kn">import</span> <span class="n">IntVector</span>
-<span class="kn">from</span> <span class="nn">topwave.util</span> <span class="kn">import</span> <span class="n">pauli</span>
+<span class="kn">from</span> <span class="nn">topwave.types</span> <span class="kn">import</span> <span class="n">IntVector</span><span class="p">,</span> <span class="n">RealList</span><span class="p">,</span> <span class="n">SquareMatrix</span><span class="p">,</span> <span class="n">VectorList</span>
+<span class="kn">from</span> <span class="nn">topwave.util</span> <span class="kn">import</span> <span class="n">format_kpoints</span><span class="p">,</span> <span class="n">pauli</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Spec"</span><span class="p">]</span>
 
-<span class="c1"># CHECK for model.dim</span>
+
+<span class="c1"># TODO: Make the constructor method an instance attribute and the get_..._ham static methods</span>
+<span class="c1"># also get rid of 'diagonalize', but make the user use a static method so that spec class</span>
+<span class="c1"># can always be expected to have energies and eigenvalues. MAYBE???</span>
+<span class="c1"># Make a copy method for the model so you only store a copy of it.</span>
 <div class="viewcode-block" id="Spec"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec">[docs]</a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Spec</span><span class="p">:</span>
     <span class="sd">"""Computes the spectrum of a model for a given set of k-points."""</span>
 
     <span class="n">model</span><span class="p">:</span> <span class="n">Model</span>
-    <span class="n">kpoints</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+    <span class="n">kpoints</span><span class="p">:</span> <span class="n">VectorList</span> <span class="o">|</span> <span class="n">SetOfKPoints</span>
     <span class="n">energies</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">hamiltonian</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">kpoints_xyz</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -320,25 +326,69 @@
 
     <span class="c1"># TODO: refactor kpoints to kpoints</span>
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span><span class="p">,</span> <span class="n">SetOfKPoints</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">kpoints</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="c1"># compute this only when you need it e.g. neutron</span>
+        <span class="c1"># self.kpoints_xyz = 2 * np.pi * np.einsum('ka, ab -&gt; kb', self.kpoints, inv(self.model.structure.lattice.matrix))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">kpoints_xyz</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">'ka, ab -&gt; kb'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span><span class="p">,</span> <span class="n">inv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">matrix</span><span class="p">))</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">'spinwave'</span><span class="p">:</span>
-            <span class="n">constructor</span><span class="p">,</span> <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spinwave_hamiltonian</span><span class="p">,</span> <span class="n">solvers</span><span class="o">.</span><span class="n">colpa</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">constructor</span><span class="p">,</span> <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tightbinding_hamiltonian</span><span class="p">,</span> <span class="n">eigh</span>
+        <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_type</span><span class="p">():</span>
+            <span class="k">case</span> <span class="s1">'spinwave'</span><span class="p">:</span>
+                <span class="n">constructor</span><span class="p">,</span> <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spinwave_hamiltonian</span><span class="p">,</span> <span class="n">solvers</span><span class="o">.</span><span class="n">colpa</span>
+            <span class="k">case</span> <span class="s1">'tightbinding'</span><span class="p">:</span>
+                <span class="n">constructor</span><span class="p">,</span> <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tightbinding_hamiltonian</span><span class="p">,</span> <span class="n">eigh</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">hamiltonian</span> <span class="o">=</span> <span class="n">constructor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">energies</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Spec.get_spinwave_hamiltonian"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_spinwave_hamiltonian">[docs]</a>    <span class="k">def</span> <span class="nf">get_spinwave_hamiltonian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">SpinWaveModel</span><span class="p">,</span> <span class="n">kpoints</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]:</span>
+
+<div class="viewcode-block" id="Spec.get_density_of_states"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_density_of_states">[docs]</a>    <span class="k">def</span> <span class="nf">get_density_of_states</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                              <span class="n">energies</span><span class="p">:</span> <span class="n">RealList</span><span class="p">,</span>
+                              <span class="n">broadening</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RealList</span><span class="p">:</span>
+        <span class="sd">"""Computes the density of states:</span>
+
+<span class="sd">        .. math:: \rho(\omega) = \int_{k} dk A_k(\omega).</span>
+
+
+<span class="sd">        .. admonition:: K-Grid!</span>
+<span class="sd">            :class: warning</span>
+
+<span class="sd">            The spectral density should be evaluated on a grid that covers the whole Brillouin zone. You can use</span>
+<span class="sd">            :class:`topwave.set_of_kpoints.Plane` or grid.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        energies: RealList</span>
+<span class="sd">            Energies at which the density of states is calculated.</span>
+<span class="sd">        broadening: float</span>
+<span class="sd">            Broadening of the spectral density. Default is 0.02.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        RealList</span>
+<span class="sd">            The density of states.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :class:`topwave.topology.get_berry_phase`</span>
+
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Calculate some DOS.</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">density_of_states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">energy</span> <span class="ow">in</span> <span class="n">energies</span><span class="p">:</span>
+            <span class="n">density_of_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_spectral_density</span><span class="p">(</span><span class="n">energy</span><span class="p">,</span> <span class="n">broadening</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">density_of_states</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Spec.get_spinwave_hamiltonian"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_spinwave_hamiltonian">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_spinwave_hamiltonian</span><span class="p">(</span>
+            <span class="n">model</span><span class="p">:</span> <span class="n">SpinWaveModel</span><span class="p">,</span>
+            <span class="n">kpoints</span><span class="p">:</span> <span class="n">VectorList</span> <span class="o">|</span> <span class="n">SetOfKPoints</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]:</span>
         <span class="sd">"""Constructs the spin wave Hamiltonian for a set of given k-points."""</span>
 
-        <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">)</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">)</span>
         <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">kpoints</span><span class="p">),</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dim</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">dim</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
 
         <span class="c1"># construct matrix elements at each k-point</span>
@@ -367,8 +417,8 @@
 
         <span class="c1"># add single ion anisotropies</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
-            <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'Rot'</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'Rot'</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">])</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'Rot'</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'Rot'</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">K</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">])</span>
             <span class="n">matrix</span><span class="p">[:,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">]</span> <span class="o">+=</span> <span class="n">u</span> <span class="o">@</span> <span class="n">K</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
             <span class="n">matrix</span><span class="p">[:,</span> <span class="n">_</span> <span class="o">+</span> <span class="n">dim</span><span class="p">,</span> <span class="n">_</span> <span class="o">+</span> <span class="n">dim</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">u</span> <span class="o">@</span> <span class="n">K</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
             <span class="n">matrix</span><span class="p">[:,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">+</span> <span class="n">dim</span><span class="p">]</span> <span class="o">+=</span> <span class="n">u</span> <span class="o">@</span> <span class="n">K</span> <span class="o">@</span> <span class="n">u</span>
@@ -376,17 +426,46 @@
 
         <span class="c1"># add the external magnetic field</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'Rot'</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">_</span><span class="p">]</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'Rot'</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">]</span>
             <span class="n">H_Zeeman</span> <span class="o">=</span> <span class="n">MU_BOHR</span> <span class="o">*</span> <span class="n">G_LANDE</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">zeeman</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
             <span class="n">matrix</span><span class="p">[:,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">]</span> <span class="o">+=</span> <span class="n">H_Zeeman</span>
             <span class="n">matrix</span><span class="p">[:,</span> <span class="n">_</span> <span class="o">+</span> <span class="n">dim</span><span class="p">,</span> <span class="n">_</span> <span class="o">+</span> <span class="n">dim</span><span class="p">]</span> <span class="o">+=</span> <span class="n">H_Zeeman</span>
 
         <span class="k">return</span> <span class="n">matrix</span></div>
 
-<div class="viewcode-block" id="Spec.get_tightbinding_hamiltonian"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_tightbinding_hamiltonian">[docs]</a>    <span class="k">def</span> <span class="nf">get_tightbinding_hamiltonian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">TightBindingModel</span><span class="p">,</span> <span class="n">kpoints</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]:</span>
-        <span class="sd">"""Constructs the spin wave Hamiltonian for a set of given k-points."""</span>
+<div class="viewcode-block" id="Spec.get_tightbinding_hamiltonian"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_tightbinding_hamiltonian">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_tightbinding_hamiltonian</span><span class="p">(</span>
+            <span class="n">model</span><span class="p">:</span> <span class="n">TightBindingModel</span><span class="p">,</span>
+            <span class="n">kpoints</span><span class="p">:</span> <span class="n">VectorList</span> <span class="o">|</span> <span class="n">SetOfKPoints</span><span class="p">,</span>
+            <span class="n">derivative</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SquareMatrix</span><span class="p">:</span>
+        <span class="sd">"""Constructs the Tight Binding Hamiltonian (or its derivative) for a set of given k-points.</span>
 
-        <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">kpoints</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        model: TightBindingModel</span>
+<span class="sd">            The model of that is used to calculate the spectrum.</span>
+<span class="sd">        kpoints: VectorList | SetOfKPoints</span>
+<span class="sd">            The kpoints at which the Hamiltonian or its derivatives are constructed.</span>
+<span class="sd">        derivative: str</span>
+<span class="sd">            String that indicates which derivative should be constructed. Options are 'x', 'y' or 'z'.</span>
+<span class="sd">            Default is None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SquareMatrix</span>
+<span class="sd">            The Hamiltonian or one of its derivatives.</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">kpoints</span> <span class="o">=</span> <span class="n">format_kpoints</span><span class="p">(</span><span class="n">kpoints</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">derivative</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">get_fourier_coefficient</span> <span class="o">=</span> <span class="n">get_periodic_fourier_coefficient</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">get_fourier_coefficient</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">get_periodic_fourier_derivative</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">derivative</span><span class="p">)</span>
+
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">kpoints</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
 
         <span class="c1"># construct matrix elements at each k-point</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">kpoint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">kpoints</span><span class="p">):</span>
@@ -394,19 +473,19 @@
                 <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">]</span>
 
                 <span class="c1"># get the matrix elements from the couplings</span>
-                <span class="n">A</span><span class="p">,</span> <span class="n">inner</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">get_tightbinding_matrix_elements</span><span class="p">(</span><span class="n">kpoint</span><span class="p">)</span>
-
+                <span class="c1"># A, inner = coupling.get_tightbinding_matrix_elements(kpoint)</span>
+                <span class="n">A</span> <span class="o">=</span> <span class="n">get_periodic_fourier_coefficient</span><span class="p">(</span><span class="n">coupling</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">)</span> <span class="o">*</span> <span class="n">coupling</span><span class="o">.</span><span class="n">get_tightbinding_matrix_elements</span><span class="p">()</span>
                 <span class="n">matrix</span><span class="p">[</span><span class="n">_</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span>
                 <span class="n">matrix</span><span class="p">[</span><span class="n">_</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">):</span>
             <span class="n">matrix</span><span class="p">[:,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">]</span> <span class="o">+=</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">]</span>
 
         <span class="c1"># add spin degrees of freedom</span>
         <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">check_if_spinful</span><span class="p">():</span>
             <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 
-            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">site</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">):</span>
                 <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">_</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">_</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">_</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">_</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">MU_BOHR</span> <span class="o">*</span> <span class="n">G_LANDE</span> <span class="o">*</span> <span class="n">pauli</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">zeeman</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
                 <span class="c1"># add onsite term</span>
@@ -416,7 +495,7 @@
             <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">kpoint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">kpoints</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_set_couplings</span><span class="p">():</span>
                     <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">]</span>
-                    <span class="n">spin_orbit_term</span><span class="p">,</span> <span class="n">inner</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">get_spin_orbit_matrix_elements</span><span class="p">(</span><span class="n">kpoint</span><span class="p">)</span>
+                    <span class="n">spin_orbit_term</span> <span class="o">=</span> <span class="n">get_fourier_coefficient</span><span class="p">(</span><span class="n">coupling</span><span class="p">,</span> <span class="n">kpoint</span><span class="p">)</span> <span class="o">*</span> <span class="n">coupling</span><span class="o">.</span><span class="n">get_spin_orbit_matrix_elements</span><span class="p">()</span>
                     <span class="n">matrix</span><span class="p">[</span><span class="n">_</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">spin_orbit_term</span>
                     <span class="n">matrix</span><span class="p">[</span><span class="n">_</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">spin_orbit_term</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
@@ -425,12 +504,13 @@
 <div class="viewcode-block" id="Spec.solve"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]],</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]]:</span>
         <span class="sd">"""Diagonalizes the Hamiltonian using the provided solver."""</span>
 
+        <span class="n">kpoints</span> <span class="o">=</span> <span class="n">format_kpoints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span><span class="p">)</span>
         <span class="c1"># allocate memory for the output</span>
         <span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hamiltonian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># complex for white alg.</span>
         <span class="n">psi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hamiltonian</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
 
         <span class="c1"># diagonalize the Hamiltonian at each k-point</span>
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kpoints</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">kpoints</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">E</span><span class="p">[</span><span class="n">_</span><span class="p">],</span> <span class="n">psi</span><span class="p">[</span><span class="n">_</span><span class="p">]</span> <span class="o">=</span> <span class="n">solver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hamiltonian</span><span class="p">[</span><span class="n">_</span><span class="p">])</span>
             <span class="k">except</span><span class="p">:</span>
@@ -460,7 +540,43 @@
 <span class="sd">        """</span>
 
         <span class="n">loop_operator</span> <span class="o">=</span> <span class="n">get_fermionic_wilson_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">occupied</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">get_berry_phase</span><span class="p">(</span><span class="n">loop_operator</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">get_berry_phase</span><span class="p">(</span><span class="n">loop_operator</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Spec.get_spectral_density"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_spectral_density">[docs]</a>    <span class="k">def</span> <span class="nf">get_spectral_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+                             <span class="n">broadening</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RealList</span><span class="p">:</span>
+        <span class="sd">"""Computes the spectral density at a given energy for all k-points of the spectrum:</span>
+
+<span class="sd">        .. math:: A_k(\omega) = -\operatorname{Im} \sum_n \frac{1}{\omega - \epsilon_n + i\eta}.</span>
+
+
+<span class="sd">        .. admonition:: Normalization!</span>
+<span class="sd">            :class: warning</span>
+
+<span class="sd">            The spectral density is only evaluated at one energy and is not normalized.</span>
+
+<span class="sd">        asdf</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        energy: float</span>
+<span class="sd">            The energy at which the spectral density is computed.</span>
+<span class="sd">        broadening: float</span>
+<span class="sd">            Broadening of the spectral density. Default is 0.02.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        RealList</span>
+<span class="sd">            The spectral density at each k-point of the spectrum.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        Compute the spectral density of something.</span>
+
+
+<span class="sd">        """</span>
+
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">reciprocal</span><span class="p">(</span><span class="n">energy</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">energies</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">broadening</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div></div>
 
 </pre></div>
 
