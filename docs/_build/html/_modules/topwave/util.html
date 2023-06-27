@@ -341,7 +341,7 @@
     <span class="k">return</span> <span class="n">out</span></div>
 
 <div class="viewcode-block" id="format_kpoints"><a class="viewcode-back" href="../../api.html#topwave.util.format_kpoints">[docs]</a><span class="k">def</span> <span class="nf">format_kpoints</span><span class="p">(</span>
-        <span class="n">kpoints</span><span class="p">:</span> <span class="n">VectorList</span> <span class="o">|</span> <span class="n">SetOfKPoints</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SetOfKPoints</span><span class="p">:</span>
+        <span class="n">kpoints</span><span class="p">:</span> <span class="n">VectorList</span> <span class="o">|</span> <span class="n">SetOfKPoints</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VectorList</span><span class="p">:</span>
     <span class="sd">"""Makes sure that either a list of k-points or a `SetOfKPoints` instance can be used."""</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -384,6 +384,16 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">angle</span></div>
 
+<div class="viewcode-block" id="get_berry_curvature_indices"><a class="viewcode-back" href="../../api.html#topwave.util.get_berry_curvature_indices">[docs]</a><span class="k">def</span> <span class="nf">get_berry_curvature_indices</span><span class="p">(</span>
+        <span class="n">component</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">"""Returns the indices of the crystal momenta needed to calculate the given component of the Berry Curvature."""</span>
+    <span class="k">match</span> <span class="n">component</span><span class="p">:</span>
+        <span class="k">case</span> <span class="s1">'x'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span>
+        <span class="k">case</span> <span class="s1">'y'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">case</span> <span class="s1">'z'</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span></div>
 
 <div class="viewcode-block" id="get_boundary_couplings"><a class="viewcode-back" href="../../api.html#topwave.util.get_boundary_couplings">[docs]</a><span class="k">def</span> <span class="nf">get_boundary_couplings</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">,</span>
                            <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'xyz'</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]:</span>

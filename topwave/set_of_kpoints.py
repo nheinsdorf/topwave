@@ -6,7 +6,7 @@ from pymatgen.core.structure import Structure
 from topwave.types import RealList, Vector, VectorList
 from topwave.util import rotate_vector_to_ez
 
-__all__ = ["Circle", "Grid", "Path", "Plane", "SetOfKPoints"]
+__all__ = ["Circle", "Grid", "Path", "Plane", "SetOfKPoints", "Sphere"]
 
 class SetOfKPoints:
     """Class that holds a number of k-points in three dimensional reciprocal space.
@@ -360,3 +360,108 @@ class Plane(SetOfKPoints):
         inverse_rotation = rotate_vector_to_ez(normal).T
         self.kpoints = np.einsum('nm, kn -> km', inverse_rotation, kpoints) + anchor * self.normal
 
+class Sphere(SetOfKPoints):
+    """A Sphere in the Brillouin zone.
+
+
+    Parameters
+    ----------
+    radius: float
+        The radius of the sphere in reduced reciprocal coordinates.
+    center: Vector
+        The center of the sphere in reduced reciprocal coordinates.
+    num_phi: int
+        Number of points along lines on the sphere with constant elevation.
+    num_theta: int
+        Number of points along lines on the sphere with constant azimuthal angle.
+    endpoint_phi: bool
+        Whether or not the 2pi is included in lines of constant elevation.
+        Default is False.
+    startpoint_theta: bool
+        Whether or not 0 is included in the lines of constant azimuthal angle.
+        Default is False.
+    endpoint_theta: bool
+        Whether or not pi is included in the lines of constant azimuthal angle.
+        Default is False.
+    d_cos_theta: bool
+        If False, the increment of elevation angle is equidistant in angle.
+        If True, the increment of elevation angle is equidistant in the cosine of angle.
+        Default is False.
+
+    Attributes
+    ----------
+    center: Vector
+        This is where center is stored.
+    kpoints: VectorList
+        List of points in reciprocal space in reduced coordinates.
+    num_kpoints: int
+        Number of k-points.
+    radius: float
+        This is where redius is stored.
+    shape: tuple(int, int)
+        This is where num_phi and num_theta are saved.
+
+    Notes
+    -----
+    If the sphere is used to compute the chirality of e.g. a Weyl point make sure to exclude
+    0 and pi elevation angle and to close the lines of constant elevation. If you chose d_cos_theta to
+    be False, the points close to the poles of the sphere are much closer together than at the equator.
+
+
+    Examples
+    --------
+
+    We construct two spheres with the two different increments of elevation angle.
+
+    .. ipython:: python
+
+        import matplotlib.pyplot as plt
+
+        # Create the grids.
+        num_phi, num_theta = 15, 10
+        sphere1 = tp.Sphere(radius=0.3, center=[-0.2, -0.2, 0], num_phi=num_phi, num_theta=num_theta, d_cos_theta=True)
+        sphere2 = tp.Sphere(radius=0.25, center=[0.25, 0.25, 0.25], num_phi=num_phi, num_theta=num_theta)
+
+        fig = plt.figure()
+        ax = plt.axes(projection='3d')
+        ax.scatter(*sphere1.kpoints.T)
+        ax.scatter(*sphere2.kpoints.T)
+        ax.set_xlim(-0.5, 0.5)
+        ax.set_ylim(-0.5, 0.5)
+        ax.set_zlim(-0.5, 0.5)
+        ax.set_xlabel(r'$k_x$');
+        ax.set_ylabel(r'$k_y$');
+        @savefig sphere.png
+        ax.set_zlabel(r'$k_z$');
+
+    """
+
+    def __init__(self,
+                 radius: float,
+                 center: Vector,
+                 num_phi: int,
+                 num_theta: int,
+                 endpoint_phi: bool = False,
+                 startpoint_theta: bool = False,
+                 endpoint_theta: bool = False,
+                 d_cos_theta: bool = False) -> None:
+
+        self.radius = radius
+        self.center = np.array(center, dtype=np.float64).reshape((3,))
+        self.shape = (num_phi, num_theta)
+
+        span_phi = np.linspace(0, 2 * np.pi, num_phi, endpoint=endpoint_phi)
+        if startpoint_theta:
+            span_theta = np.linspace(0, np.pi, num_theta, endpoint=endpoint_theta)
+        else:
+            span_theta = np.linspace(0, np.pi, num_theta + 1, endpoint=endpoint_theta)[1:]
+        if d_cos_theta:
+            span_theta = np.arccos(2 * span_theta / np.pi - 1)[::-1]
+
+        phis, thetas = np.meshgrid(span_phi, span_theta, indexing='ij')
+
+        kxs = radius * np.sin(thetas) * np.cos(phis) + center[0]
+        kys = radius * np.sin(thetas) * np.sin(phis) + center[1]
+        kzs = radius * np.cos(thetas) + center[2]
+
+        self.kpoints = np.array([kxs.flatten(), kys.flatten(), kzs.flatten()], dtype=np.float64).T
