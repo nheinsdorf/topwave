@@ -41,6 +41,14 @@ def coupling_selector(attribute: str,
         return indices
     return []
 
+def fermi_distribution(energies: float | npt.ArrayLike,
+                       temperature: float) -> npt.NDArray[np.float64]:
+    """Calculates the Fermi-Dirac distribution for a given set of energies and a temperature."""
+
+    energies = np.array(energies, dtype=np.float64)
+    if temperature == 0:
+        return np.zeros(energies.shape, dtype=np.float64)
+    return np.reciprocal(np.exp(energies / (K_BOLTZMANN * temperature)) + 1)
 
 def format_input_vector(orientation: list[float] | npt.NDArray[np.float64],
                         length: Optional[float] = None) -> npt.NDArray[np.float64]:

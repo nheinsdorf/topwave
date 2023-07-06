@@ -29,12 +29,12 @@ def get_berry_curvature(
     """
 
     index1, index2 = get_berry_curvature_indices(component)
-    partial_derivative_matrix1 = spec.get_tightbinding_hamiltonian(spec.model,
-                                                                   spec.kpoints.kpoints,
-                                                                   derivative='xyz'[index1])
-    partial_derivative_matrix2 = spec.get_tightbinding_hamiltonian(spec.model,
-                                                                   spec.kpoints.kpoints,
-                                                                   derivative='xyz'[index2])
+    partial_derivative_matrix1 = spec.get_tightbinding_derivative(spec.model,
+                                                                  spec.kpoints.kpoints,
+                                                                  derivative='xyz'[index1])
+    partial_derivative_matrix2 = spec.get_tightbinding_derivative(spec.model,
+                                                                  spec.kpoints.kpoints,
+                                                                  derivative='xyz'[index2])
 
     num_bands = spec.energies.shape[1]
 
@@ -82,11 +82,15 @@ def get_bosonic_wilson_loop(spectrum: Spec, band_indices: IntVector) -> Matrix:
 
     pass
 
-def get_fermionic_wilson_loop(spectrum: Spec, band_indices: IntVector) -> Matrix:
+def get_fermionic_wilson_loop(spectrum: Spec,
+                              band_indices: IntVector = None,
+                              energy: float = None) -> Matrix:
     """Constructs the Wilson loop operator of a fermionic spectrum.
 
     For a spectrum at Nk k-points, the inner product of Nk - 1 eigenfunctions for a given selection of
-    states is evaluated. The ordering is the same as that of the k-points.
+    states is evaluated. The ordering is the same as that of the k-points. The states can be selected by providing a
+    list of band indices, or all states below some energy can be selected. In that case the wilson loop operator is
+    a product of rectangular matrices.
 
     .. admonition:: Careful!
         :class: warning
@@ -100,14 +104,17 @@ def get_fermionic_wilson_loop(spectrum: Spec, band_indices: IntVector) -> Matrix
     spectrum: Spec
         The spectrum that contains the eigenfunctions of the model.
     band_indices: IntVector
-        List of band indices that are selected to compute the Wilson loop operator.
+        List of band indices that are selected to compute the Wilson loop operator. If None, all states are selected.
+    energy: float
+        If not None, only states below energy are used to compute the Wilson loop. Default is None.
 
     """
 
-    psi = spectrum.psi[:, :, band_indices]
-
+    band_indices = np.arange(spectrum.energies.shape[1]) if band_indices is None else np.array(band_indices, dtype=np.int64)
+    energies, psi = spectrum.energies[:, band_indices], spectrum.psi[:, :, band_indices]
     # check whether start and end k-point are the same and impose closed loop
 
+    # should I check this or give resonsibility to user?
     if np.all(np.isclose(spectrum.kpoints.kpoints[0], spectrum.kpoints.kpoints[-1])):
         psi[0] = psi[-1]
     else:
@@ -116,13 +123,31 @@ def get_fermionic_wilson_loop(spectrum: Spec, band_indices: IntVector) -> Matrix
         # see 'impose_pbc'-method
         pass
 
-    # construct bra-eigenvectors for k+1
-    psi_left = np.roll(np.conj(psi), 1, axis=0)
+    # standard
+    if energy is None:
+        # construct bra-eigenvectors for k+1
+        psi_left = np.roll(np.conj(psi), 1, axis=0)
 
-    # compute num_k - 1 overlaps
-    loop = np.einsum('knm, knl -> kml', psi_left[1:], psi[1:])
+        # compute num_k - 1 overlaps
+        loop = np.einsum('knm, knl -> kml', psi_left[1:], psi[1:])
 
-    # do the SVD cleanup?
-    # take the product of the matrices to compute the wilson loop operator
-    return np.linalg.multi_dot(loop)
+        # do the SVD cleanup?
+        # take the product of the matrices to compute the wilson loop operator
+        return np.linalg.multi_dot(loop)
+
+    # Ken's method
+    psi_left = np.conj(psi[0, :, energies[0] <= energy].T)
+    psi_right = psi[1, :, energies[1] <= energy].T
+    product = np.einsum('nm, nl -> ml', psi_left, psi_right)
+    print(product.shape)
+    for k_index, kpoint in enumerate(spectrum.kpoints.kpoints[1:-1]):
+        psi_left = np.conj(psi[k_index + 1, :, energies[k_index + 1] <= energy].T)
+        psi_right = psi[k_index + 2, :, energies[k_index + 2] <= energy].T
+        intermediate = np.einsum('nm, nl -> ml', psi_left, psi_right)
+        product = product @ intermediate
+    if product.size == 0:
+        return [[0]]
+    return product
+
+
 

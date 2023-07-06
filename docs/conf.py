@@ -55,14 +55,17 @@ extensions = [
 ]
 
 autodoc_type_aliases = {'ComplexVector': 'ComplexVector',
+                        'ComplexList': 'ComplexList',
                         'Complex2x2': 'Complex2x2',
                         'Coupling': 'Coupling',
                         'IntVector': 'IntVector',
                         'Matrix': 'Matrix',
+                        'ListOfRealList': 'ListOfRealList',
                         'PeriodicSite': 'PeriodicSite', # this is because for dataclasses it's weird with typehints
                         'Real3x3': 'Real3x3',
                         'RealList': 'RealList',
                         'SquareMatrix': 'SquareMatrix',
+                        'SquareMatrixList': 'SquareMatrixList',
                         'Vector': 'Vector',
                         'VectorList': 'VectorList'}
 

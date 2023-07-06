@@ -2,22 +2,57 @@ from __future__ import annotations
 
 import numpy as np
 import numpy.fft as fft
-from topwave.types import SquareMatrixList
 
+from topwave.constants import K_BOLTZMANN
+from topwave.fourier_coefficients import get_intracell_fourier_coefficient
+from topwave.model import TightBindingModel
+from topwave.set_of_kpoints import Grid
+from topwave.spec import Spec
+from topwave.types import ListOfRealList
+from topwave.util import fermi_distribution
+
+
+def get_nernst_conductivity(
+        berry_curvature: ListOfRealList,
+        energies: ListOfRealList,
+        filling: float,
+        temperature: float) -> float:
+    """Computes the Nernst Conductivity.
+
+    Parameters
+    ----------
+    berry_curvature: ListOfRealList
+        The Berry Curvature at each k-point for all bands.
+    energies: ListOfRealList
+        The energies at each k-point for all bands.
+    filling: float
+        The energy up to which the states are considered.
+    temperature: float
+        The temperature.
+
+    Returns
+    -------
+    float
+        The Nernst conductivity at some filling.
+
+    """
+
+    energies * fermi_distribution(energies, temperature) + K_BOLTZMANN * temperature * np.log(1 + np.exp(energies - filling))
 
 def get_bare_susceptibility(
-        hamiltonians: SquareMatrixList,
+        model: TightBindingModel,
         k_grid_shape: tuple[int, int, int],
         temperature: float,
-        num_matsubara_frequencies: int) -> np.ndarray[np.float64]:
-    """Computes the bare susceptibility tensor for a given spectrum.
+        num_matsubara_frequencies: int,
+        symmetrize: bool = True) -> np.ndarray[np.float64]:
+    """Computes the bare susceptibility tensor for a given model.
 
     This uses the imaginary time representation to efficiently calculate the product of Green's functions.
     Cite Something
 
     Parameters
     ----------
-    hamiltonians: SquareMatrixList
+    model: TightBindingModel
         A list of tight-binding hamiltonians on a grid that covers the Brillouin zone that is used to calculate the bare
         suscpetibility. The shape should be the shape of the grid times the dimension of the hamiltonians.
     k_grid_shape: tuple(int, int, int)
@@ -30,6 +65,9 @@ def get_bare_susceptibility(
     num_matsubara_frequencies: int
         The number of matsubara frequencies. Increase this number until convergence is reached. A good starting point
         is 256.
+    symmetrize: bool
+        If true, the susceptibility tensor is transformed taking into account the intracell sublattice positions to
+        restore the symmetries of e.g. nonsymmorphic crystals. Default is true.
 
     Returns
     -------
@@ -65,7 +103,10 @@ def get_bare_susceptibility(
 
     """
 
-    hamiltonians = np.array(hamiltonians, dtype=np.complex128)
+    grid = Grid(num_x=k_grid_shape[0], num_y=k_grid_shape[1], num_z=k_grid_shape[2],
+                x_min=0, x_max=1, y_min=0, y_max=1, z_min=0, z_max=1,
+                endpoint_x=False, endpoint_y=False, endpoint_z=False)
+    hamiltonians = Spec.get_tightbinding_hamiltonian(model, grid)
     num_bands = hamiltonians.shape[-1]
     hamiltonians = hamiltonians.reshape((*k_grid_shape, num_bands, num_bands))
 
@@ -90,10 +131,22 @@ def get_bare_susceptibility(
                                                       1, axis=2),
                                               1, axis=3)
     Greens_functions_negative_times[0] *= -1
-    product_Greens_functions = -np.einsum('fhklmn, fhklop -> fhklmnop', Greens_functions, Greens_functions_negative_times)
+    product_Greens_functions = -np.einsum('fhklmn, fhklop -> fhklmnop',
+                                          Greens_functions,
+                                          Greens_functions_negative_times) / temperature
     susceptibility = (fft.fftn(fft.ifft(product_Greens_functions, axis=0)
                                , axes=[1, 2, 3]))
+    if not symmetrize:
+        return  susceptibility
 
-    return susceptibility
+    intracell_phase_factors = np.array([get_intracell_fourier_coefficient(site, grid.kpoints)
+                                        for site in model.structure], dtype=np.complex128).T
+    intracell_phase_factors = intracell_phase_factors.reshape((*grid.shape, num_bands))[..., np.newaxis] \
+                              * np.eye(len(model.structure))
+    symmetric_susceptibility = np.einsum('whklabcd, hklbc, hklad -> whklabcd',
+                                         fft.fftshift(susceptibility, axes=[1, 2, 3]),
+                                         intracell_phase_factors,
+                                         np.conj(intracell_phase_factors))
+    return symmetric_susceptibility
 
 

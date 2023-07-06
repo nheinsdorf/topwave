@@ -149,9 +149,8 @@ class Spec:
     @staticmethod
     def get_tightbinding_hamiltonian(
             model: TightBindingModel,
-            kpoints: VectorList | SetOfKPoints,
-            derivative: str = None) -> SquareMatrix:
-        """Constructs the Tight Binding Hamiltonian (or its derivative) for a set of given k-points.
+            kpoints: VectorList | SetOfKPoints) -> SquareMatrix:
+        """Constructs the Tight Binding Hamiltonian for a given set of k-points.
 
 
         Parameters
@@ -160,23 +159,18 @@ class Spec:
             The model of that is used to calculate the spectrum.
         kpoints: VectorList | SetOfKPoints
             The kpoints at which the Hamiltonian or its derivatives are constructed.
-        derivative: str
-            String that indicates which derivative should be constructed. Options are 'x', 'y' or 'z'.
-            Default is None.
 
         Returns
         -------
         SquareMatrix
-            The Hamiltonian or one of its derivatives.
+            The Hamiltonian.
 
         """
 
         kpoints = format_kpoints(kpoints)
 
-        if derivative is None:
-            k_dependence = get_periodic_fourier_coefficient
-        else:
-            k_dependence = partial(get_periodic_fourier_derivative, direction=derivative)
+        k_dependence = get_periodic_fourier_coefficient
+
         matrix = np.zeros((len(kpoints), len(model.structure), len(model.structure)), dtype=complex)
 
         # construct matrix elements at each k-point
@@ -213,6 +207,58 @@ class Spec:
 
         return matrix
 
+    @staticmethod
+    def get_tightbinding_derivative(
+            model: TightBindingModel,
+            kpoints: VectorList | SetOfKPoints,
+            derivative: str) -> SquareMatrix:
+        """Constructs the derivative of a Tight Binding Hamiltonian for a given set of k-points.
+
+
+        Parameters
+        ----------
+        model: TightBindingModel
+            The model of that is used to calculate the spectrum.
+        kpoints: VectorList | SetOfKPoints
+            The kpoints at which the Hamiltonian or its derivatives are constructed.
+        derivative: str
+            String that indicates which derivative should be constructed. Options are 'x', 'y' or 'z'.
+
+        Returns
+        -------
+        SquareMatrix
+            The derivative of the Hamiltonian.
+
+        """
+
+        kpoints = format_kpoints(kpoints)
+
+        k_dependence = partial(get_periodic_fourier_derivative, direction=derivative)
+        matrix = np.zeros((len(kpoints), len(model.structure), len(model.structure)), dtype=complex)
+
+        # construct matrix elements at each k-point
+        # for _, kpoint in enumerate(kpoints):
+        for coupling in model.get_set_couplings():
+            i, j = coupling.site1.properties['index'], coupling.site2.properties['index']
+
+            # get the matrix elements from the couplings
+            # A, inner = coupling.get_tightbinding_matrix_elements(kpoint)
+            A = k_dependence(coupling, kpoints) * coupling.get_tightbinding_matrix_elements()
+            matrix[:, i, j] += A
+            matrix[:, j, i] += np.conj(A)
+
+        # add spin degrees of freedom
+        if model.check_if_spinful():
+            matrix = np.kron(matrix, np.eye(2))
+
+            for coupling in model.get_set_couplings():
+                i, j = coupling.site1.properties['index'], coupling.site2.properties['index']
+                spin_orbit_term = np.einsum('c, nm -> cnm', k_dependence(coupling, kpoints), coupling.get_spin_orbit_matrix_elements())
+                matrix[:, 2 * i:2 * i + 2, 2 * j:2 * j + 2] += spin_orbit_term
+                matrix[:, 2 * j:2 * j + 2, 2 * i:2 * i + 2] += np.conj(spin_orbit_term.swapaxes(1, 2))
+
+        return matrix
+
     def solve(self, solver: Callable[[npt.NDArray[np.complex128]], tuple[npt.NDArray[np.complex128], npt.NDArray[np.complex128]]]) -> tuple[npt.NDArray[np.complex128], npt.NDArray[np.complex128]]:
         """Diagonalizes the Hamiltonian using the provided solver."""
 
@@ -241,7 +287,9 @@ class Spec:
         return E, psi
 
 
-    def get_berry_phase(self, occupied: IntVector) -> float:
+    def get_berry_phase(self,
+                        band_indices: IntVector = None,
+                        energy: float = None) -> float:
         """Computes the Berry phase.
 
         See Also
@@ -250,7 +298,7 @@ class Spec:
 
         """
 
-        loop_operator = get_fermionic_wilson_loop(self, occupied)
+        loop_operator = get_fermionic_wilson_loop(self, band_indices, energy)
         return get_berry_phase(loop_operator)
 
     def get_spectral_density(self,
