@@ -638,6 +638,24 @@ class Model(ABC):
         for site in self.structure:
             site.properties['magmom'] = None
 
+    def unset_spin_polarized(self):
+        """Sets the spin-polarization flag to False.
+
+
+        Examples
+        --------
+
+        Unset spin-polarization and confirm by printing the site properties.
+
+        .. ipython:: python
+
+            model.unset_spin_polarized()
+            model.show_site_properties()
+
+        """
+
+        self.is_spin_polarized = False
+
     def write_cif(self,
                   path: str,
                   write_magmoms: bool = True) -> None:

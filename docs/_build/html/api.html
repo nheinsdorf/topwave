@@ -322,6 +322,8 @@
         </li>
         <li class="md-nav__item"><a href="#topwave.model.Model.unset_moments" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.unset_moments()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#topwave.model.Model.unset_spin_polarized" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.unset_spin_polarized()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#topwave.model.Model.write_cif" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.write_cif()</span></code></a>
         </li></ul>
             </nav>
@@ -975,6 +977,8 @@
         <li class="md-nav__item"><a href="#topwave.model.Model.unset_coupling" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.unset_coupling()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.model.Model.unset_moments" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.unset_moments()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.model.Model.unset_spin_polarized" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.unset_spin_polarized()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.model.Model.write_cif" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.write_cif()</span></code></a>
         </li></ul>
@@ -1811,6 +1815,26 @@ The dimension of the Hilbert space will be doubled. See <a class="reference inte
 </div>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="topwave.model.Model.unset_spin_polarized">
+<span class="sig-name descname"><span class="pre">unset_spin_polarized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/topwave/model.html#Model.unset_spin_polarized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.model.Model.unset_spin_polarized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the spin-polarization flag to False.</p>
+<p class="rubric">Examples</p>
+<p>Unset spin-polarization and confirm by printing the site properties.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">model</span><span class="o">.</span><span class="n">unset_spin_polarized</span><span class="p">()</span>
+
+<span class="gp">In [2]: </span><span class="n">model</span><span class="o">.</span><span class="n">show_site_properties</span><span class="p">()</span>
+<span class="go">╒═════════╤═══════════╤═════════╤════════════╤═══════════════════════╤═══════════════════════╤══════════╤═════════════════╤════════════════════════════════════╤═══════════════════╤════════════════════╤═════════╕</span>
+<span class="go">│   index │ species   │ label   │   orbitals │ coordinates (latt.)   │ coordinates (cart.)   │ magmom   │   onsite scalar │ onsite vector                      │ unit cell index   │ supercell vector   │ layer   │</span>
+<span class="go">╞═════════╪═══════════╪═════════╪════════════╪═══════════════════════╪═══════════════════════╪══════════╪═════════════════╪════════════════════════════════════╪═══════════════════╪════════════════════╪═════════╡</span>
+<span class="go">│       0 │ Co1       │ A       │          1 │ [0. 0. 0.]            │ [0. 0. 0.]            │          │            0.25 │ [0.05773503 0.05773503 0.05773503] │                   │                    │         │</span>
+<span class="go">╘═════════╧═══════════╧═════════╧════════════╧═══════════════════════╧═══════════════════════╧══════════╧═════════════════╧════════════════════════════════════╧═══════════════════╧════════════════════╧═════════╛</span>
+<span class="go">Spin Polarized: False</span>
+<span class="go">Zeeman: [0.11547005 0.11547005 0.11547005]</span>
+<span class="go">Supercell Size: None</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="topwave.model.Model.write_cif">
 <span class="sig-name descname"><span class="pre">write_cif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_magmoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/topwave/model.html#Model.write_cif"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.model.Model.write_cif" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves the structure to a .mcif file.</p>
@@ -2169,7 +2193,7 @@ do not touch <cite>x_min</cite>, <cite>x_max</cite>, <cite>y_min</cite> and <cit
 <span class="gp">In [12]: </span><span class="n">p</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
 
 <span class="gp">In [13]: </span><span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-<span class="gh">Out[13]: </span><span class="go">&lt;matplotlib.collections.PatchCollection at 0x15e535110&gt;</span>
+<span class="gh">Out[13]: </span><span class="go">&lt;matplotlib.collections.PatchCollection at 0x15ee79cd0&gt;</span>
 
 <span class="gp">In [14]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="gh">Out[14]: </span><span class="go">(-0.5, 0.5)</span>
@@ -2329,7 +2353,7 @@ Default is True.</p></li>
 <span class="gp">In [3]: </span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">'3d'</span><span class="p">)</span>
 
 <span class="gp">In [4]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">circle</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[4]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15e44e690&gt;</span>
+<span class="gh">Out[4]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15f86e210&gt;</span>
 
 <span class="gp">In [5]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_x$'</span><span class="p">)</span>
 <span class="gh">Out[5]: </span><span class="go">Text(0.5, 0, '$k_x$')</span>
@@ -2426,10 +2450,10 @@ double counting the points on the boundaries of the plane and make sure that <ci
 <span class="gp">In [6]: </span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">'3d'</span><span class="p">)</span>
 
 <span class="gp">In [7]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">grid1</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[7]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15e702e10&gt;</span>
+<span class="gh">Out[7]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15f8bc150&gt;</span>
 
 <span class="gp">In [8]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">grid2</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[8]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15e701210&gt;</span>
+<span class="gh">Out[8]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15f830690&gt;</span>
 
 <span class="gp">In [9]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_x$'</span><span class="p">);</span>
 
@@ -2513,10 +2537,10 @@ double counting the points on the boundaries of the plane and make sure that <ci
 <span class="gp">In [2]: </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 
 <span class="gp">In [3]: </span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[3]: </span><span class="go">[&lt;matplotlib.lines.Line2D at 0x15e7917d0&gt;]</span>
+<span class="gh">Out[3]: </span><span class="go">[&lt;matplotlib.lines.Line2D at 0x15ee9e950&gt;]</span>
 
 <span class="gp">In [4]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="o">.</span><span class="n">nodes</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[4]: </span><span class="go">&lt;matplotlib.collections.PathCollection at 0x15e707250&gt;</span>
+<span class="gh">Out[4]: </span><span class="go">&lt;matplotlib.collections.PathCollection at 0x15ee0a550&gt;</span>
 
 <span class="gp">In [5]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_x$'</span><span class="p">)</span>
 <span class="gh">Out[5]: </span><span class="go">Text(0.5, 0, '$k_x$')</span>
@@ -2765,10 +2789,10 @@ be False, the points close to the poles of the sphere are much closer together t
 <span class="gp">In [6]: </span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">'3d'</span><span class="p">)</span>
 
 <span class="gp">In [7]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">sphere1</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[7]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15e7231d0&gt;</span>
+<span class="gh">Out[7]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15efb2010&gt;</span>
 
 <span class="gp">In [8]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">sphere2</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[8]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15e707b90&gt;</span>
+<span class="gh">Out[8]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15efa1010&gt;</span>
 
 <span class="gp">In [9]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="gh">Out[9]: </span><span class="go">(-0.5, 0.5)</span>
