@@ -121,7 +121,8 @@ def get_fermionic_wilson_loop(spectrum: Spec,
         # implement the case where they are connected by a reciprocal vector
         # https://github.com/bellomia/PythTB/blob/master/pythtb.py
         # see 'impose_pbc'-method
-        pass
+        psi[0] = psi[-1]
+        #pass
 
     # standard
     if energy is None:

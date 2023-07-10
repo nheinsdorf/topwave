@@ -3,12 +3,82 @@ from __future__ import annotations
 import numpy as np
 from skimage.util import view_as_windows
 
-# from set_of_kpoints import SetOfKPoints
+from topwave.set_of_kpoints import Plane
 from topwave.types import VectorList
 from topwave.util import get_plaquette_indices
 
 
-__all__ = ["get_plaquette_cover"]
+# __all__ = ["get_plaquette_cover"]
+#NOTE: make normal also a vector like in set_of_kpoints plane object
+def get_line_cover(normal: str,
+                   direction: str,
+                   num_lines: int,
+                   num_points: int,
+                   anchor: float = 0.0,
+                   min: float = -0.5,
+                   max: float = 0.5) -> list[VectorList]:
+    """Builds a rectangular cover of a plane through the Brillouin zone.
+
+    Parameters
+    ----------
+    normal: str
+        A string indicating the normal of the plane in units of reciprocal lattice vectors.
+        Options are 'x', 'y' or 'z'.
+    direction: str
+        In which direction the lines are stacked. Options are 'x' and 'y'.
+    num_lines: int
+        Number of lines that are used to span the plane.
+    num_points: int
+        Number of points on one line.
+    anchor: float
+        Where along the normal the plane is anchored. Default is 0.
+    min: float
+        At which coordinate along the direction the first line is anchored.
+    max: float
+        At which coordinate along the direction the last line is anchored.
+
+    Returns
+    -------
+    list[VectorList]
+        A num_lines-long list of lines that each contains num_points k-points. The first and last k-point are
+        connected by a reciprocal lattice vector.
+
+    Examples
+    --------
+
+    We create a cover of the xy-plane anchored at z = 0 with 30 lines stacked along the x-direction.
+    Each line consists fo 60 points.
+
+    .. ipython:: python
+
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        # Create the cover.
+        cover = tp.get_line_cover('z', 'x', 30, 60)
+
+        fig = plt.figure()
+        ax = plt.axes(projection='3d')
+        for line in cover:
+            ax.plot(*line.T, c='hotpink')
+        ax.set_xlim(-0.5, 0.5)
+        ax.set_ylim(-0.5, 0.5)
+        ax.set_zlim(-0.5, 0.5)
+        ax.set_xlabel(r'$k_x$');
+        ax.set_ylabel(r'$k_y$');
+        @savefig line_cover.png
+        ax.set_zlabel(r'$k_z$');
+
+    """
+
+    normal_vector = [0, 0, 0]
+    normal_vector['xyz'.find(normal)] = 1
+    if direction == 'x':
+        kpoints = Plane(normal_vector, num_lines, num_points, anchor=anchor, x_min=min, x_max=max, endpoint_y=True).kpoints
+        return kpoints.reshape((num_lines, num_points, 3))
+    kpoints = Plane(normal_vector, num_points, num_lines, anchor=anchor, y_min=min, y_max=max, endpoint_x=True).kpoints
+    return kpoints.reshape((num_points, num_lines, 3)).transpose(1, 0, 2)
+
 
 def get_plaquette_cover(normal: str,
                         num_x: int,

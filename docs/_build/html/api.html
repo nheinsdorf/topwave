@@ -270,6 +270,8 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#module-topwave.fourier_coefficients" class="md-nav__link">fourier_coefficients</a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#topwave.fourier_coefficients.get_intracell_fourier_coefficient" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_intracell_fourier_coefficient()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#topwave.fourier_coefficients.get_periodic_fourier_coefficient" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_periodic_fourier_coefficient()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.fourier_coefficients.get_periodic_fourier_derivative" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_periodic_fourier_derivative()</span></code></a>
@@ -307,6 +309,8 @@
         <li class="md-nav__item"><a href="#topwave.model.Model.set_open_boundaries" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.set_open_boundaries()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.model.Model.set_spin_orbit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.set_spin_orbit()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.model.Model.set_spin_polarized" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.set_spin_polarized()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.model.Model.set_zeeman" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.set_zeeman()</span></code></a>
         </li>
@@ -348,6 +352,8 @@
         </li>
         <li class="md-nav__item"><a href="#module-topwave.k_space_utils" class="md-nav__link">k_space_utils</a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#topwave.k_space_utils.get_line_cover" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_line_cover()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#topwave.k_space_utils.get_plaquette_cover" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_plaquette_cover()</span></code></a>
         </li></ul>
             </nav>
@@ -355,6 +361,8 @@
         <li class="md-nav__item"><a href="#module-topwave.response" class="md-nav__link">response</a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#topwave.response.get_bare_susceptibility" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_bare_susceptibility()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.response.get_nernst_conductivity" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_nernst_conductivity()</span></code></a>
         </li></ul>
             </nav>
         </li>
@@ -456,6 +464,8 @@
         </li>
         <li class="md-nav__item"><a href="#topwave.spec.Spec.get_spinwave_hamiltonian" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Spec.get_spinwave_hamiltonian()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#topwave.spec.Spec.get_tightbinding_derivative" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Spec.get_tightbinding_derivative()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#topwave.spec.Spec.get_tightbinding_hamiltonian" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Spec.get_tightbinding_hamiltonian()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.spec.Spec.hamiltonian" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Spec.hamiltonian</span></code></a>
@@ -476,11 +486,7 @@
         </li>
         <li class="md-nav__item"><a href="#module-topwave.supercell" class="md-nav__link">supercell</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#topwave.supercell.Supercell" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Supercell</span></code></a><nav class="md-nav">
-              <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#topwave.supercell.Supercell.get_supercell_structure" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Supercell.get_supercell_structure()</span></code></a>
-        </li></ul>
-            </nav>
+        <li class="md-nav__item"><a href="#topwave.supercell.get_supercell" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_supercell()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.supercell.stack" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">stack()</span></code></a>
         </li></ul>
@@ -503,6 +509,8 @@
         <li class="md-nav__item"><a href="#topwave.util.bose_distribution" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">bose_distribution()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.util.coupling_selector" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">coupling_selector()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.util.fermi_distribution" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">fermi_distribution()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.util.format_input_vector" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">format_input_vector()</span></code></a>
         </li>
@@ -544,6 +552,13 @@
     
       <a href="#module-topwave.fourier_coefficients" class="md-nav__link">fourier_coefficients</a>
       <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#topwave.fourier_coefficients.get_intracell_fourier_coefficient" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_intracell_fourier_coefficient()</span></code></a>
+      
+    
+    </li>
     <li class="md-nav__item">
     
     
@@ -596,6 +611,13 @@
     <li class="md-nav__item">
     
     
+      <a href="#topwave.k_space_utils.get_line_cover" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_line_cover()</span></code></a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="#topwave.k_space_utils.get_plaquette_cover" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_plaquette_cover()</span></code></a>
       
     
@@ -611,6 +633,13 @@
     
     
       <a href="#topwave.response.get_bare_susceptibility" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_bare_susceptibility()</span></code></a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#topwave.response.get_nernst_conductivity" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_nernst_conductivity()</span></code></a>
       
     
     </li></ul>
@@ -701,7 +730,7 @@
     <li class="md-nav__item">
     
     
-      <a href="#topwave.supercell.Supercell" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Supercell</span></code></a>
+      <a href="#topwave.supercell.get_supercell" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_supercell()</span></code></a>
       
     
     </li>
@@ -765,6 +794,13 @@
     
     
       <a href="#topwave.util.coupling_selector" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">coupling_selector()</span></code></a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#topwave.util.fermi_distribution" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">fermi_distribution()</span></code></a>
       
     
     </li>
@@ -888,6 +924,8 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#module-topwave.fourier_coefficients" class="md-nav__link">fourier_coefficients</a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#topwave.fourier_coefficients.get_intracell_fourier_coefficient" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_intracell_fourier_coefficient()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#topwave.fourier_coefficients.get_periodic_fourier_coefficient" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_periodic_fourier_coefficient()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.fourier_coefficients.get_periodic_fourier_derivative" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_periodic_fourier_derivative()</span></code></a>
@@ -925,6 +963,8 @@
         <li class="md-nav__item"><a href="#topwave.model.Model.set_open_boundaries" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.set_open_boundaries()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.model.Model.set_spin_orbit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.set_spin_orbit()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.model.Model.set_spin_polarized" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.set_spin_polarized()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.model.Model.set_zeeman" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Model.set_zeeman()</span></code></a>
         </li>
@@ -966,6 +1006,8 @@
         </li>
         <li class="md-nav__item"><a href="#module-topwave.k_space_utils" class="md-nav__link">k_space_utils</a><nav class="md-nav">
               <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#topwave.k_space_utils.get_line_cover" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_line_cover()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#topwave.k_space_utils.get_plaquette_cover" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_plaquette_cover()</span></code></a>
         </li></ul>
             </nav>
@@ -973,6 +1015,8 @@
         <li class="md-nav__item"><a href="#module-topwave.response" class="md-nav__link">response</a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#topwave.response.get_bare_susceptibility" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_bare_susceptibility()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.response.get_nernst_conductivity" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_nernst_conductivity()</span></code></a>
         </li></ul>
             </nav>
         </li>
@@ -1074,6 +1118,8 @@
         </li>
         <li class="md-nav__item"><a href="#topwave.spec.Spec.get_spinwave_hamiltonian" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Spec.get_spinwave_hamiltonian()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#topwave.spec.Spec.get_tightbinding_derivative" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Spec.get_tightbinding_derivative()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#topwave.spec.Spec.get_tightbinding_hamiltonian" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Spec.get_tightbinding_hamiltonian()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.spec.Spec.hamiltonian" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Spec.hamiltonian</span></code></a>
@@ -1094,11 +1140,7 @@
         </li>
         <li class="md-nav__item"><a href="#module-topwave.supercell" class="md-nav__link">supercell</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#topwave.supercell.Supercell" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Supercell</span></code></a><nav class="md-nav">
-              <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#topwave.supercell.Supercell.get_supercell_structure" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Supercell.get_supercell_structure()</span></code></a>
-        </li></ul>
-            </nav>
+        <li class="md-nav__item"><a href="#topwave.supercell.get_supercell" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">get_supercell()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.supercell.stack" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">stack()</span></code></a>
         </li></ul>
@@ -1121,6 +1163,8 @@
         <li class="md-nav__item"><a href="#topwave.util.bose_distribution" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">bose_distribution()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.util.coupling_selector" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">coupling_selector()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#topwave.util.fermi_distribution" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">fermi_distribution()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#topwave.util.format_input_vector" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">format_input_vector()</span></code></a>
         </li>
@@ -1169,8 +1213,27 @@
 <section id="module-topwave.fourier_coefficients">
 <span id="fourier-coefficients"></span><h2 id="module-topwave.fourier_coefficients">fourier_coefficients<a class="headerlink" href="#module-topwave.fourier_coefficients" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
+<dt class="sig sig-object py" id="topwave.fourier_coefficients.get_intracell_fourier_coefficient">
+<span class="sig-prename descclassname"><span class="pre">topwave.fourier_coefficients.</span></span><span class="sig-name descname"><span class="pre">get_intracell_fourier_coefficient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">site</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PeriodicSite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">VectorList</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">ComplexList</span></span></span><a class="reference internal" href="_modules/topwave/fourier_coefficients.html#get_intracell_fourier_coefficient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.fourier_coefficients.get_intracell_fourier_coefficient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the phase factor from different sublattice positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>site</strong> (<em>PeriodicSite</em>) – The <cite>pymatgen.core.sites.PeriodicSite</cite> for which the coefficient is computed.</p></li>
+<li><p><strong>kpoint</strong> (<em>VectorList</em>) – The kpoints at which the coefficient is computed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The intracell Fourier coefficient at the given k-point of the site.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ComplexList</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
 <dt class="sig sig-object py" id="topwave.fourier_coefficients.get_periodic_fourier_coefficient">
-<span class="sig-prename descclassname"><span class="pre">topwave.fourier_coefficients.</span></span><span class="sig-name descname"><span class="pre">get_periodic_fourier_coefficient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coupling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Coupling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">VectorList</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">complex128</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">complex</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/fourier_coefficients.html#get_periodic_fourier_coefficient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.fourier_coefficients.get_periodic_fourier_coefficient" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">topwave.fourier_coefficients.</span></span><span class="sig-name descname"><span class="pre">get_periodic_fourier_coefficient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coupling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Coupling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">VectorList</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">ComplexList</span></span></span><a class="reference internal" href="_modules/topwave/fourier_coefficients.html#get_periodic_fourier_coefficient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.fourier_coefficients.get_periodic_fourier_coefficient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the Fourier coefficient of a coupling to get a Brillouin zone periodic Hamiltonian.</p>
 <p>This is the convention of Fourier transform where the positions of the atomic sites within one unit cell
 are not taken into account. This should be used for Wilson loop calculations. In this convention, the physical
@@ -1179,7 +1242,7 @@ representations of point group symmetries have no k-dependence. (CHECK!)</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>coupling</strong> (<em>Coupling</em>) – The <cite>topwave.coupling.Coupling</cite> for which the coefficient is computed.</p></li>
-<li><p><strong>kpoint</strong> (<em>VectorList</em>) – The kpoint at which the coefficient is computed.</p></li>
+<li><p><strong>kpoint</strong> (<em>VectorList</em>) – The kpoints at which the coefficient is computed.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1192,7 +1255,7 @@ representations of point group symmetries have no k-dependence. (CHECK!)</p>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="topwave.fourier_coefficients.get_periodic_fourier_derivative">
-<span class="sig-prename descclassname"><span class="pre">topwave.fourier_coefficients.</span></span><span class="sig-name descname"><span class="pre">get_periodic_fourier_derivative</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coupling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Coupling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">VectorList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">complex128</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">complex</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/fourier_coefficients.html#get_periodic_fourier_derivative"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.fourier_coefficients.get_periodic_fourier_derivative" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">topwave.fourier_coefficients.</span></span><span class="sig-name descname"><span class="pre">get_periodic_fourier_derivative</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coupling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Coupling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">VectorList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">ComplexList</span></span></span><a class="reference internal" href="_modules/topwave/fourier_coefficients.html#get_periodic_fourier_derivative"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.fourier_coefficients.get_periodic_fourier_derivative" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the derivative of the Fourier coefficient w.r.t. a list of crystal momenta.</p>
 <p>This is used to compute the element-wise derivatives of the Hamiltonian w.r.t. crystal momentum. These
 tangent matrices are useful for computing Berry curvatures or transport properties like the Nernst effect.</p>
@@ -1200,7 +1263,7 @@ tangent matrices are useful for computing Berry curvatures or transport properti
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>coupling</strong> (<em>Coupling</em>) – The <cite>topwave.coupling.Coupling</cite> for which the derivative is computed.</p></li>
-<li><p><strong>kpoint</strong> (<em>VectorList</em>) – The kpoint at which the derivative is computed.</p></li>
+<li><p><strong>kpoint</strong> (<em>VectorList</em>) – The kpoints at which the derivative is computed.</p></li>
 <li><p><strong>direction</strong> (<em>str</em>) – Which crystal momentum is used for the derivative. Options are ‘x’, ‘y’ and ‘z’.</p></li>
 </ul>
 </dd>
@@ -1460,6 +1523,7 @@ tangent matrices are useful for computing Berry curvatures or transport properti
 <span class="go">╞═════════╪═══════════╪═════════╪════════════╪═══════════════════════╪═══════════════════════╪══════════╪═════════════════╪═════════════════╪═══════════════════╪════════════════════╪═════════╡</span>
 <span class="go">│       0 │ Co1       │ A       │          1 │ [0. 0. 0.]            │ [0. 0. 0.]            │          │               0 │ [0. 0. 0.]      │                   │                    │         │</span>
 <span class="go">╘═════════╧═══════════╧═════════╧════════════╧═══════════════════════╧═══════════════════════╧══════════╧═════════════════╧═════════════════╧═══════════════════╧════════════════════╧═════════╛</span>
+<span class="go">Spin Polarized: False</span>
 <span class="go">Zeeman: [0. 0. 0.]</span>
 <span class="go">Supercell Size: None</span>
 </pre></div>
@@ -1488,6 +1552,7 @@ of the input vector is used. Default is None.</p></li>
 <span class="go">╞═════════╪═══════════╪═════════╪════════════╪═══════════════════════╪═══════════════════════╪════════════════════════════════════╪═════════════════╪═════════════════╪═══════════════════╪════════════════════╪═════════╡</span>
 <span class="go">│       0 │ Co1       │ A       │          1 │ [0. 0. 0.]            │ [0. 0. 0.]            │ [0.28867513 0.28867513 0.28867513] │               0 │ [0. 0. 0.]      │                   │                    │         │</span>
 <span class="go">╘═════════╧═══════════╧═════════╧════════════╧═══════════════════════╧═══════════════════════╧════════════════════════════════════╧═════════════════╧═════════════════╧═══════════════════╧════════════════════╧═════════╛</span>
+<span class="go">Spin Polarized: False</span>
 <span class="go">Zeeman: [0. 0. 0.]</span>
 <span class="go">Supercell Size: None</span>
 </pre></div>
@@ -1519,6 +1584,7 @@ symmetrically equivalent sites. Default is None.</p></li>
 <span class="go">╞═════════╪═══════════╪═════════╪════════════╪═══════════════════════╪═══════════════════════╪════════════════════════════════════╪═════════════════╪═════════════════╪═══════════════════╪════════════════════╪═════════╡</span>
 <span class="go">│       0 │ Co1       │ A       │          1 │ [0. 0. 0.]            │ [0. 0. 0.]            │ [0.28867513 0.28867513 0.28867513] │            0.25 │ [0. 0. 0.]      │                   │                    │         │</span>
 <span class="go">╘═════════╧═══════════╧═════════╧════════════╧═══════════════════════╧═══════════════════════╧════════════════════════════════════╧═════════════════╧═════════════════╧═══════════════════╧════════════════════╧═════════╛</span>
+<span class="go">Spin Polarized: False</span>
 <span class="go">Zeeman: [0. 0. 0.]</span>
 <span class="go">Supercell Size: None</span>
 </pre></div>
@@ -1555,6 +1621,7 @@ onsite vector column in the output.</p>
 <span class="go">╞═════════╪═══════════╪═════════╪════════════╪═══════════════════════╪═══════════════════════╪════════════════════════════════════╪═════════════════╪════════════════════════════════════╪═══════════════════╪════════════════════╪═════════╡</span>
 <span class="go">│       0 │ Co1       │ A       │          1 │ [0. 0. 0.]            │ [0. 0. 0.]            │ [0.28867513 0.28867513 0.28867513] │            0.25 │ [0.05773503 0.05773503 0.05773503] │                   │                    │         │</span>
 <span class="go">╘═════════╧═══════════╧═════════╧════════════╧═══════════════════════╧═══════════════════════╧════════════════════════════════════╧═════════════════╧════════════════════════════════════╧═══════════════════╧════════════════════╧═════════╛</span>
+<span class="go">Spin Polarized: False</span>
 <span class="go">Zeeman: [0. 0. 0.]</span>
 <span class="go">Supercell Size: None</span>
 </pre></div>
@@ -1627,6 +1694,34 @@ See the ‘spin-orbit vector’ column in the output.</p>
 </div>
 </dd></dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="topwave.model.Model.set_spin_polarized">
+<span class="sig-name descname"><span class="pre">set_spin_polarized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/topwave/model.html#Model.set_spin_polarized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.model.Model.set_spin_polarized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spin polarizes the system.</p>
+<p>For a tight-binding model, only terms from the spin-up sector will be considered when constructing
+the Hamiltonian. For a spinwave model, only the upper right hand block matrix that corresponds to the
+BdG block of positive momentum will be considered.</p>
+<div class="tip admonition">
+<p class="admonition-title">Tip</p>
+<p>If only terms that do not couple to the spin, e.g. scalar hoppings or onsite terms, are given, the
+model is also spinless.</p>
+</div>
+<p class="rubric">Examples</p>
+<p>Spin polarize the system and confirm by printing the site properties.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">model</span><span class="o">.</span><span class="n">set_spin_polarized</span><span class="p">()</span>
+
+<span class="gp">In [2]: </span><span class="n">model</span><span class="o">.</span><span class="n">show_site_properties</span><span class="p">()</span>
+<span class="go">╒═════════╤═══════════╤═════════╤════════════╤═══════════════════════╤═══════════════════════╤════════════════════════════════════╤═════════════════╤════════════════════════════════════╤═══════════════════╤════════════════════╤═════════╕</span>
+<span class="go">│   index │ species   │ label   │   orbitals │ coordinates (latt.)   │ coordinates (cart.)   │ magmom                             │   onsite scalar │ onsite vector                      │ unit cell index   │ supercell vector   │ layer   │</span>
+<span class="go">╞═════════╪═══════════╪═════════╪════════════╪═══════════════════════╪═══════════════════════╪════════════════════════════════════╪═════════════════╪════════════════════════════════════╪═══════════════════╪════════════════════╪═════════╡</span>
+<span class="go">│       0 │ Co1       │ A       │          1 │ [0. 0. 0.]            │ [0. 0. 0.]            │ [0.28867513 0.28867513 0.28867513] │            0.25 │ [0.05773503 0.05773503 0.05773503] │                   │                    │         │</span>
+<span class="go">╘═════════╧═══════════╧═════════╧════════════╧═══════════════════════╧═══════════════════════╧════════════════════════════════════╧═════════════════╧════════════════════════════════════╧═══════════════════╧════════════════════╧═════════╛</span>
+<span class="go">Spin Polarized: True</span>
+<span class="go">Zeeman: [0. 0. 0.]</span>
+<span class="go">Supercell Size: None</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="topwave.model.Model.set_zeeman">
 <span class="sig-name descname"><span class="pre">set_zeeman</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Vector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strength</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/topwave/model.html#Model.set_zeeman"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.model.Model.set_zeeman" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets a global Zeeman term.</p>
@@ -1655,6 +1750,7 @@ The dimension of the Hilbert space will be doubled. See <a class="reference inte
 <span class="go">╞═════════╪═══════════╪═════════╪════════════╪═══════════════════════╪═══════════════════════╪════════════════════════════════════╪═════════════════╪════════════════════════════════════╪═══════════════════╪════════════════════╪═════════╡</span>
 <span class="go">│       0 │ Co1       │ A       │          1 │ [0. 0. 0.]            │ [0. 0. 0.]            │ [0.28867513 0.28867513 0.28867513] │            0.25 │ [0.05773503 0.05773503 0.05773503] │                   │                    │         │</span>
 <span class="go">╘═════════╧═══════════╧═════════╧════════════╧═══════════════════════╧═══════════════════════╧════════════════════════════════════╧═════════════════╧════════════════════════════════════╧═══════════════════╧════════════════════╧═════════╛</span>
+<span class="go">Spin Polarized: True</span>
 <span class="go">Zeeman: [0.11547005 0.11547005 0.11547005]</span>
 <span class="go">Supercell Size: None</span>
 </pre></div>
@@ -1708,6 +1804,7 @@ The dimension of the Hilbert space will be doubled. See <a class="reference inte
 <span class="go">╞═════════╪═══════════╪═════════╪════════════╪═══════════════════════╪═══════════════════════╪══════════╪═════════════════╪════════════════════════════════════╪═══════════════════╪════════════════════╪═════════╡</span>
 <span class="go">│       0 │ Co1       │ A       │          1 │ [0. 0. 0.]            │ [0. 0. 0.]            │          │            0.25 │ [0.05773503 0.05773503 0.05773503] │                   │                    │         │</span>
 <span class="go">╘═════════╧═══════════╧═════════╧════════════╧═══════════════════════╧═══════════════════════╧══════════╧═════════════════╧════════════════════════════════════╧═══════════════════╧════════════════════╧═════════╛</span>
+<span class="go">Spin Polarized: True</span>
 <span class="go">Zeeman: [0.11547005 0.11547005 0.11547005]</span>
 <span class="go">Supercell Size: None</span>
 </pre></div>
@@ -1767,6 +1864,7 @@ The dimension of the Hilbert space will be doubled. See <a class="reference inte
 <span class="go">╞═════════╪═══════════╪═════════╪════════════╪═══════════════════════╪═══════════════════════╪════════════╪═════════════════╪═════════════════╪═══════════════════╪════════════════════╪═════════╡</span>
 <span class="go">│       0 │ Co1       │         │          1 │ [0. 0. 0.]            │ [0. 0. 0.]            │ [0. 0. 1.] │               0 │ [0. 0. 0.]      │                   │                    │         │</span>
 <span class="go">╘═════════╧═══════════╧═════════╧════════════╧═══════════════════════╧═══════════════════════╧════════════╧═════════════════╧═════════════════╧═══════════════════╧════════════════════╧═════════╛</span>
+<span class="go">Spin Polarized: False</span>
 <span class="go">Zeeman: [0. 0. 0.]</span>
 <span class="go">Supercell Size: None</span>
 </pre></div>
@@ -1860,6 +1958,7 @@ onsite vector column in the output.</p>
 <span class="go">╞═════════╪═══════════╪═════════╪════════════╪═══════════════════════╪═══════════════════════╪════════════╪═════════════════╪═════════════════╪═══════════════════╪════════════════════╪═════════╡</span>
 <span class="go">│       0 │ Co1       │         │          1 │ [0. 0. 0.]            │ [0. 0. 0.]            │ [0. 0. 1.] │               0 │ [0.  0.  0.1]   │                   │                    │         │</span>
 <span class="go">╘═════════╧═══════════╧═════════╧════════════╧═══════════════════════╧═══════════════════════╧════════════╧═════════════════╧═════════════════╧═══════════════════╧════════════════════╧═════════╛</span>
+<span class="go">Spin Polarized: False</span>
 <span class="go">Zeeman: [0. 0. 0.]</span>
 <span class="go">Supercell Size: None</span>
 </pre></div>
@@ -1948,6 +2047,67 @@ influence the spectrum.</p>
 <section id="module-topwave.k_space_utils">
 <span id="k-space-utils"></span><h2 id="module-topwave.k_space_utils">k_space_utils<a class="headerlink" href="#module-topwave.k_space_utils" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
+<dt class="sig sig-object py" id="topwave.k_space_utils.get_line_cover">
+<span class="sig-prename descclassname"><span class="pre">topwave.k_space_utils.</span></span><span class="sig-name descname"><span class="pre">get_line_cover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">VectorList</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/k_space_utils.html#get_line_cover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.k_space_utils.get_line_cover" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a rectangular cover of a plane through the Brillouin zone.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>normal</strong> (<em>str</em>) – A string indicating the normal of the plane in units of reciprocal lattice vectors.
+Options are ‘x’, ‘y’ or ‘z’.</p></li>
+<li><p><strong>direction</strong> (<em>str</em>) – In which direction the lines are stacked. Options are ‘x’ and ‘y’.</p></li>
+<li><p><strong>num_lines</strong> (<em>int</em>) – Number of lines that are used to span the plane.</p></li>
+<li><p><strong>num_points</strong> (<em>int</em>) – Number of points on one line.</p></li>
+<li><p><strong>anchor</strong> (<em>float</em>) – Where along the normal the plane is anchored. Default is 0.</p></li>
+<li><p><strong>min</strong> (<em>float</em>) – At which coordinate along the direction the first line is anchored.</p></li>
+<li><p><strong>max</strong> (<em>float</em>) – At which coordinate along the direction the last line is anchored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A num_lines-long list of lines that each contains num_points k-points. The first and last k-point are
+connected by a reciprocal lattice vector.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[VectorList]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>We create a cover of the xy-plane anchored at z = 0 with 30 lines stacked along the x-direction.
+Each line consists fo 60 points.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="gp">In [2]: </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="go"># Create the cover.</span>
+<span class="gp">In [3]: </span><span class="n">cover</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">get_line_cover</span><span class="p">(</span><span class="s1">'z'</span><span class="p">,</span> <span class="s1">'x'</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
+
+<span class="gp">In [4]: </span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+<span class="gp">In [5]: </span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">'3d'</span><span class="p">)</span>
+
+<span class="gp">In [6]: </span><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">cover</span><span class="p">:</span>
+<span class="gp">   ...: </span>    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">line</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'hotpink'</span><span class="p">)</span>
+<span class="gp">   ...: </span>
+
+<span class="gp">In [7]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="gh">Out[7]: </span><span class="go">(-0.5, 0.5)</span>
+
+<span class="gp">In [8]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="gh">Out[8]: </span><span class="go">(-0.5, 0.5)</span>
+
+<span class="gp">In [9]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_zlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="gh">Out[9]: </span><span class="go">(-0.5, 0.5)</span>
+
+<span class="gp">In [10]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_x$'</span><span class="p">);</span>
+
+<span class="gp">In [11]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_y$'</span><span class="p">);</span>
+
+<span class="gp">In [12]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_z$'</span><span class="p">);</span>
+</pre></div>
+</div>
+<img alt="_images/line_cover.png" src="_images/line_cover.png"/>
+</dd></dl>
+<dl class="py function">
 <dt class="sig sig-object py" id="topwave.k_space_utils.get_plaquette_cover">
 <span class="sig-prename descclassname"><span class="pre">topwave.k_space_utils.</span></span><span class="sig-name descname"><span class="pre">get_plaquette_cover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">VectorList</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/k_space_utils.html#get_plaquette_cover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.k_space_utils.get_plaquette_cover" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds a rectangular cover of a plane through the Brillouin zone.</p>
@@ -2009,7 +2169,7 @@ do not touch <cite>x_min</cite>, <cite>x_max</cite>, <cite>y_min</cite> and <cit
 <span class="gp">In [12]: </span><span class="n">p</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
 
 <span class="gp">In [13]: </span><span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-<span class="gh">Out[13]: </span><span class="go">&lt;matplotlib.collections.PatchCollection at 0x1501b4e10&gt;</span>
+<span class="gh">Out[13]: </span><span class="go">&lt;matplotlib.collections.PatchCollection at 0x15e535110&gt;</span>
 
 <span class="gp">In [14]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="gh">Out[14]: </span><span class="go">(-0.5, 0.5)</span>
@@ -2027,14 +2187,14 @@ do not touch <cite>x_min</cite>, <cite>x_max</cite>, <cite>y_min</cite> and <cit
 <span id="response"></span><h2 id="module-topwave.response">response<a class="headerlink" href="#module-topwave.response" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="topwave.response.get_bare_susceptibility">
-<span class="sig-prename descclassname"><span class="pre">topwave.response.</span></span><span class="sig-name descname"><span class="pre">get_bare_susceptibility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hamiltonians</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">complex128</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.complex128</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_grid_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_matsubara_frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/response.html#get_bare_susceptibility"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.response.get_bare_susceptibility" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the bare susceptibility tensor for a given spectrum.</p>
+<span class="sig-prename descclassname"><span class="pre">topwave.response.</span></span><span class="sig-name descname"><span class="pre">get_bare_susceptibility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#topwave.model.TightBindingModel" title="topwave.model.TightBindingModel"><span class="pre">TightBindingModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_grid_shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_matsubara_frequencies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symmetrize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/response.html#get_bare_susceptibility"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.response.get_bare_susceptibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the bare susceptibility tensor for a given model.</p>
 <p>This uses the imaginary time representation to efficiently calculate the product of Green’s functions.
 Cite Something</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>hamiltonians</strong> (<em>SquareMatrixList</em>) – A list of tight-binding hamiltonians on a grid that covers the Brillouin zone that is used to calculate the bare
+<li><p><strong>model</strong> (<a class="reference internal" href="#topwave.model.TightBindingModel" title="topwave.model.TightBindingModel"><em>TightBindingModel</em></a>) – A list of tight-binding hamiltonians on a grid that covers the Brillouin zone that is used to calculate the bare
 suscpetibility. The shape should be the shape of the grid times the dimension of the hamiltonians.</p></li>
 <li><p><strong>k_grid_shape</strong> (<em>tuple</em><em>(</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>)</em>) – A tuple that gives the shape of the grid in reciprocal space. It is used to reshape <cite>hamiltonians</cite> and perform
 the multidimensional fast Fourier transform. For two-dimensional grids chose the last number in this tuple to
@@ -2043,6 +2203,8 @@ be 1.</p></li>
 starting value.</p></li>
 <li><p><strong>num_matsubara_frequencies</strong> (<em>int</em>) – The number of matsubara frequencies. Increase this number until convergence is reached. A good starting point
 is 256.</p></li>
+<li><p><strong>symmetrize</strong> (<em>bool</em>) – If true, the susceptibility tensor is transformed taking into account the intracell sublattice positions to
+restore the symmetries of e.g. nonsymmorphic crystals. Default is true.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2087,6 +2249,27 @@ See also…</p>
 <span class="go">╘═════════╧══════════════════╧══════════════════════╧════════════╧══════════════════╧═════════════════════╧═════════╧════════════╧═════════╧════════════╧════════════╧═════════════════════╛</span>
 </pre></div>
 </div>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="topwave.response.get_nernst_conductivity">
+<span class="sig-prename descclassname"><span class="pre">topwave.response.</span></span><span class="sig-name descname"><span class="pre">get_nernst_conductivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">berry_curvature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ListOfRealList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ListOfRealList</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/topwave/response.html#get_nernst_conductivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.response.get_nernst_conductivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the Nernst Conductivity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>berry_curvature</strong> (<em>ListOfRealList</em>) – The Berry Curvature at each k-point for all bands.</p></li>
+<li><p><strong>energies</strong> (<em>ListOfRealList</em>) – The energies at each k-point for all bands.</p></li>
+<li><p><strong>filling</strong> (<em>float</em>) – The energy up to which the states are considered.</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – The temperature.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Nernst conductivity at some filling.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 </section>
 <section id="module-topwave.set_of_kpoints">
@@ -2146,7 +2329,7 @@ Default is True.</p></li>
 <span class="gp">In [3]: </span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">'3d'</span><span class="p">)</span>
 
 <span class="gp">In [4]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">circle</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[4]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x150264690&gt;</span>
+<span class="gh">Out[4]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15e44e690&gt;</span>
 
 <span class="gp">In [5]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_x$'</span><span class="p">)</span>
 <span class="gh">Out[5]: </span><span class="go">Text(0.5, 0, '$k_x$')</span>
@@ -2243,10 +2426,10 @@ double counting the points on the boundaries of the plane and make sure that <ci
 <span class="gp">In [6]: </span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">'3d'</span><span class="p">)</span>
 
 <span class="gp">In [7]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">grid1</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[7]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15043a710&gt;</span>
+<span class="gh">Out[7]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15e702e10&gt;</span>
 
 <span class="gp">In [8]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">grid2</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[8]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x150320050&gt;</span>
+<span class="gh">Out[8]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15e701210&gt;</span>
 
 <span class="gp">In [9]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_x$'</span><span class="p">);</span>
 
@@ -2330,10 +2513,10 @@ double counting the points on the boundaries of the plane and make sure that <ci
 <span class="gp">In [2]: </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 
 <span class="gp">In [3]: </span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[3]: </span><span class="go">[&lt;matplotlib.lines.Line2D at 0x1504826d0&gt;]</span>
+<span class="gh">Out[3]: </span><span class="go">[&lt;matplotlib.lines.Line2D at 0x15e7917d0&gt;]</span>
 
 <span class="gp">In [4]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="o">.</span><span class="n">nodes</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[4]: </span><span class="go">&lt;matplotlib.collections.PathCollection at 0x1504e24d0&gt;</span>
+<span class="gh">Out[4]: </span><span class="go">&lt;matplotlib.collections.PathCollection at 0x15e707250&gt;</span>
 
 <span class="gp">In [5]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_x$'</span><span class="p">)</span>
 <span class="gh">Out[5]: </span><span class="go">Text(0.5, 0, '$k_x$')</span>
@@ -2582,10 +2765,10 @@ be False, the points close to the poles of the sphere are much closer together t
 <span class="gp">In [6]: </span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">'3d'</span><span class="p">)</span>
 
 <span class="gp">In [7]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">sphere1</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[7]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x150576ad0&gt;</span>
+<span class="gh">Out[7]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15e7231d0&gt;</span>
 
 <span class="gp">In [8]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">sphere2</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[8]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15041c950&gt;</span>
+<span class="gh">Out[8]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x15e707b90&gt;</span>
 
 <span class="gp">In [9]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="gh">Out[9]: </span><span class="go">(-0.5, 0.5)</span>
@@ -2648,7 +2831,7 @@ does not minimize the classical energy (e.g. in frustrated systems) that is not 
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="topwave.spec.Spec.get_berry_phase">
-<span class="sig-name descname"><span class="pre">get_berry_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">occupied</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/topwave/spec.html#Spec.get_berry_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.spec.Spec.get_berry_phase" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_berry_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">band_indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/topwave/spec.html#Spec.get_berry_phase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.spec.Spec.get_berry_phase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the Berry phase.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -2718,20 +2901,38 @@ does not minimize the classical energy (e.g. in frustrated systems) that is not 
 <dd><p>Constructs the spin wave Hamiltonian for a set of given k-points.</p>
 </dd></dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="topwave.spec.Spec.get_tightbinding_hamiltonian">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tightbinding_hamiltonian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#topwave.model.TightBindingModel" title="topwave.model.TightBindingModel"><span class="pre">TightBindingModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">kpoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#topwave.set_of_kpoints.SetOfKPoints" title="topwave.set_of_kpoints.SetOfKPoints"><span class="pre">SetOfKPoints</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">complex128</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/spec.html#Spec.get_tightbinding_hamiltonian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.spec.Spec.get_tightbinding_hamiltonian" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructs the Tight Binding Hamiltonian (or its derivative) for a set of given k-points.</p>
+<dt class="sig sig-object py" id="topwave.spec.Spec.get_tightbinding_derivative">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tightbinding_derivative</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#topwave.model.TightBindingModel" title="topwave.model.TightBindingModel"><span class="pre">TightBindingModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">kpoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#topwave.set_of_kpoints.SetOfKPoints" title="topwave.set_of_kpoints.SetOfKPoints"><span class="pre">SetOfKPoints</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">complex128</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/spec.html#Spec.get_tightbinding_derivative"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.spec.Spec.get_tightbinding_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs the derivative of a Tight Binding Hamiltonian for a given set of k-points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model</strong> (<a class="reference internal" href="#topwave.model.TightBindingModel" title="topwave.model.TightBindingModel"><em>TightBindingModel</em></a>) – The model of that is used to calculate the spectrum.</p></li>
 <li><p><strong>kpoints</strong> (<em>VectorList</em><em> | </em><a class="reference internal" href="#topwave.set_of_kpoints.SetOfKPoints" title="topwave.set_of_kpoints.SetOfKPoints"><em>SetOfKPoints</em></a>) – The kpoints at which the Hamiltonian or its derivatives are constructed.</p></li>
-<li><p><strong>derivative</strong> (<em>str</em>) – String that indicates which derivative should be constructed. Options are ‘x’, ‘y’ or ‘z’.
-Default is None.</p></li>
+<li><p><strong>derivative</strong> (<em>str</em>) – String that indicates which derivative should be constructed. Options are ‘x’, ‘y’ or ‘z’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The Hamiltonian or one of its derivatives.</p>
+<dd class="field-even"><p>The derivative of the Hamiltonian.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>SquareMatrix</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="topwave.spec.Spec.get_tightbinding_hamiltonian">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tightbinding_hamiltonian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#topwave.model.TightBindingModel" title="topwave.model.TightBindingModel"><span class="pre">TightBindingModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">kpoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#topwave.set_of_kpoints.SetOfKPoints" title="topwave.set_of_kpoints.SetOfKPoints"><span class="pre">SetOfKPoints</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">complex128</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/spec.html#Spec.get_tightbinding_hamiltonian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.spec.Spec.get_tightbinding_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs the Tight Binding Hamiltonian for a given set of k-points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="#topwave.model.TightBindingModel" title="topwave.model.TightBindingModel"><em>TightBindingModel</em></a>) – The model of that is used to calculate the spectrum.</p></li>
+<li><p><strong>kpoints</strong> (<em>VectorList</em><em> | </em><a class="reference internal" href="#topwave.set_of_kpoints.SetOfKPoints" title="topwave.set_of_kpoints.SetOfKPoints"><em>SetOfKPoints</em></a>) – The kpoints at which the Hamiltonian or its derivatives are constructed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Hamiltonian.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>SquareMatrix</p>
@@ -2767,15 +2968,10 @@ Default is None.</p></li>
 </section>
 <section id="module-topwave.supercell">
 <span id="supercell"></span><h2 id="module-topwave.supercell">supercell<a class="headerlink" href="#module-topwave.supercell" title="Permalink to this heading">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="topwave.supercell.Supercell">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">topwave.supercell.</span></span><span class="sig-name descname"><span class="pre">Supercell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#topwave.model.Model" title="topwave.model.Model"><span class="pre">Model</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/topwave/supercell.html#Supercell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.supercell.Supercell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Supercell of a given model.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="topwave.supercell.Supercell.get_supercell_structure">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_supercell_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#topwave.model.Model" title="topwave.model.Model"><span class="pre">Model</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Structure</span></span></span><a class="reference internal" href="_modules/topwave/supercell.html#Supercell.get_supercell_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.supercell.Supercell.get_supercell_structure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructs a supercell out of an existing model.</p>
-</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="topwave.supercell.get_supercell">
+<span class="sig-prename descclassname"><span class="pre">topwave.supercell.</span></span><span class="sig-name descname"><span class="pre">get_supercell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#topwave.model.Model" title="topwave.model.Model"><span class="pre">Model</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#topwave.model.Model" title="topwave.model.Model"><span class="pre">Model</span></a></span></span><a class="reference internal" href="_modules/topwave/supercell.html#get_supercell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.supercell.get_supercell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a supercell of a given model.</p>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="topwave.supercell.stack">
@@ -2841,6 +3037,7 @@ Default is ‘z’.</p></li>
 <span class="go">├─────────┼───────────┼─────────┼────────────┼───────────────────────────────────────────────────┼───────────────────────────────────────────────────┼──────────┼─────────────────┼─────────────────┼───────────────────┼────────────────────┼─────────┤</span>
 <span class="go">│       3 │ C1        │         │          1 │ [0.         0.         0.25595238]                │ [0.   0.   3.44]                                  │          │             0   │ [0. 0. 0.]      │                   │                    │       1 │</span>
 <span class="go">╘═════════╧═══════════╧═════════╧════════════╧═══════════════════════════════════════════════════╧═══════════════════════════════════════════════════╧══════════╧═════════════════╧═════════════════╧═══════════════════╧════════════════════╧═════════╛</span>
+<span class="go">Spin Polarized: False</span>
 <span class="go">Zeeman: [0. 0. 0.]</span>
 <span class="go">Supercell Size: None</span>
 
@@ -2884,10 +3081,12 @@ Default is ‘z’.</p></li>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="topwave.topology.get_fermionic_wilson_loop">
-<span class="sig-prename descclassname"><span class="pre">topwave.topology.</span></span><span class="sig-name descname"><span class="pre">get_fermionic_wilson_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spectrum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#topwave.spec.Spec" title="topwave.spec.Spec"><span class="pre">Spec</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IntVector</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Matrix</span></span></span><a class="reference internal" href="_modules/topwave/topology.html#get_fermionic_wilson_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.topology.get_fermionic_wilson_loop" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">topwave.topology.</span></span><span class="sig-name descname"><span class="pre">get_fermionic_wilson_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spectrum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#topwave.spec.Spec" title="topwave.spec.Spec"><span class="pre">Spec</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IntVector</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Matrix</span></span></span><a class="reference internal" href="_modules/topwave/topology.html#get_fermionic_wilson_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.topology.get_fermionic_wilson_loop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructs the Wilson loop operator of a fermionic spectrum.</p>
 <p>For a spectrum at Nk k-points, the inner product of Nk - 1 eigenfunctions for a given selection of
-states is evaluated. The ordering is the same as that of the k-points.</p>
+states is evaluated. The ordering is the same as that of the k-points. The states can be selected by providing a
+list of band indices, or all states below some energy can be selected. In that case the wilson loop operator is
+a product of rectangular matrices.</p>
 <div class="warning admonition">
 <p class="admonition-title">Careful!</p>
 <p>Typically, <strong>closed</strong> Wilson loops of the <strong>occupied</strong> states are the desired quantities. Make sure the
@@ -2898,7 +3097,8 @@ separated in energy (<strong>nondegenerate</strong>).</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>spectrum</strong> (<a class="reference internal" href="#topwave.spec.Spec" title="topwave.spec.Spec"><em>Spec</em></a>) – The spectrum that contains the eigenfunctions of the model.</p></li>
-<li><p><strong>band_indices</strong> (<em>IntVector</em>) – List of band indices that are selected to compute the Wilson loop operator.</p></li>
+<li><p><strong>band_indices</strong> (<em>IntVector</em>) – List of band indices that are selected to compute the Wilson loop operator. If None, all states are selected.</p></li>
+<li><p><strong>energy</strong> (<em>float</em>) – If not None, only states below energy are used to compute the Wilson loop. Default is None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2915,6 +3115,11 @@ separated in energy (<strong>nondegenerate</strong>).</p>
 <dt class="sig sig-object py" id="topwave.util.coupling_selector">
 <span class="sig-prename descclassname"><span class="pre">topwave.util.</span></span><span class="sig-name descname"><span class="pre">coupling_selector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#topwave.model.Model" title="topwave.model.Model"><span class="pre">Model</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/util.html#coupling_selector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.util.coupling_selector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Selects couplings based on a given attribute.</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="topwave.util.fermi_distribution">
+<span class="sig-prename descclassname"><span class="pre">topwave.util.</span></span><span class="sig-name descname"><span class="pre">fermi_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">energies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/topwave/util.html#fermi_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#topwave.util.fermi_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Fermi-Dirac distribution for a given set of energies and a temperature.</p>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="topwave.util.format_input_vector">

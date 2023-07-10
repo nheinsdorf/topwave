@@ -439,9 +439,8 @@
 <div class="viewcode-block" id="Spec.get_tightbinding_hamiltonian"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_tightbinding_hamiltonian">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_tightbinding_hamiltonian</span><span class="p">(</span>
             <span class="n">model</span><span class="p">:</span> <span class="n">TightBindingModel</span><span class="p">,</span>
-            <span class="n">kpoints</span><span class="p">:</span> <span class="n">VectorList</span> <span class="o">|</span> <span class="n">SetOfKPoints</span><span class="p">,</span>
-            <span class="n">derivative</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SquareMatrix</span><span class="p">:</span>
-        <span class="sd">"""Constructs the Tight Binding Hamiltonian (or its derivative) for a set of given k-points.</span>
+            <span class="n">kpoints</span><span class="p">:</span> <span class="n">VectorList</span> <span class="o">|</span> <span class="n">SetOfKPoints</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SquareMatrix</span><span class="p">:</span>
+        <span class="sd">"""Constructs the Tight Binding Hamiltonian for a given set of k-points.</span>
 
 
 <span class="sd">        Parameters</span>
@@ -450,23 +449,18 @@
 <span class="sd">            The model of that is used to calculate the spectrum.</span>
 <span class="sd">        kpoints: VectorList | SetOfKPoints</span>
 <span class="sd">            The kpoints at which the Hamiltonian or its derivatives are constructed.</span>
-<span class="sd">        derivative: str</span>
-<span class="sd">            String that indicates which derivative should be constructed. Options are 'x', 'y' or 'z'.</span>
-<span class="sd">            Default is None.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        SquareMatrix</span>
-<span class="sd">            The Hamiltonian or one of its derivatives.</span>
+<span class="sd">            The Hamiltonian.</span>
 
 <span class="sd">        """</span>
 
         <span class="n">kpoints</span> <span class="o">=</span> <span class="n">format_kpoints</span><span class="p">(</span><span class="n">kpoints</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">derivative</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">k_dependence</span> <span class="o">=</span> <span class="n">get_periodic_fourier_coefficient</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">k_dependence</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">get_periodic_fourier_derivative</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">derivative</span><span class="p">)</span>
+        <span class="n">k_dependence</span> <span class="o">=</span> <span class="n">get_periodic_fourier_coefficient</span>
+
         <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">kpoints</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
 
         <span class="c1"># construct matrix elements at each k-point</span>
@@ -503,6 +497,58 @@
 
         <span class="k">return</span> <span class="n">matrix</span></div>
 
+<div class="viewcode-block" id="Spec.get_tightbinding_derivative"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_tightbinding_derivative">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_tightbinding_derivative</span><span class="p">(</span>
+            <span class="n">model</span><span class="p">:</span> <span class="n">TightBindingModel</span><span class="p">,</span>
+            <span class="n">kpoints</span><span class="p">:</span> <span class="n">VectorList</span> <span class="o">|</span> <span class="n">SetOfKPoints</span><span class="p">,</span>
+            <span class="n">derivative</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SquareMatrix</span><span class="p">:</span>
+        <span class="sd">"""Constructs the derivative of a Tight Binding Hamiltonian for a given set of k-points.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        model: TightBindingModel</span>
+<span class="sd">            The model of that is used to calculate the spectrum.</span>
+<span class="sd">        kpoints: VectorList | SetOfKPoints</span>
+<span class="sd">            The kpoints at which the Hamiltonian or its derivatives are constructed.</span>
+<span class="sd">        derivative: str</span>
+<span class="sd">            String that indicates which derivative should be constructed. Options are 'x', 'y' or 'z'.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SquareMatrix</span>
+<span class="sd">            The derivative of the Hamiltonian.</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">kpoints</span> <span class="o">=</span> <span class="n">format_kpoints</span><span class="p">(</span><span class="n">kpoints</span><span class="p">)</span>
+
+        <span class="n">k_dependence</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">get_periodic_fourier_derivative</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">derivative</span><span class="p">)</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">kpoints</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">structure</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+
+        <span class="c1"># construct matrix elements at each k-point</span>
+        <span class="c1"># for _, kpoint in enumerate(kpoints):</span>
+        <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_set_couplings</span><span class="p">():</span>
+            <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">]</span>
+
+            <span class="c1"># get the matrix elements from the couplings</span>
+            <span class="c1"># A, inner = coupling.get_tightbinding_matrix_elements(kpoint)</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">k_dependence</span><span class="p">(</span><span class="n">coupling</span><span class="p">,</span> <span class="n">kpoints</span><span class="p">)</span> <span class="o">*</span> <span class="n">coupling</span><span class="o">.</span><span class="n">get_tightbinding_matrix_elements</span><span class="p">()</span>
+            <span class="n">matrix</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">A</span>
+            <span class="n">matrix</span><span class="p">[:,</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+        <span class="c1"># add spin degrees of freedom</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">check_if_spinful</span><span class="p">():</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_set_couplings</span><span class="p">():</span>
+                <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">]</span>
+                <span class="n">spin_orbit_term</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">'c, nm -&gt; cnm'</span><span class="p">,</span> <span class="n">k_dependence</span><span class="p">(</span><span class="n">coupling</span><span class="p">,</span> <span class="n">kpoints</span><span class="p">),</span> <span class="n">coupling</span><span class="o">.</span><span class="n">get_spin_orbit_matrix_elements</span><span class="p">())</span>
+                <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">spin_orbit_term</span>
+                <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">spin_orbit_term</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">matrix</span></div>
+
 <div class="viewcode-block" id="Spec.solve"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]],</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]]:</span>
         <span class="sd">"""Diagonalizes the Hamiltonian using the provided solver."""</span>
 
@@ -531,7 +577,9 @@
         <span class="k">return</span> <span class="n">E</span><span class="p">,</span> <span class="n">psi</span></div>
 
 
-<div class="viewcode-block" id="Spec.get_berry_phase"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_berry_phase">[docs]</a>    <span class="k">def</span> <span class="nf">get_berry_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">occupied</span><span class="p">:</span> <span class="n">IntVector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="Spec.get_berry_phase"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_berry_phase">[docs]</a>    <span class="k">def</span> <span class="nf">get_berry_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                        <span class="n">band_indices</span><span class="p">:</span> <span class="n">IntVector</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">"""Computes the Berry phase.</span>
 
 <span class="sd">        See Also</span>
@@ -540,7 +588,7 @@
 
 <span class="sd">        """</span>
 
-        <span class="n">loop_operator</span> <span class="o">=</span> <span class="n">get_fermionic_wilson_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">occupied</span><span class="p">)</span>
+        <span class="n">loop_operator</span> <span class="o">=</span> <span class="n">get_fermionic_wilson_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">band_indices</span><span class="p">,</span> <span class="n">energy</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">get_berry_phase</span><span class="p">(</span><span class="n">loop_operator</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Spec.get_spectral_density"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_spectral_density">[docs]</a>    <span class="k">def</span> <span class="nf">get_spectral_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>

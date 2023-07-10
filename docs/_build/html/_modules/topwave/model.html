@@ -359,6 +359,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">twist_tuple</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="c1"># set a spin-polarized flag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_spin_polarized</span> <span class="o">=</span> <span class="kc">False</span>
+
         <span class="c1"># put zero magnetic field</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zeeman</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
@@ -784,6 +787,33 @@
             <span class="n">spin_orbit</span> <span class="o">=</span> <span class="n">coupling</span><span class="o">.</span><span class="n">symmetry_op</span><span class="o">.</span><span class="n">apply_rotation_only</span><span class="p">(</span><span class="n">input_vector</span><span class="p">)</span> <span class="k">if</span> <span class="n">attribute</span> <span class="o">==</span> <span class="s1">'symmetry_id'</span> <span class="k">else</span> <span class="n">input_vector</span>
             <span class="n">coupling</span><span class="o">.</span><span class="n">set_spin_orbit</span><span class="p">(</span><span class="n">spin_orbit</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="Model.set_spin_polarized"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_spin_polarized">[docs]</a>    <span class="k">def</span> <span class="nf">set_spin_polarized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">"""Spin polarizes the system.</span>
+
+<span class="sd">        For a tight-binding model, only terms from the spin-up sector will be considered when constructing</span>
+<span class="sd">        the Hamiltonian. For a spinwave model, only the upper right hand block matrix that corresponds to the</span>
+<span class="sd">        BdG block of positive momentum will be considered.</span>
+
+<span class="sd">        .. admonition:: Tip</span>
+<span class="sd">            :class: tip</span>
+
+<span class="sd">            If only terms that do not couple to the spin, e.g. scalar hoppings or onsite terms, are given, the</span>
+<span class="sd">            model is also spinless.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        Spin polarize the system and confirm by printing the site properties.</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            model.set_spin_polarized()</span>
+<span class="sd">            model.show_site_properties()</span>
+
+<span class="sd">        """</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_spin_polarized</span> <span class="o">=</span> <span class="kc">True</span></div>
+
 <div class="viewcode-block" id="Model.set_zeeman"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_zeeman">[docs]</a>    <span class="k">def</span> <span class="nf">set_zeeman</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                    <span class="n">orientation</span><span class="p">:</span> <span class="n">Vector</span><span class="p">,</span>
                    <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -848,6 +878,7 @@
                           <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'cell_vector'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'layer'</span><span class="p">]])</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">'fancy_grid'</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Spin Polarized: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_spin_polarized</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Zeeman: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">zeeman</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Supercell Size: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scaling_factors</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 

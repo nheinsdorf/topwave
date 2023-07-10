@@ -72,22 +72,28 @@ could create the list manually, or use the functionality of :class:`topwave.set_
     fig, ax = plt.subplots()
     for band in spec.energies.T:
         ax.plot(band, ls='-', lw=2.5, c='deeppink')
-    ax.set_xticks(path.node_indices)
+    ax.set_xticks(path.node_indices);
     @savefig graphene_bands.png
-    ax.set_xticklabels([r'$\Gamma$', 'M', 'K', r'$\Gamma$'])
+    ax.set_xticklabels([r'$\Gamma$', 'M', 'K', r'$\Gamma$']);
 
 We can see graphene's famous Dirac point at the K-point. It's time reversal partner,
 the K'-point, sits at opposite momentum. Let us construct the Wilson loop around the K-point using
 class:`topwave.set_of_kpoints.Circle` and calculate the Berry phase for the valence band.
+We also add a small staggered onsite potential to the sublattices. This so-called mass gap is trivial,
+and makes the Berry curvature at the K- and K'-point well defined.
 
 .. ipython:: python
 
+    mass_term = 0.005
+    model.set_onsite_scalar(0, mass_term)
+    model.set_onsite_scalar(1, -mass_term)
+
     circle = tp.Circle(radius=0.02, center=[1 / 3, 1 / 3, 0], normal=[0, 0, 1])
     spec = tp.Spec(model, circle)
-    print(spec.get_berry_phase(occupied=[0]))
+    print(spec.get_berry_phase(band_indices=[0]))
 
-As expected, the Berry phase is quantized to pi. Because the system is time-reversal invariant,
-the Berry phase around the K'-point is -pi. There is no net flux of Berry curvature. Let us have a look
+As expected, the Berry phase is quantized to (-)pi. Because the system is time-reversal invariant,
+the Berry phase around the K'-point must have the opposite sign. There is no net flux of Berry curvature. Let us have a look
 at the distribution of Berry flux over the entire two-dimensional Brillouin zone. We cover the plane with
 small plaquettes and compute the flux through each plaquette.
 
@@ -101,7 +107,7 @@ small plaquettes and compute the flux through each plaquette.
     spectra = [tp.Spec(model, plaquette) for plaquette in plaquettes]
 
     # Compute the Berry phase of each spectrum and plot it.
-    fluxes = np.array([spectrum.get_berry_phase(occupied=[0]) for spectrum in spectra])
+    fluxes = np.array([spectrum.get_berry_phase(band_indices=[0]) for spectrum in spectra])
 
     fig, ax = plt.subplots()
     im = ax.imshow(fluxes.reshape((num_x, num_y)), origin='lower', cmap='PiYG', vmin=-np.pi, vmax=np.pi, extent=[-0.5, 0.5, -0.5, 0.5])
@@ -175,10 +181,10 @@ distance this time (which we just read off the tables from above).
 
     # this sets the strength of the complex hopping term
     lamda = 0.03
-    #model.set_spin_orbit(attribute_value=1.42,
-    #                     vector=[0, 0, 1],
-    #                     strength=lamda,
-    #                     attribute='distance')
+    model.set_spin_orbit(attribute_value=1.42,
+                         vector=[0, 0, 1],
+                         strength=lamda,
+                         attribute='distance')
 
     spec = tp.Spec(model, path)
 

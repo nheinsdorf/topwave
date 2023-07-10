@@ -69,6 +69,9 @@ class Model(ABC):
         self.normal = None
         self.twist_tuple = None
 
+        # set a spin-polarized flag
+        self.is_spin_polarized = False
+
         # put zero magnetic field
         self.zeeman = np.zeros(3, dtype=float)
 
@@ -494,6 +497,33 @@ class Model(ABC):
             spin_orbit = coupling.symmetry_op.apply_rotation_only(input_vector) if attribute == 'symmetry_id' else input_vector
             coupling.set_spin_orbit(spin_orbit)
 
+    def set_spin_polarized(self):
+        """Spin polarizes the system.
+
+        For a tight-binding model, only terms from the spin-up sector will be considered when constructing
+        the Hamiltonian. For a spinwave model, only the upper right hand block matrix that corresponds to the
+        BdG block of positive momentum will be considered.
+
+        .. admonition:: Tip
+            :class: tip
+
+            If only terms that do not couple to the spin, e.g. scalar hoppings or onsite terms, are given, the
+            model is also spinless.
+
+        Examples
+        --------
+
+        Spin polarize the system and confirm by printing the site properties.
+
+        .. ipython:: python
+
+            model.set_spin_polarized()
+            model.show_site_properties()
+
+        """
+
+        self.is_spin_polarized = True
+
     def set_zeeman(self,
                    orientation: Vector,
                    strength: float = None) -> None:
@@ -558,6 +588,7 @@ class Model(ABC):
                           site.properties['cell_vector'], site.properties['layer']])
 
         print(tabulate(table, headers=header, tablefmt='fancy_grid'))
+        print(f'Spin Polarized: {self.is_spin_polarized}')
         print(f'Zeeman: {self.zeeman}')
         print(f'Supercell Size: {self.scaling_factors}')
 
