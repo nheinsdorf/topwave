@@ -36,7 +36,7 @@ def _get_supercell_structure(model: Model,
 
     lattice = (scaling_factors * model.structure.lattice.matrix.T).T
 
-    num_uc = np.product(scaling_factors)
+    num_uc = np.prod(scaling_factors)
     x_lim, y_lim, z_lim = scaling_factors
     coords = []
     cell_vectors = []
@@ -68,7 +68,7 @@ def _generate_supercell_couplings(supercell: Model,
     cell_vectors = np.array([site.properties['cell_vector'] for site in supercell.structure], dtype=int)
     cell_vectors = np.unique(cell_vectors, axis=0)
 
-    num_uc = np.product(supercell.scaling_factors)
+    num_uc = np.prod(supercell.scaling_factors)
     x_lim, y_lim, z_lim = supercell.scaling_factors
     dim = len(model.structure)
     for _, coupling in enumerate(model.couplings):

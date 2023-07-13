@@ -29,7 +29,7 @@ def get_projections(spec: Spec,
     is_spinless =  not spec.model.check_if_spinful() or spec.model._is_spin_polarized
     num_spins = 1 if is_spinless else 2
 
-    num_sublattices = int(dimension / num_spins / np.product(spec.model.scaling_factors))
+    num_sublattices = int(dimension / num_spins / np.prod(spec.model.scaling_factors))
 
     wavefunctions = spec.psi.reshape((spec.kpoints.num_kpoints,
                                       *spec.model.scaling_factors,

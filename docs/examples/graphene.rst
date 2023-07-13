@@ -311,6 +311,7 @@ plot the color of the slab bands as a function of that projector.
     @savefig graphene_edge_modes.png
     plt.tight_layout()
 
+
 A gapless mode has appeared! Even though our bulk model was an insulator, the boundary has become
 metallic. We can also see that these boundary modes are located at the ends of the slab that we created.
 Let's compute the electron density on a finite sheet with open boundary conditions in x, y and both directions.

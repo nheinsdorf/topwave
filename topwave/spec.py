@@ -58,15 +58,6 @@ class Spec:
                               broadening: float = 0.02) -> RealList:
         """Computes the density of states:
 
-        .. math:: \rho(\omega) = \int_{k} dk A_k(\omega).
-
-
-        .. admonition:: K-Grid!
-            :class: warning
-
-            The spectral density should be evaluated on a grid that covers the whole Brillouin zone. You can use
-            :class:`topwave.set_of_kpoints.Plane` or grid.
-
         Parameters
         ----------
         energies: RealList
@@ -341,16 +332,6 @@ class Spec:
                              energy: float = 0.0,
                              broadening: float = 0.02) -> RealList:
         """Computes the spectral density at a given energy for all k-points of the spectrum:
-
-        .. math:: A_k(\omega) = -\operatorname{Im} \sum_n \frac{1}{\omega - \epsilon_n + i\eta}.
-
-
-        .. admonition:: Normalization!
-            :class: warning
-
-            The spectral density is only evaluated at one energy and is not normalized.
-
-        asdf
 
         Parameters
         ----------
