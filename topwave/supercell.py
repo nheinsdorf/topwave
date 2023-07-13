@@ -21,6 +21,8 @@ def get_supercell(model: Model,
     supercell_model.__init__(supercell_structure, import_site_properties=True)
 
     supercell_model.scaling_factors = scaling_factors
+    supercell_model._is_spin_polarized = model._is_spin_polarized
+
     _generate_supercell_couplings(supercell_model, model)
 
     return supercell_model

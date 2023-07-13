@@ -100,9 +100,7 @@ class Coupling:
         inner_derivative = -2j * np.pi * self.lattice_vector[index]
         return inner_derivative * coefficient
 
-    def get_spinwave_matrix_elements(
-            self,
-            k_point: npt.ArrayLike) -> tuple[complex, complex, complex, complex, complex, complex, ComplexVector]:
+    def get_spinwave_matrix_elements(self) -> tuple[complex, complex, complex, complex, complex, complex, ComplexVector]:
         """Constructs the matrix elements for the Spinwave Hamiltonian at a given k-point."""
 
         # the local spin reference frames
@@ -118,25 +116,22 @@ class Coupling:
         spin_magnitude2 = norm(self.site2.properties['magmom'])
         pre_factor = np.sqrt(spin_magnitude1 * spin_magnitude2) / 2
 
-        # phase factors and their derivatives
-        phase_factor, inner = self.get_fourier_coefficients(k_point)
-
         # spin exchange matrix
         exchange_matrix = self.get_exchange_matrix()
 
         # construct k-dependent elements of the diagonal blocks
-        A = pre_factor * phase_factor * (rotation_vector1 @ exchange_matrix @ np.conj(rotation_vector2))
-        Abar = pre_factor * np.conj(phase_factor) * (rotation_vector1 @ exchange_matrix @ np.conj(rotation_vector2))
+        A = pre_factor * (rotation_vector1 @ exchange_matrix @ np.conj(rotation_vector2))
+        Abar = pre_factor * (rotation_vector1 @ exchange_matrix @ np.conj(rotation_vector2))
 
         # construct the k-independent elements of the diagonal blocks
         CI = spin_magnitude1 * (spin_direction1 @ exchange_matrix @ spin_direction2)
         CJ = spin_magnitude2 * (spin_direction1 @ exchange_matrix @ spin_direction2)
 
         # construct the k-dependent elements of the off-diagonal blocks
-        B = pre_factor * phase_factor * (rotation_vector1 @ exchange_matrix @ rotation_vector2)
-        Bbar = pre_factor * np.conj(phase_factor) * np.conj(rotation_vector2 @ exchange_matrix @ rotation_vector1)
+        B = pre_factor * (rotation_vector1 @ exchange_matrix @ rotation_vector2)
+        Bbar = pre_factor * np.conj(rotation_vector2 @ exchange_matrix @ rotation_vector1)
 
-        return A, Abar, CI, CJ, B, Bbar, inner
+        return A, Abar, CI, CJ, B, Bbar
 
     def get_tightbinding_matrix_elements(self) -> float:
         """Constructs the matrix elements for the TightBinding Hamiltonian at a given k-point."""

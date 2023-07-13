@@ -360,7 +360,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">twist_tuple</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># set a spin-polarized flag</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_spin_polarized</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_spin_polarized</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="c1"># put zero magnetic field</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zeeman</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
@@ -812,7 +812,7 @@
 
 <span class="sd">        """</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_spin_polarized</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_spin_polarized</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="Model.set_zeeman"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_zeeman">[docs]</a>    <span class="k">def</span> <span class="nf">set_zeeman</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                    <span class="n">orientation</span><span class="p">:</span> <span class="n">Vector</span><span class="p">,</span>
@@ -878,7 +878,7 @@
                           <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'cell_vector'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'layer'</span><span class="p">]])</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">'fancy_grid'</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Spin Polarized: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">is_spin_polarized</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Spin Polarized: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_spin_polarized</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Zeeman: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">zeeman</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Supercell Size: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">scaling_factors</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
@@ -944,7 +944,7 @@
 
 <span class="sd">        """</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_spin_polarized</span> <span class="o">=</span> <span class="kc">False</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_spin_polarized</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="Model.write_cif"><a class="viewcode-back" href="../../api.html#topwave.model.Model.write_cif">[docs]</a>    <span class="k">def</span> <span class="nf">write_cif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                   <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>

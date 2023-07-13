@@ -495,6 +495,8 @@
                 <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">spin_orbit_term</span>
                 <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">spin_orbit_term</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 
+            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_is_spin_polarized</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">matrix</span><span class="p">[:,</span> <span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="p">::</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">matrix</span></div>
 
 <div class="viewcode-block" id="Spec.get_tightbinding_derivative"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_tightbinding_derivative">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -547,6 +549,8 @@
                 <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">spin_orbit_term</span>
                 <span class="n">matrix</span><span class="p">[:,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">j</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">spin_orbit_term</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 
+            <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_is_spin_polarized</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">matrix</span><span class="p">[:,</span> <span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="p">::</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">matrix</span></div>
 
 <div class="viewcode-block" id="Spec.solve"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]],</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]]])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">]]:</span>
@@ -576,7 +580,6 @@
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">E</span><span class="p">,</span> <span class="n">psi</span></div>
 
-
 <div class="viewcode-block" id="Spec.get_berry_phase"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_berry_phase">[docs]</a>    <span class="k">def</span> <span class="nf">get_berry_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                         <span class="n">band_indices</span><span class="p">:</span> <span class="n">IntVector</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -590,6 +593,35 @@
 
         <span class="n">loop_operator</span> <span class="o">=</span> <span class="n">get_fermionic_wilson_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">band_indices</span><span class="p">,</span> <span class="n">energy</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">get_berry_phase</span><span class="p">(</span><span class="n">loop_operator</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Spec.get_particle_density"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_particle_density">[docs]</a>    <span class="k">def</span> <span class="nf">get_particle_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                             <span class="n">filling</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">"""Computes the electron density for all occupied states.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filling: float</span>
+<span class="sd">            The energy up to which states are considered.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            Array with the electron densities. The shape is</span>
+<span class="sd">            (num_unit_cell_x, num_unit_cell_y, num_unit_cell_z, num_sublattices, num_spins)</span>
+
+<span class="sd">        """</span>
+
+        <span class="n">wavefunctions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psi</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">wavefunctions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">energies</span> <span class="o">&gt;</span> <span class="n">filling</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">densities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">wavefunctions</span><span class="p">)</span> <span class="o">*</span> <span class="n">wavefunctions</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">supercell_shape</span> <span class="o">=</span> <span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">scaling_factors</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">scaling_factors</span>
+        <span class="n">is_spinless</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">check_if_spinful</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_is_spin_polarized</span>
+        <span class="n">num_spins</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">is_spinless</span> <span class="k">else</span> <span class="mi">2</span>
+        <span class="n">densities</span> <span class="o">=</span> <span class="n">densities</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">*</span><span class="n">supercell_shape</span><span class="p">,</span>
+                                       <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                                       <span class="n">num_spins</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">densities</span></div>
 
 <div class="viewcode-block" id="Spec.get_spectral_density"><a class="viewcode-back" href="../../api.html#topwave.spec.Spec.get_spectral_density">[docs]</a>    <span class="k">def</span> <span class="nf">get_spectral_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                              <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>

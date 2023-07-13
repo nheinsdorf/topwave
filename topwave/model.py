@@ -70,7 +70,7 @@ class Model(ABC):
         self.twist_tuple = None
 
         # set a spin-polarized flag
-        self.is_spin_polarized = False
+        self._is_spin_polarized = False
 
         # put zero magnetic field
         self.zeeman = np.zeros(3, dtype=float)
@@ -522,7 +522,7 @@ class Model(ABC):
 
         """
 
-        self.is_spin_polarized = True
+        self._is_spin_polarized = True
 
     def set_zeeman(self,
                    orientation: Vector,
@@ -588,7 +588,7 @@ class Model(ABC):
                           site.properties['cell_vector'], site.properties['layer']])
 
         print(tabulate(table, headers=header, tablefmt='fancy_grid'))
-        print(f'Spin Polarized: {self.is_spin_polarized}')
+        print(f'Spin Polarized: {self._is_spin_polarized}')
         print(f'Zeeman: {self.zeeman}')
         print(f'Supercell Size: {self.scaling_factors}')
 
@@ -654,7 +654,7 @@ class Model(ABC):
 
         """
 
-        self.is_spin_polarized = False
+        self._is_spin_polarized = False
 
     def write_cif(self,
                   path: str,

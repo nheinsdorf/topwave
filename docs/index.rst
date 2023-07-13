@@ -126,6 +126,8 @@ https://doi.org/10.1103/PhysRevB.107.125111
 
    examples/graphene.rst
 
+   examples/benalcazar-bernevig-hughes.rst
+
    examples/breathing_pyrochlore.rst
 
 .. toctree::

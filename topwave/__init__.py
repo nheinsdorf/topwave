@@ -4,6 +4,7 @@ from .fourier_coefficients import *
 from .k_space_utils import *
 from .model import *
 # from .neutron import *
+from .projections import *
 from .response import *
 from .set_of_kpoints import *
 from .solvers import *

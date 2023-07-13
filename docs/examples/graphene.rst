@@ -1,8 +1,8 @@
-Graphene
-========
+Haldane Model
+=============
 
-Graphene is the fruitfly of (band) topological systems. Let us set up a simple tight-binding model
-and investigate its topological properties.
+The Haldane model, a time-reversal symmetry breaking model of Graphene, is the fruitfly of (band) topological systems.
+Let us set up a simple tight-binding model and investigate its topological properties.
 
 We use a `pymatgen Structure <https://pymatgen.org/pymatgen.core.structure.html#pymatgen.core.structure.Structure>`_ as
 as input. We start by constructing a hexagonal unit cell. Pymatgen structures are always three-dimensional,
@@ -73,6 +73,7 @@ could create the list manually, or use the functionality of :class:`topwave.set_
     for band in spec.energies.T:
         ax.plot(band, ls='-', lw=2.5, c='deeppink')
     ax.set_xticks(path.node_indices);
+    ax.set_ylabel('Energy');
     @savefig graphene_bands.png
     ax.set_xticklabels([r'$\Gamma$', 'M', 'K', r'$\Gamma$']);
 
@@ -114,7 +115,7 @@ small plaquettes and compute the flux through each plaquette.
     cbar = fig.colorbar(im, ax=ax)
     ax.set_xlabel(r'$k_x$')
     @savefig flux.png
-    ax.set_ylabel(r'$k_y$')
+    ax.set_ylabel(r'$k_y$');
 
     # Compute the Chern number by integrating out the Berry curvature flux.
     chern_number = fluxes.sum() / (2 * np.pi)
@@ -191,15 +192,16 @@ distance this time (which we just read off the tables from above).
     fig, (ax1, ax2) = plt.subplots(1, 2)
     for band in spec.energies.T:
         ax1.plot(band, ls='-', lw=2.5, c='deeppink')
-    ax1.set_xticks(path.node_indices)
-    ax1.set_xticklabels([r'$\Gamma$', 'M', 'K', r'$\Gamma$'])
+    ax1.set_xticks(path.node_indices);
+    ax1.set_xticklabels([r'$\Gamma$', 'M', 'K', r'$\Gamma$']);
+    ax1.set_ylabel('Energy');
 
     fluxes = np.array([tp.Spec(model, plaquette).get_berry_phase([0]) for plaquette in plaquettes])
 
     im = ax2.imshow(fluxes.reshape((num_x, num_y)), origin='lower', cmap='PiYG', vmin=-np.pi, vmax=np.pi, extent=[-0.5, 0.5, -0.5, 0.5])
     cbar = fig.colorbar(im, ax=ax2)
-    ax2.set_xlabel(r'$k_x$')
-    ax2.set_ylabel(r'$k_y$')
+    ax2.set_xlabel(r'$k_x$');
+    ax2.set_ylabel(r'$k_y$');
     fig.set_size_inches(10, 3)
     @savefig graphene_gapped.png
     plt.tight_layout()
@@ -216,33 +218,136 @@ confirm by checking the number of eigenvalues at any k-point (or by calling the 
 
 The (abelian) Berry curvature is not well-defined for degenerate bands. In the Haldane model, the spinless or rather
 spin-polarized case is considered. What we are looking at now is actually two copies of the Haldane model,
-the so-called Kane-Mele model. We can spin-polarize our system by applying a strong external magnetic field.
+the so-called Kane-Mele model. We can spin-polarize our system by applying a strong external magnetic field and only
+computing the Berry curvature for the lowest energy band, or we can use the `set_spin_polarized`
+method of the model to only consider the spin-up block of the Hamiltoninan.
 
 .. ipython:: python
 
-    magnetic_field_direction = [0, 0, 1]
-    magnetic_field_strength = -30
-    model.set_zeeman(magnetic_field_direction, magnetic_field_strength)
+    model.set_spin_polarized()
     spec = tp.Spec(model, path)
 
-    fig, (ax1, ax2) = plt.subplots(1, 2)
-    for band in spec.energies.T:
-        ax1.plot(band, ls='-', lw=2.5, c='deeppink')
-    ax1.set_xticks(path.node_indices)
-    ax1.set_xticklabels([r'$\Gamma$', 'M', 'K', r'$\Gamma$'])
+    fig, ax = plt.subplots()
 
     fluxes = np.array([tp.Spec(model, plaquette).get_berry_phase([0]) for plaquette in plaquettes])
 
-    im = ax2.imshow(fluxes.reshape((num_x, num_y)), origin='lower', cmap='PiYG', vmin=-np.pi, vmax=np.pi, extent=[-0.5, 0.5, -0.5, 0.5])
-    cbar = fig.colorbar(im, ax=ax2)
-    ax2.set_xlabel(r'$k_x$')
-    ax2.set_ylabel(r'$k_y$')
-    fig.set_size_inches(10, 3)
+    im = ax.imshow(fluxes.reshape((num_x, num_y)), origin='lower', cmap='PiYG', vmin=-np.pi, vmax=np.pi, extent=[-0.5, 0.5, -0.5, 0.5])
+    cbar = fig.colorbar(im, ax=ax)
+    ax.set_xlabel(r'$k_x$');
     @savefig graphene_gapped_haldane.png
-    plt.tight_layout()
+    ax.set_ylabel(r'$k_y$');
 
     chern_number = fluxes.sum() / (2 * np.pi)
     print('Chern number: %.4f' % chern_number)
 
-The external field separated the spin-up and -down branches. The spin-orbit
+
+Instead of computing the Berry phase for a set of plaquettes that cover the two-dimensional Brillouin
+zone, we can also evaluate the Berry Curvature directly at each k-point. Because the Berry Curvature is often an
+ill-behaved function - it has very sharp peaks close to avoided crossings - it is often preferred to
+use the Wilson loop method as above. Another option is to track the evolution of the Wannier charge centers
+through the Brillouin zone, which is equivalent to computing the Berry phase for lines that we use
+to cover the Brillouin zone.
+
+.. ipython:: python
+
+    nk = 13
+    plane = tp.Plane(normal=[0, 0, 1], num_x=nk, num_y=nk)
+    spec = tp.Spec(model, plane)
+    berry_curvature_all_bands = tp.get_berry_curvature(spec, component='z')
+    berry_curvature = berry_curvature_all_bands[:, 0].reshape(plane.shape)
+    vmax = np.abs(berry_curvature).max()
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+
+    im = ax1.imshow(berry_curvature, origin='lower', cmap='PiYG', vmin=-vmax, vmax=vmax, extent=[-0.5, 0.5, -0.5, 0.5])
+    ax1.set_xlabel(r'$k_x$');
+    ax1.set_ylabel(r'$k_y$');
+
+    line_cover = tp.get_line_cover('z', 'x', 50, 100)
+    spectra = [tp.Spec(model, line) for line in line_cover]
+    charge_centers = np.array([spectrum.get_berry_phase(band_indices=[0]) for spectrum in spectra])
+
+    ax2.scatter(line_cover[:, 0, 0], charge_centers, c='deeppink')
+
+    ax2.set_aspect(1 / (2 * np.pi))
+    ax2.set_xlabel(r'$k_x$')
+    ax2.set_ylabel('Berry phase')
+    @savefig graphene_wcc_evolution.png
+    plt.tight_layout()
+
+    chern_number = berry_curvature.sum() / (2 * np.pi) / nk**2
+    print('Chern number: %.4f' % chern_number)
+
+Note that even though we used the same grid size as we had numbers of plaquettes, the Chern
+number for integrating out the Berry curvature directly is not as close to its correct value as
+the Wilson loop method. We can also nicely see that charge is 'pumped' throughout one adiabatic cycle,
+which means taking kx from -pi to pi.
+
+We have confirmed, using three different methods, that the model is in a Chern Hall insulating phase.
+This means that even though our model is an insulator, we expect a quantized Hall current on the
+boundaries of the system. To see this, we perform a slab calculation. We create a supercell in one
+spatial direction and open the boundaries along that direction. We then use the `get_projections` function
+to project the wave functions onto the first and last unit cell of the slab that we created and
+plot the color of the slab bands as a function of that projector.
+
+
+.. ipython:: python
+
+    num_cells = 10
+    supercell_model = tp.get_supercell(model, [1, num_cells, 1])
+    supercell_model.set_open_boundaries('y')
+    path = tp.Path([[0, 0, 0], [1, 0, 0]], 101)
+
+    spec = tp.Spec(supercell_model, path)
+    projections = tp.get_projections(spec, {'unit_cell_y' : [0, num_cells - 1]})
+
+    fig, ax = plt.subplots()
+
+    for band, projection in zip(spec.energies.T, projections.T):
+        ax.scatter(path.kpoints[:, 0], band, alpha=0.4, c=projection, cmap=plt.get_cmap('RdPu'), vmin=0, vmax=1)
+
+    ax.set_xlabel(r'$k_x$')
+    ax.set_ylabel(r'Energy')
+
+    @savefig graphene_edge_modes.png
+    plt.tight_layout()
+
+A gapless mode has appeared! Even though our bulk model was an insulator, the boundary has become
+metallic. We can also see that these boundary modes are located at the ends of the slab that we created.
+Let's compute the electron density on a finite sheet with open boundary conditions in x, y and both directions.
+
+
+.. ipython:: python
+
+    import matplotlib.transforms as mtransforms
+
+    num_cells = 10
+    supercell_model_x = tp.get_supercell(model, [num_cells, num_cells, 1])
+    supercell_model_x.set_open_boundaries('x')
+    supercell_model_y = tp.get_supercell(model, [num_cells, num_cells, 1])
+    supercell_model_y.set_open_boundaries('y')
+    supercell_model_xy = tp.get_supercell(model, [num_cells, num_cells, 1])
+    supercell_model_xy.set_open_boundaries('xy')
+
+    spec_x = tp.Spec(supercell_model_x, [[0, 0, 0]])
+    spec_y = tp.Spec(supercell_model_y, [[0, 0, 0]])
+    spec_xy = tp.Spec(supercell_model_xy, [[0, 0, 0]])
+
+    density_x = spec_x.get_particle_density(0)[:, :, 0, :, 0].sum(axis=2)
+    density_y = spec_y.get_particle_density(0)[:, :, 0, :, 0].sum(axis=2)
+    density_xy = spec_xy.get_particle_density(0)[:, :, 0, :, 0].sum(axis=2)
+
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+    fig.set_size_inches(6, 2)
+    for ax, density in zip([ax1, ax2, ax3], [density_x, density_y, density_xy]):
+        ax.imshow(density, origin='lower', cmap='PiYG', extent=[-0.5, 0.5, -0.5, 0.5],
+                   transform=mtransforms.Affine2D().skew(np.pi / 6, 0) + ax.transData)
+        ax.set_xlim(-0.8, 0.8)
+        ax.set_ylim(-0.8, 0.8)
+        ax.spines[['left', 'right', 'bottom', 'top']].set_visible(False)
+        ax.set_xticks([])
+        ax.set_yticks([])
+
+    @savefig graphene_density.png
+    plt.tight_layout()
+
 

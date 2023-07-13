@@ -101,32 +101,36 @@ class Spec:
             kpoints: VectorList | SetOfKPoints) -> npt.NDArray[np.complex128]:
         """Constructs the spin wave Hamiltonian for a set of given k-points."""
 
+
+        kpoints = format_kpoints(kpoints)
+
+        k_dependence = get_periodic_fourier_coefficient
+
         dim = len(model.structure)
         matrix = np.zeros((len(kpoints), 2 * dim, 2 * dim), dtype=complex)
 
         # construct matrix elements at each k-point
-        for _, kpoint in enumerate(kpoints):
-            for coupling in model.get_set_couplings():
+        for coupling in model.get_set_couplings():
 
-                i, j = coupling.site1.properties['index'], coupling.site2.properties['index']
+            i, j = coupling.site1.properties['index'], coupling.site2.properties['index']
+            fourier_coefficients = k_dependence(coupling, kpoints)
+            # get the matrix elements from the couplings
+            (A, Abar, CI, CJ, B, Bbar) = coupling.get_spinwave_matrix_elements()
 
-                # get the matrix elements from the couplings
-                (A, Abar, CI, CJ, B12, B21, inner) = coupling.get_spinwave_matrix_elements(kpoint)
+            matrix[:, i, j] += fourier_coefficients * A
+            matrix[:, j, i] += np.conj(fourier_coefficients * A)
+            matrix[:, i + dim, j + dim] += np.conj(np.conj(fourier_coefficients) * Abar)
+            matrix[:, j + dim, i + dim] += np.conj(fourier_coefficients) * Abar
 
-                matrix[_, i, j] += A
-                matrix[_, j, i] += np.conj(A)
-                matrix[_, i + dim, j + dim] += np.conj(Abar)
-                matrix[_, j + dim, i + dim] += Abar
+            matrix[:, i, i] -= CI
+            matrix[:, j, j] -= CJ
+            matrix[:, i + dim, i + dim] -= np.conj(CI)
+            matrix[:, j + dim, j + dim] -= np.conj(CJ)
 
-                matrix[_, i, i] -= CI
-                matrix[_, j, j] -= CJ
-                matrix[_, i + dim, i + dim] -= np.conj(CI)
-                matrix[_, j + dim, j + dim] -= np.conj(CJ)
-
-                matrix[_, i, j + dim] += B12
-                matrix[_, j, i + dim] += B21
-                matrix[_, j + dim, i] += np.conj(B12)
-                matrix[_, i + dim, j] += np.conj(B21)
+            matrix[:, i, j + dim] += fourier_coefficients * B
+            matrix[:, j, i + dim] += np.conj(fourier_coefficients) * Bbar
+            matrix[:, j + dim, i] += np.conj(fourier_coefficients * B)
+            matrix[:, i + dim, j] += np.conj(np.conj(fourier_coefficients) * Bbar)
 
         # add single ion anisotropies
         for _ in range(dim):
@@ -205,6 +209,8 @@ class Spec:
                 matrix[:, 2 * i:2 * i + 2, 2 * j:2 * j + 2] += spin_orbit_term
                 matrix[:, 2 * j:2 * j + 2, 2 * i:2 * i + 2] += np.conj(spin_orbit_term.swapaxes(1, 2))
 
+            if model._is_spin_polarized:
+                return matrix[:, ::2, ::2]
         return matrix
 
     @staticmethod
@@ -257,6 +263,8 @@ class Spec:
                 matrix[:, 2 * i:2 * i + 2, 2 * j:2 * j + 2] += spin_orbit_term
                 matrix[:, 2 * j:2 * j + 2, 2 * i:2 * i + 2] += np.conj(spin_orbit_term.swapaxes(1, 2))
 
+            if model._is_spin_polarized:
+                return matrix[:, ::2, ::2]
         return matrix
 
     def solve(self, solver: Callable[[npt.NDArray[np.complex128]], tuple[npt.NDArray[np.complex128], npt.NDArray[np.complex128]]]) -> tuple[npt.NDArray[np.complex128], npt.NDArray[np.complex128]]:
@@ -286,7 +294,6 @@ class Spec:
                     raise TypeError(s)
         return E, psi
 
-
     def get_berry_phase(self,
                         band_indices: IntVector = None,
                         energy: float = None) -> float:
@@ -300,6 +307,35 @@ class Spec:
 
         loop_operator = get_fermionic_wilson_loop(self, band_indices, energy)
         return get_berry_phase(loop_operator)
+
+    def get_particle_density(self,
+                             filling: float) -> np.ndarray:
+        """Computes the electron density for all occupied states.
+
+        Parameters
+        ----------
+        filling: float
+            The energy up to which states are considered.
+
+        Returns
+        -------
+        np.ndarray
+            Array with the electron densities. The shape is
+            (num_unit_cell_x, num_unit_cell_y, num_unit_cell_z, num_sublattices, num_spins)
+
+        """
+
+        wavefunctions = self.psi.transpose(0, 2, 1)
+        wavefunctions[self.energies > filling] = 0
+        densities = np.real(np.conj(wavefunctions) * wavefunctions).sum(axis=0).sum(axis=0)
+
+        supercell_shape = () if self.model.scaling_factors is None else self.model.scaling_factors
+        is_spinless = not self.model.check_if_spinful() or self.model._is_spin_polarized
+        num_spins = 1 if is_spinless else 2
+        densities = densities.reshape((*supercell_shape,
+                                       -1,
+                                       num_spins))
+        return densities
 
     def get_spectral_density(self,
                              energy: float = 0.0,
