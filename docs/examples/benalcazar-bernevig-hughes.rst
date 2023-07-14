@@ -113,7 +113,7 @@ centers throughout the Brillouin zone. Let's try that.
     supercell.set_open_boundaries('xy')
 
 
-Weird. Why is there no
+Weird. Why is there no well we have to calculate
 
 .. ipython:: python
 
