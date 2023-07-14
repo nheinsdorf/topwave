@@ -108,9 +108,9 @@ centers throughout the Brillouin zone. Let's try that.
 
 .. ipython:: python
 
-    line_cover = tp.get_ine
-    model = tp.get_supercell(get_BBH_model(0.5, 1, delta), scaling_factors)
-    supercell.set_open_boundaries('xy')
+    #line_cover = tp.get_ine
+    #model = tp.get_supercell(get_BBH_model(0.5, 1, delta), scaling_factors)
+    #supercell.set_open_boundaries('xy')
 
 
 Weird. Why is there no well we have to calculate
