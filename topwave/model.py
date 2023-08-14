@@ -14,7 +14,7 @@ from tabulate import tabulate
 
 from topwave.constants import G_LANDE, MU_BOHR
 from topwave.coupling import Coupling
-from topwave.types import RealList, Vector, VectorList
+from topwave.types import RealList, SquareMatrix, Vector, VectorList
 from topwave import util
 
 __all__ = ["Model", "SpinWaveModel", "TightBindingModel"]
@@ -58,6 +58,7 @@ class Model(ABC):
                 site.properties['magmom'] = None
                 site.properties['onsite_scalar'] = 0.
                 site.properties['onsite_vector'] = np.zeros(3, dtype=float)
+                site.properties['onsite_matrix'] = np.zeros((3, 3), dtype=float)
                 site.properties['orbitals'] = 1
                 site.properties['Rot'] = None
 
@@ -75,7 +76,7 @@ class Model(ABC):
         # put zero magnetic field
         self.zeeman = np.zeros(3, dtype=float)
 
-        # allocate an empty list for the couplings
+        # allocate an empty list for the couplings and onsite (inter-orbital) couplings
         self.couplings = []
 
     def delete_all_couplings(self) -> None:
@@ -116,6 +117,27 @@ class Model(ABC):
                 coupling = Coupling(index, lattice_vector, site1, orbital1, site2, orbital2, int(symmetry_id), symmetry_op)
                 self.couplings.append(coupling)
                 index += 1
+
+        self._generate_onsite_couplings()
+
+    def _generate_onsite_couplings(self) -> None:
+        """Generates the onsite (inter-orbital) couplings for all sites.
+
+        The method is called by 'model.generate_couplings'.
+        TODO: Implement the site symmetries as symmetry id.
+        """
+
+        coupling_index = len(self.couplings)
+        for site in self.structure:
+            orbit_indices = np.triu_indices(site.properties['orbitals'], k=1)
+            for i, j in zip(*orbit_indices):
+                coupling = Coupling(coupling_index,
+                                    lattice_vector=np.zeros(3, dtype=np.int64),
+                                    site1=site, orbital1=i,
+                                    site2=site, orbital2=j,
+                                    symmetry_id=None, symmetry_op=None)
+                self.couplings.append(coupling)
+                coupling_index += 1
 
     def get_couplings(self,
                       attribute: str,
@@ -337,9 +359,40 @@ class Model(ABC):
             site.properties['Rot'] = util.rotate_vector_to_ez(moment)
             site.properties['magmom'] = moment * magnitude
 
+    def set_onsite_matrix(self,
+                          index: int,
+                          matrix: float | SquareMatrix,
+                          overwrite: bool = True) -> None:
+        """Sets a onsite matrix to a given site.
+
+        TODO: implement this for the pseudo diplor terms and single-ion anisotropies
+        For a TightBindingModel this is nothing? For SpinWaveModel this term is a onsite spin interaction matrix.
+
+        Parameters
+        ----------
+        index: int
+            The index of the site.
+        matrix: SquareMatrix
+            The matrix of the onsite term.
+        overwrite: bool
+            If true, any existing term is overwritten. If false, the term is added. Default is true.
+
+        Examples
+        --------
+        We assign a easy-axis blabla...
+
+        .. ipython:: python
+
+            #model.set_onsite_scalar(0, 0.25)
+            #model.show_site_properties()
+
+        """
+
+
+
     def set_onsite_scalar(self,
                           index: int,
-                          strength: float,
+                          strengths: float | RealList,
                           space_group: int = 1,
                           overwrite: bool = True) -> None:
         """Sets a scalar onsite energy to a given site.
@@ -350,8 +403,8 @@ class Model(ABC):
         ----------
         index: int
             The index of the site.
-        strength: float
-            The strength of the onsite term.
+        strengths: float | RealList
+            The strength of the onsite term. If there are multiple orbitals on the site, a list must be passed.
         space_group: int
             If a compatible space group symmetry is selected, the term will automatically be assigned to all
             symmetrically equivalent sites. Default is None.
@@ -369,12 +422,14 @@ class Model(ABC):
 
         """
 
+        site = self.structure[index]
+        strengths = np.array(strengths, dtype=np.float64).reshape((site.properties['orbitals']))
         space_group = SpaceGroup.from_int_number(space_group)
-        coordinates = space_group.get_orbit(self.structure[index].frac_coords)
+        coordinates = space_group.get_orbit(site.frac_coords)
         for coordinate in coordinates:
             cartesian_coordinate = self.structure.lattice.get_cartesian_coords(coordinate)
             site = self.structure.get_sites_in_sphere(cartesian_coordinate, 1e-06)[0]
-            site.properties['onsite_scalar'] = float(strength) if overwrite else float(strength) + site.properties['onsite_scalar']
+            site.properties['onsite_scalar'] = strengths if overwrite else strengths + site.properties['onsite_scalar']
 
 
     def set_onsite_vector(self,
@@ -385,6 +440,7 @@ class Model(ABC):
                           overwrite: bool = True) -> None:
         """Sets an onsite vector to a given site.
 
+        NOTE: Implement this for multi-orbital!
         For a SpinWaveModel this corresponds to a single-ion anisotropy. For a TightBindingModel to a local magnetic field.
 
         Parameters
@@ -564,10 +620,13 @@ class Model(ABC):
     def show_couplings(self) -> None:
         """Prints the couplings."""
 
+        nums_orbitals = [site.properties['orbitals'] for site in self.structure]
+        num_onsite_terms = np.sum([np.sum(np.arange(1, num_orbital)) for num_orbital in nums_orbitals])
+
         header = ['index', 'symmetry index', 'symmetry operation', 'distance', 'lattice_vector', 'sublattice_vector',
                   'site1', 'orbital1', 'site2', 'orbital2', 'strength', 'spin-orbit vector']
         table = []
-        for coupling in self.couplings:
+        for coupling in self.couplings[:-num_onsite_terms]:
             table.append([coupling.index, coupling.symmetry_id, coupling.symmetry_op.as_xyz_string(), coupling.distance,
                           coupling.lattice_vector, coupling.sublattice_vector, coupling.site1.properties['index'],
                           coupling.orbital1, coupling.site2.properties['index'], coupling.orbital2, coupling.strength,
@@ -575,17 +634,27 @@ class Model(ABC):
 
         print(tabulate(table, headers=header, tablefmt='fancy_grid'))
 
+        onsite_table = []
+        for coupling in self.couplings[-num_onsite_terms:]:
+            onsite_table.append([coupling.index, coupling.symmetry_id, None, coupling.distance,
+                                 coupling.lattice_vector, coupling.sublattice_vector, coupling.site1.properties['index'],
+                                 coupling.orbital1, coupling.site2.properties['index'], coupling.orbital2, coupling.strength,
+                                 coupling.spin_orbit])
+
+        print('\nOnsite (Inter-Orbital) Couplings:')
+        print(tabulate(onsite_table, headers=header, tablefmt='fancy_grid'))
+
     def show_site_properties(self) -> None:
         """Prints the site properties."""
 
         header = ['index', 'species', 'label', 'orbitals', 'coordinates (latt.)', 'coordinates (cart.)', 'magmom',
-                  'onsite scalar', 'onsite vector', 'unit cell index', 'supercell vector', 'layer']
+                  'onsite scalar', 'onsite vector', 'onsite matrix', 'unit cell index', 'supercell vector', 'layer']
         table = []
         for site in self.structure:
             table.append([site.properties['index'], site.species, site.properties['label'], site.properties['orbitals'],
                           site.frac_coords, site.coords, site.properties['magmom'], site.properties['onsite_scalar'],
-                          site.properties['onsite_vector'], site.properties['uc_site_index'],
-                          site.properties['cell_vector'], site.properties['layer']])
+                          site.properties['onsite_vector'], site.properties['onsite_matrix'].tolist(),
+                          site.properties['uc_site_index'], site.properties['cell_vector'], site.properties['layer']])
 
         print(tabulate(table, headers=header, tablefmt='fancy_grid'))
         print(f'Spin Polarized: {self._is_spin_polarized}')
@@ -934,7 +1003,7 @@ class TightBindingModel(Model):
 
     def set_orbitals(self,
                      index: int,
-                     num_orbitals: int):
+                     num_orbitals: int) -> None:
         """Sets the number of orbitals on a given site.
 
         .. admonition:: Coming soon!

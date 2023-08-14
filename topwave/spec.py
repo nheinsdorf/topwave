@@ -166,12 +166,16 @@ class Spec:
 
         k_dependence = get_periodic_fourier_coefficient
 
-        matrix = np.zeros((len(kpoints), len(model.structure), len(model.structure)), dtype=complex)
+        nums_orbitals = [site.properties['orbitals'] for site in model.structure]
+        dimension = sum(nums_orbitals)
+        combined_index_nodes = np.concatenate(([0], np.cumsum(nums_orbitals)[:-1]), dtype=np.int)
+        matrix = np.zeros((len(kpoints), dimension, dimension), dtype=complex)
 
         # construct matrix elements at each k-point
         # for _, kpoint in enumerate(kpoints):
         for coupling in model.get_set_couplings():
-            i, j = coupling.site1.properties['index'], coupling.site2.properties['index']
+            i = combined_index_nodes[coupling.site1.properties['index']] + coupling.orbital1
+            j = combined_index_nodes[coupling.site2.properties['index']] + coupling.orbital2
 
             # get the matrix elements from the couplings
             # A, inner = coupling.get_tightbinding_matrix_elements(kpoint)
@@ -179,23 +183,30 @@ class Spec:
             matrix[:, i, j] += A
             matrix[:, j, i] += np.conj(A)
 
-        for _, site in enumerate(model.structure):
-            matrix[:, _, _] += site.properties['onsite_scalar']
+        for site_index, site in enumerate(model.structure):
+            for orbital_index, onsite_scalar in enumerate(np.array(site.properties['onsite_scalar']).reshape((-1,))):
+                i = combined_index_nodes[site_index] + orbital_index
+                matrix[:, i, i] += onsite_scalar
 
         # add spin degrees of freedom
         if model.check_if_spinful():
             matrix = np.kron(matrix, np.eye(2))
 
-            for _, site in enumerate(model.structure):
-                matrix[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += MU_BOHR * G_LANDE * pauli(model.zeeman, normalize=False)
+            for site_index, site in enumerate(model.structure):
+                # for orbital_index, onsite_vector in enumerate(np.array(site.properties['onsite_vector']).reshape((-1, 3))):
+                for orbital_index in range(site.properties['orbital']):
+                    i = combined_index_nodes[site_index] + orbital_index
+                    # add zeeman term
+                    matrix[:, 2 * i: 2 * i + 2, 2 * i: 2 * i + 2] += MU_BOHR * G_LANDE * pauli(model.zeeman, normalize=False)
 
-                # add onsite term
-                matrix[:, 2 * _: 2 * _ + 2, 2 * _: 2 * _ + 2] += pauli(site.properties['onsite_vector'], normalize=False)
+                    # add onsite term (for all orbitals the same at the moment)
+                    matrix[:, 2 * i: 2 * i + 2, 2 * i: 2 * i + 2] += pauli(site.properties['onsite_vector'], normalize=False)
 
             # add spin-orbit term
             # for _, kpoint in enumerate(kpoints):
             for coupling in model.get_set_couplings():
-                i, j = coupling.site1.properties['index'], coupling.site2.properties['index']
+                i = combined_index_nodes[coupling.site1.properties['index']] + coupling.orbital1
+                j = combined_index_nodes[coupling.site2.properties['index']] + coupling.orbital2
                 spin_orbit_term = np.einsum('c, nm -> cnm', k_dependence(coupling, kpoints), coupling.get_spin_orbit_matrix_elements())
                 matrix[:, 2 * i:2 * i + 2, 2 * j:2 * j + 2] += spin_orbit_term
                 matrix[:, 2 * j:2 * j + 2, 2 * i:2 * i + 2] += np.conj(spin_orbit_term.swapaxes(1, 2))
@@ -211,7 +222,7 @@ class Spec:
             derivative: str) -> SquareMatrix:
         """Constructs the derivative of a Tight Binding Hamiltonian for a given set of k-points.
 
-
+        TODO: update for multi-orbital
         Parameters
         ----------
         model: TightBindingModel
@@ -231,6 +242,58 @@ class Spec:
         kpoints = format_kpoints(kpoints)
 
         k_dependence = partial(get_periodic_fourier_derivative, direction=derivative)
+
+        nums_orbitals = [site.properties['orbitals'] for site in model.structure]
+        dimension = sum(nums_orbitals)
+        combined_index_nodes = np.concatenate(([0], np.cumsum(nums_orbitals)[:-1]), dtype=np.int)
+        matrix = np.zeros((len(kpoints), dimension, dimension), dtype=complex)
+
+        # construct matrix elements at each k-point
+        # for _, kpoint in enumerate(kpoints):
+        for coupling in model.get_set_couplings():
+            i = combined_index_nodes[coupling.site1.properties['index']] + coupling.orbital1
+            j = combined_index_nodes[coupling.site2.properties['index']] + coupling.orbital2
+
+            # get the matrix elements from the couplings
+            # A, inner = coupling.get_tightbinding_matrix_elements(kpoint)
+            A = k_dependence(coupling, kpoints) * coupling.get_tightbinding_matrix_elements()
+            matrix[:, i, j] += A
+            matrix[:, j, i] += np.conj(A)
+
+        for site_index, site in enumerate(model.structure):
+            for orbital_index, onsite_scalar in enumerate(np.array(site.properties['onsite_scalar']).reshape((-1,))):
+                i = combined_index_nodes[site_index] + orbital_index
+                matrix[:, i, i] += onsite_scalar
+
+        # add spin degrees of freedom
+        if model.check_if_spinful():
+            matrix = np.kron(matrix, np.eye(2))
+
+            for site_index, site in enumerate(model.structure):
+                # for orbital_index, onsite_vector in enumerate(np.array(site.properties['onsite_vector']).reshape((-1, 3))):
+                for orbital_index in range(site.properties['orbital']):
+                    i = combined_index_nodes[site_index] + orbital_index
+                    # add zeeman term
+                    matrix[:, 2 * i: 2 * i + 2, 2 * i: 2 * i + 2] += MU_BOHR * G_LANDE * pauli(model.zeeman,
+                                                                                               normalize=False)
+
+                    # add onsite term (for all orbitals the same at the moment)
+                    matrix[:, 2 * i: 2 * i + 2, 2 * i: 2 * i + 2] += pauli(site.properties['onsite_vector'],
+                                                                           normalize=False)
+
+            # add spin-orbit term
+            # for _, kpoint in enumerate(kpoints):
+            for coupling in model.get_set_couplings():
+                i = combined_index_nodes[coupling.site1.properties['index']] + coupling.orbital1
+                j = combined_index_nodes[coupling.site2.properties['index']] + coupling.orbital2
+                spin_orbit_term = np.einsum('c, nm -> cnm', k_dependence(coupling, kpoints),
+                                            coupling.get_spin_orbit_matrix_elements())
+                matrix[:, 2 * i:2 * i + 2, 2 * j:2 * j + 2] += spin_orbit_term
+                matrix[:, 2 * j:2 * j + 2, 2 * i:2 * i + 2] += np.conj(spin_orbit_term.swapaxes(1, 2))
+
+            if model._is_spin_polarized:
+                return matrix[:, ::2, ::2]
+        return matrix
         matrix = np.zeros((len(kpoints), len(model.structure), len(model.structure)), dtype=complex)
 
         # construct matrix elements at each k-point
