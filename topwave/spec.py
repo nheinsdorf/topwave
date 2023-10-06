@@ -175,7 +175,7 @@ class Spec:
 
         nums_orbitals = [site.properties['orbitals'] for site in model.structure]
         dimension = sum(nums_orbitals)
-        combined_index_nodes = np.concatenate(([0], np.cumsum(nums_orbitals)[:-1]), dtype=np.int)
+        combined_index_nodes = np.concatenate(([0], np.cumsum(nums_orbitals)[:-1]), dtype=np.int64)
         matrix = np.zeros((len(kpoints), dimension, dimension), dtype=complex)
 
         # construct matrix elements at each k-point
