@@ -14,7 +14,7 @@ from topwave.set_of_kpoints import SetOfKPoints
 from topwave.model import Model, SpinWaveModel, TightBindingModel
 from topwave.topology import get_berry_phase, get_fermionic_wilson_loop
 from topwave.types import IntVector, RealList, SquareMatrix, VectorList
-from topwave.util import format_kpoints, pauli
+from topwave.util import format_input_vector, format_kpoints, pauli
 
 __all__ = ["Spec"]
 
@@ -126,11 +126,18 @@ class Spec:
         # add single ion anisotropies
         for _ in range(dim):
             u = model.structure[_].properties['Rot'][:, 0] + 1j * model.structure[_].properties['Rot'][:, 1]
-            K = np.diag(model.structure[_].properties['onsite_vector'])
-            matrix[:, _, _] += u @ K @ np.conj(u)
-            matrix[:, _ + dim, _ + dim] += np.conj(u @ K @ np.conj(u))
-            matrix[:, _, _ + dim] += u @ K @ u
-            matrix[:, _ + dim, _] += np.conj(u @ K @ u)
+            v = model.structure[_]
+            # K = np.diag(model.structure[_].properties['onsite_vector'])
+            # this constructs an interaction matrix with a principal axis along the onsite vector
+            K = np.linalg.norm(model.structure[_].properties['onsite_vector'])
+            easy_axis = format_input_vector(model.structure[_].properties['onsite_vector'], 1)
+            onsite_exchange_matrix = -K * np.outer(easy_axis, easy_axis) \
+                                     + model.structure[_].properties['onsite_matrix']
+
+            matrix[:, _, _] += u @ onsite_exchange_matrix @ np.conj(u)
+            matrix[:, _ + dim, _ + dim] += np.conj(u @ onsite_exchange_matrix @ np.conj(u))
+            matrix[:, _, _ + dim] += u @ onsite_exchange_matrix @ u
+            matrix[:, _ + dim, _] += np.conj(u @ onsite_exchange_matrix @ u)
 
         # add the external magnetic field
         for _ in range(dim):
@@ -194,7 +201,7 @@ class Spec:
 
             for site_index, site in enumerate(model.structure):
                 # for orbital_index, onsite_vector in enumerate(np.array(site.properties['onsite_vector']).reshape((-1, 3))):
-                for orbital_index in range(site.properties['orbital']):
+                for orbital_index in range(site.properties['orbitals']):
                     i = combined_index_nodes[site_index] + orbital_index
                     # add zeeman term
                     matrix[:, 2 * i: 2 * i + 2, 2 * i: 2 * i + 2] += MU_BOHR * G_LANDE * pauli(model.zeeman, normalize=False)

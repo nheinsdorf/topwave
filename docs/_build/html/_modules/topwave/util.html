@@ -242,7 +242,14 @@
     <li class="md-nav__item">
     
     
-      <a href="../../examples/graphene.html" class="md-nav__link">Graphene</a>
+      <a href="../../examples/graphene.html" class="md-nav__link">Haldane Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../examples/benalcazar-bernevig-hughes.html" class="md-nav__link">Benalcazar-Bernevig-Hughes</a>
       
     
     </li>
@@ -345,6 +352,8 @@
     <span class="sd">"""Normalizes an input vector and scales it by length, or does nothing if length=None."""</span>
 
     <span class="n">unscaled_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">orientation</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,))</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">unscaled_vector</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">unscaled_vector</span> <span class="k">if</span> <span class="n">length</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">length</span> <span class="o">*</span> <span class="n">unscaled_vector</span> <span class="o">/</span> <span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">unscaled_vector</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">out</span></div>
 

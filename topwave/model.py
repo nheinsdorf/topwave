@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from itertools import product
 
 import numpy as np
-import numpy.typing as npt
 from pymatgen.core.sites import PeriodicSite
 from pymatgen.core.structure import Structure
 from pymatgen.io.cif import CifWriter
@@ -624,22 +623,22 @@ class Model(ABC):
         num_onsite_terms = np.sum([np.sum(np.arange(1, num_orbital)) for num_orbital in nums_orbitals])
 
         header = ['index', 'symmetry index', 'symmetry operation', 'distance', 'lattice_vector', 'sublattice_vector',
-                  'site1', 'orbital1', 'site2', 'orbital2', 'strength', 'spin-orbit vector']
+                  'site1', 'orbital1', 'site2', 'orbital2', 'strength', 'spin-orbit vector', 'matrix']
         table = []
-        for coupling in self.couplings[:-num_onsite_terms]:
+        for coupling in self.couplings[:len(self.couplings) - num_onsite_terms]:
             table.append([coupling.index, coupling.symmetry_id, coupling.symmetry_op.as_xyz_string(), coupling.distance,
                           coupling.lattice_vector, coupling.sublattice_vector, coupling.site1.properties['index'],
                           coupling.orbital1, coupling.site2.properties['index'], coupling.orbital2, coupling.strength,
-                          coupling.spin_orbit])
+                          coupling.spin_orbit, coupling.matrix.tolist()])
 
         print(tabulate(table, headers=header, tablefmt='fancy_grid'))
 
         onsite_table = []
-        for coupling in self.couplings[-num_onsite_terms:]:
+        for coupling in self.couplings[len(self.couplings) - num_onsite_terms:]:
             onsite_table.append([coupling.index, coupling.symmetry_id, None, coupling.distance,
                                  coupling.lattice_vector, coupling.sublattice_vector, coupling.site1.properties['index'],
                                  coupling.orbital1, coupling.site2.properties['index'], coupling.orbital2, coupling.strength,
-                                 coupling.spin_orbit])
+                                 coupling.spin_orbit, coupling.matrix.tolist()])
 
         print('\nOnsite (Inter-Orbital) Couplings:')
         print(tabulate(onsite_table, headers=header, tablefmt='fancy_grid'))
@@ -791,6 +790,7 @@ class SpinWaveModel(Model):
     #     super().__init__(structure, import_site_properties)
     #     self.type = 'spinwave'
 
+    # TODO: add anisotropy
     def get_classical_energy(self,
                              per_spin: bool = True) -> float:
         """Computes the classical ground state energy of the model with its current orientation of local moments.
@@ -892,43 +892,6 @@ class SpinWaveModel(Model):
         # normalize the final configuration
         res.x = (res.x.reshape((-1, 3)).T / norm(res.x.reshape((-1, 3)), axis=1)).flatten(order='F')
         return res
-
-    def set_single_ion_anisotropy(self,
-                                  index: int,
-                                  vector: Vector,
-                                  strength: float = None,
-                                  space_group: int = 1) -> None:
-        """Sets a single-ion anisotropy to a given site. Same as Model.set_onsite_vector.
-
-        Parameters
-        ----------
-        index: int
-            The index of the site.
-        vector: Vector
-            The orientation of the term.
-        strength: float
-            The strength of the onsite term. If None, the length of the input vector is used. Default is None.
-        space_group: int
-            If a compatible space group symmetry is selected, the term will automatically be assigned to all
-            symmetrically equivalent sites and the assigned vector will be rotated accordingly. Default is None.
-
-        Examples
-        --------
-        We assign a single-ion anisotropy of strength A = 0.1 along the 001-direction. See the
-        onsite vector column in the output.
-
-        .. ipython:: python
-
-            model.set_onsite_vector(0, [0, 0, 1], 0.1)
-            model.show_site_properties()
-
-        See Also
-        --------
-        :class:`topwave.model.Model.set_onsite_vector`
-
-        """
-
-        self.set_onsite_vector(index=index, vector=vector, strength=strength, space_group=space_group)
 
 
 class TightBindingModel(Model):

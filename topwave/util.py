@@ -51,8 +51,7 @@ def fermi_distribution(energies: float | npt.ArrayLike,
     return np.reciprocal(np.exp(energies / (K_BOLTZMANN * temperature)) + 1)
 
 def format_input_vector(orientation: list[float] | npt.NDArray[np.float64],
-                        length: Optional[float] = None,
-                        normalize=False) -> npt.NDArray[np.float64]:
+                        length: Optional[float] = None) -> npt.NDArray[np.float64]:
     """Normalizes an input vector and scales it by length, or does nothing if length=None."""
 
     unscaled_vector = np.array(orientation, dtype=np.float64).reshape((3,))

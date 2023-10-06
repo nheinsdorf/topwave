@@ -89,6 +89,15 @@ Please see the `contributing guidelines <https://github.com/nheinsdorf/topwave/b
 Topwave in Research
 -------------------
 
+**Stable Bosonic Topological Edge Modes in the Presence of Many-Body Interaction**
+
+N. Heinsdorf, DG. Joshi, H. Katsura, AP. Schnyder - arXiv:
+
+https://doi.org/10.1103/PhysRevB.107.125111
+
+.. image:: ./_static/papers_that_use_topwave/triplon_paper2000.jpg
+   :align: center
+
 **IrF4: From tetrahedral compass model to topological semimetal**
 
 C Shang, O. Ganter, N. Heinsdorf, SM. Winter - Phys. Rev. B, 2023 - APS

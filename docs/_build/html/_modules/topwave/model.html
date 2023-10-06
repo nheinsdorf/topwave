@@ -242,7 +242,14 @@
     <li class="md-nav__item">
     
     
-      <a href="../../examples/graphene.html" class="md-nav__link">Graphene</a>
+      <a href="../../examples/graphene.html" class="md-nav__link">Haldane Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../examples/benalcazar-bernevig-hughes.html" class="md-nav__link">Benalcazar-Bernevig-Hughes</a>
       
     
     </li>
@@ -304,7 +311,7 @@
 
 <span class="kn">from</span> <span class="nn">topwave.constants</span> <span class="kn">import</span> <span class="n">G_LANDE</span><span class="p">,</span> <span class="n">MU_BOHR</span>
 <span class="kn">from</span> <span class="nn">topwave.coupling</span> <span class="kn">import</span> <span class="n">Coupling</span>
-<span class="kn">from</span> <span class="nn">topwave.types</span> <span class="kn">import</span> <span class="n">RealList</span><span class="p">,</span> <span class="n">Vector</span><span class="p">,</span> <span class="n">VectorList</span>
+<span class="kn">from</span> <span class="nn">topwave.types</span> <span class="kn">import</span> <span class="n">RealList</span><span class="p">,</span> <span class="n">SquareMatrix</span><span class="p">,</span> <span class="n">Vector</span><span class="p">,</span> <span class="n">VectorList</span>
 <span class="kn">from</span> <span class="nn">topwave</span> <span class="kn">import</span> <span class="n">util</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Model"</span><span class="p">,</span> <span class="s2">"SpinWaveModel"</span><span class="p">,</span> <span class="s2">"TightBindingModel"</span><span class="p">]</span>
@@ -348,6 +355,7 @@
                 <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'magmom'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
                 <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_matrix'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
                 <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'Rot'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -365,7 +373,7 @@
         <span class="c1"># put zero magnetic field</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zeeman</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
-        <span class="c1"># allocate an empty list for the couplings</span>
+        <span class="c1"># allocate an empty list for the couplings and onsite (inter-orbital) couplings</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="Model.delete_all_couplings"><a class="viewcode-back" href="../../api.html#topwave.model.Model.delete_all_couplings">[docs]</a>    <span class="k">def</span> <span class="nf">delete_all_couplings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -405,7 +413,28 @@
             <span class="k">for</span> <span class="n">orbital1</span><span class="p">,</span> <span class="n">orbital2</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">site1</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">]),</span> <span class="nb">range</span><span class="p">(</span><span class="n">site2</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">])):</span>
                 <span class="n">coupling</span> <span class="o">=</span> <span class="n">Coupling</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">lattice_vector</span><span class="p">,</span> <span class="n">site1</span><span class="p">,</span> <span class="n">orbital1</span><span class="p">,</span> <span class="n">site2</span><span class="p">,</span> <span class="n">orbital2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">symmetry_id</span><span class="p">),</span> <span class="n">symmetry_op</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coupling</span><span class="p">)</span>
-                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span></div>
+                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generate_onsite_couplings</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_generate_onsite_couplings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Generates the onsite (inter-orbital) couplings for all sites.</span>
+
+<span class="sd">        The method is called by 'model.generate_couplings'.</span>
+<span class="sd">        TODO: Implement the site symmetries as symmetry id.</span>
+<span class="sd">        """</span>
+
+        <span class="n">coupling_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">:</span>
+            <span class="n">orbit_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">],</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">orbit_indices</span><span class="p">):</span>
+                <span class="n">coupling</span> <span class="o">=</span> <span class="n">Coupling</span><span class="p">(</span><span class="n">coupling_index</span><span class="p">,</span>
+                                    <span class="n">lattice_vector</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+                                    <span class="n">site1</span><span class="o">=</span><span class="n">site</span><span class="p">,</span> <span class="n">orbital1</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                                    <span class="n">site2</span><span class="o">=</span><span class="n">site</span><span class="p">,</span> <span class="n">orbital2</span><span class="o">=</span><span class="n">j</span><span class="p">,</span>
+                                    <span class="n">symmetry_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">symmetry_op</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coupling</span><span class="p">)</span>
+                <span class="n">coupling_index</span> <span class="o">+=</span> <span class="mi">1</span>
 
 <div class="viewcode-block" id="Model.get_couplings"><a class="viewcode-back" href="../../api.html#topwave.model.Model.get_couplings">[docs]</a>    <span class="k">def</span> <span class="nf">get_couplings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                       <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -627,9 +656,40 @@
             <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'Rot'</span><span class="p">]</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">rotate_vector_to_ez</span><span class="p">(</span><span class="n">moment</span><span class="p">)</span>
             <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'magmom'</span><span class="p">]</span> <span class="o">=</span> <span class="n">moment</span> <span class="o">*</span> <span class="n">magnitude</span></div>
 
+<div class="viewcode-block" id="Model.set_onsite_matrix"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_onsite_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">set_onsite_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                          <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                          <span class="n">matrix</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">SquareMatrix</span><span class="p">,</span>
+                          <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">"""Sets a onsite matrix to a given site.</span>
+
+<span class="sd">        TODO: implement this for the pseudo diplor terms and single-ion anisotropies</span>
+<span class="sd">        For a TightBindingModel this is nothing? For SpinWaveModel this term is a onsite spin interaction matrix.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index: int</span>
+<span class="sd">            The index of the site.</span>
+<span class="sd">        matrix: SquareMatrix</span>
+<span class="sd">            The matrix of the onsite term.</span>
+<span class="sd">        overwrite: bool</span>
+<span class="sd">            If true, any existing term is overwritten. If false, the term is added. Default is true.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        We assign a easy-axis blabla...</span>
+
+<span class="sd">        .. ipython:: python</span>
+
+<span class="sd">            #model.set_onsite_scalar(0, 0.25)</span>
+<span class="sd">            #model.show_site_properties()</span>
+
+<span class="sd">        """</span></div>
+
+
+
 <div class="viewcode-block" id="Model.set_onsite_scalar"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_onsite_scalar">[docs]</a>    <span class="k">def</span> <span class="nf">set_onsite_scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                           <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                          <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                          <span class="n">strengths</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="n">RealList</span><span class="p">,</span>
                           <span class="n">space_group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
                           <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Sets a scalar onsite energy to a given site.</span>
@@ -640,8 +700,8 @@
 <span class="sd">        ----------</span>
 <span class="sd">        index: int</span>
 <span class="sd">            The index of the site.</span>
-<span class="sd">        strength: float</span>
-<span class="sd">            The strength of the onsite term.</span>
+<span class="sd">        strengths: float | RealList</span>
+<span class="sd">            The strength of the onsite term. If there are multiple orbitals on the site, a list must be passed.</span>
 <span class="sd">        space_group: int</span>
 <span class="sd">            If a compatible space group symmetry is selected, the term will automatically be assigned to all</span>
 <span class="sd">            symmetrically equivalent sites. Default is None.</span>
@@ -659,12 +719,14 @@
 
 <span class="sd">        """</span>
 
+        <span class="n">site</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">strengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">strengths</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">]))</span>
         <span class="n">space_group</span> <span class="o">=</span> <span class="n">SpaceGroup</span><span class="o">.</span><span class="n">from_int_number</span><span class="p">(</span><span class="n">space_group</span><span class="p">)</span>
-        <span class="n">coordinates</span> <span class="o">=</span> <span class="n">space_group</span><span class="o">.</span><span class="n">get_orbit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">)</span>
+        <span class="n">coordinates</span> <span class="o">=</span> <span class="n">space_group</span><span class="o">.</span><span class="n">get_orbit</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">coordinate</span> <span class="ow">in</span> <span class="n">coordinates</span><span class="p">:</span>
             <span class="n">cartesian_coordinate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">lattice</span><span class="o">.</span><span class="n">get_cartesian_coords</span><span class="p">(</span><span class="n">coordinate</span><span class="p">)</span>
             <span class="n">site</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">get_sites_in_sphere</span><span class="p">(</span><span class="n">cartesian_coordinate</span><span class="p">,</span> <span class="mf">1e-06</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">strength</span><span class="p">)</span> <span class="k">if</span> <span class="n">overwrite</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">strength</span><span class="p">)</span> <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">]</span></div>
+            <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">]</span> <span class="o">=</span> <span class="n">strengths</span> <span class="k">if</span> <span class="n">overwrite</span> <span class="k">else</span> <span class="n">strengths</span> <span class="o">+</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="Model.set_onsite_vector"><a class="viewcode-back" href="../../api.html#topwave.model.Model.set_onsite_vector">[docs]</a>    <span class="k">def</span> <span class="nf">set_onsite_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -675,6 +737,7 @@
                           <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Sets an onsite vector to a given site.</span>
 
+<span class="sd">        NOTE: Implement this for multi-orbital!</span>
 <span class="sd">        For a SpinWaveModel this corresponds to a single-ion anisotropy. For a TightBindingModel to a local magnetic field.</span>
 
 <span class="sd">        Parameters</span>
@@ -854,28 +917,41 @@
 <div class="viewcode-block" id="Model.show_couplings"><a class="viewcode-back" href="../../api.html#topwave.model.Model.show_couplings">[docs]</a>    <span class="k">def</span> <span class="nf">show_couplings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Prints the couplings."""</span>
 
+        <span class="n">nums_orbitals</span> <span class="o">=</span> <span class="p">[</span><span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">]</span> <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">]</span>
+        <span class="n">num_onsite_terms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_orbital</span><span class="p">))</span> <span class="k">for</span> <span class="n">num_orbital</span> <span class="ow">in</span> <span class="n">nums_orbitals</span><span class="p">])</span>
+
         <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'index'</span><span class="p">,</span> <span class="s1">'symmetry index'</span><span class="p">,</span> <span class="s1">'symmetry operation'</span><span class="p">,</span> <span class="s1">'distance'</span><span class="p">,</span> <span class="s1">'lattice_vector'</span><span class="p">,</span> <span class="s1">'sublattice_vector'</span><span class="p">,</span>
-                  <span class="s1">'site1'</span><span class="p">,</span> <span class="s1">'orbital1'</span><span class="p">,</span> <span class="s1">'site2'</span><span class="p">,</span> <span class="s1">'orbital2'</span><span class="p">,</span> <span class="s1">'strength'</span><span class="p">,</span> <span class="s1">'spin-orbit vector'</span><span class="p">]</span>
+                  <span class="s1">'site1'</span><span class="p">,</span> <span class="s1">'orbital1'</span><span class="p">,</span> <span class="s1">'site2'</span><span class="p">,</span> <span class="s1">'orbital2'</span><span class="p">,</span> <span class="s1">'strength'</span><span class="p">,</span> <span class="s1">'spin-orbit vector'</span><span class="p">,</span> <span class="s1">'matrix'</span><span class="p">]</span>
         <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">)</span> <span class="o">-</span> <span class="n">num_onsite_terms</span><span class="p">]:</span>
             <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">coupling</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">symmetry_id</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">symmetry_op</span><span class="o">.</span><span class="n">as_xyz_string</span><span class="p">(),</span> <span class="n">coupling</span><span class="o">.</span><span class="n">distance</span><span class="p">,</span>
                           <span class="n">coupling</span><span class="o">.</span><span class="n">lattice_vector</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">sublattice_vector</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">],</span>
                           <span class="n">coupling</span><span class="o">.</span><span class="n">orbital1</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">orbital2</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span>
-                          <span class="n">coupling</span><span class="o">.</span><span class="n">spin_orbit</span><span class="p">])</span>
+                          <span class="n">coupling</span><span class="o">.</span><span class="n">spin_orbit</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">tolist</span><span class="p">()])</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">'fancy_grid'</span><span class="p">))</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">'fancy_grid'</span><span class="p">))</span>
+
+        <span class="n">onsite_table</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">couplings</span><span class="p">)</span> <span class="o">-</span> <span class="n">num_onsite_terms</span><span class="p">:]:</span>
+            <span class="n">onsite_table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">coupling</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">symmetry_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">distance</span><span class="p">,</span>
+                                 <span class="n">coupling</span><span class="o">.</span><span class="n">lattice_vector</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">sublattice_vector</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">],</span>
+                                 <span class="n">coupling</span><span class="o">.</span><span class="n">orbital1</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">orbital2</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">strength</span><span class="p">,</span>
+                                 <span class="n">coupling</span><span class="o">.</span><span class="n">spin_orbit</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">tolist</span><span class="p">()])</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">Onsite (Inter-Orbital) Couplings:'</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">onsite_table</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">'fancy_grid'</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Model.show_site_properties"><a class="viewcode-back" href="../../api.html#topwave.model.Model.show_site_properties">[docs]</a>    <span class="k">def</span> <span class="nf">show_site_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Prints the site properties."""</span>
 
         <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'index'</span><span class="p">,</span> <span class="s1">'species'</span><span class="p">,</span> <span class="s1">'label'</span><span class="p">,</span> <span class="s1">'orbitals'</span><span class="p">,</span> <span class="s1">'coordinates (latt.)'</span><span class="p">,</span> <span class="s1">'coordinates (cart.)'</span><span class="p">,</span> <span class="s1">'magmom'</span><span class="p">,</span>
-                  <span class="s1">'onsite scalar'</span><span class="p">,</span> <span class="s1">'onsite vector'</span><span class="p">,</span> <span class="s1">'unit cell index'</span><span class="p">,</span> <span class="s1">'supercell vector'</span><span class="p">,</span> <span class="s1">'layer'</span><span class="p">]</span>
+                  <span class="s1">'onsite scalar'</span><span class="p">,</span> <span class="s1">'onsite vector'</span><span class="p">,</span> <span class="s1">'onsite matrix'</span><span class="p">,</span> <span class="s1">'unit cell index'</span><span class="p">,</span> <span class="s1">'supercell vector'</span><span class="p">,</span> <span class="s1">'layer'</span><span class="p">]</span>
         <span class="n">table</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">:</span>
             <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'index'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">species</span><span class="p">,</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'label'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'orbitals'</span><span class="p">],</span>
                           <span class="n">site</span><span class="o">.</span><span class="n">frac_coords</span><span class="p">,</span> <span class="n">site</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'magmom'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_scalar'</span><span class="p">],</span>
-                          <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'uc_site_index'</span><span class="p">],</span>
-                          <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'cell_vector'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'layer'</span><span class="p">]])</span>
+                          <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_vector'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'onsite_matrix'</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+                          <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'uc_site_index'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'cell_vector'</span><span class="p">],</span> <span class="n">site</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="s1">'layer'</span><span class="p">]])</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="n">tabulate</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">header</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">'fancy_grid'</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Spin Polarized: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_spin_polarized</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
@@ -1012,6 +1088,7 @@
     <span class="c1">#     super().__init__(structure, import_site_properties)</span>
     <span class="c1">#     self.type = 'spinwave'</span>
 
+    <span class="c1"># TODO: add anisotropy</span>
 <div class="viewcode-block" id="SpinWaveModel.get_classical_energy"><a class="viewcode-back" href="../../api.html#topwave.model.SpinWaveModel.get_classical_energy">[docs]</a>    <span class="k">def</span> <span class="nf">get_classical_energy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                              <span class="n">per_spin</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">"""Computes the classical ground state energy of the model with its current orientation of local moments.</span>
@@ -1112,44 +1189,7 @@
 
         <span class="c1"># normalize the final configuration</span>
         <span class="n">res</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s1">'F'</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">res</span></div>
-
-<div class="viewcode-block" id="SpinWaveModel.set_single_ion_anisotropy"><a class="viewcode-back" href="../../api.html#topwave.model.SpinWaveModel.set_single_ion_anisotropy">[docs]</a>    <span class="k">def</span> <span class="nf">set_single_ion_anisotropy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                                  <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                                  <span class="n">vector</span><span class="p">:</span> <span class="n">Vector</span><span class="p">,</span>
-                                  <span class="n">strength</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                                  <span class="n">space_group</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">"""Sets a single-ion anisotropy to a given site. Same as Model.set_onsite_vector.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        index: int</span>
-<span class="sd">            The index of the site.</span>
-<span class="sd">        vector: Vector</span>
-<span class="sd">            The orientation of the term.</span>
-<span class="sd">        strength: float</span>
-<span class="sd">            The strength of the onsite term. If None, the length of the input vector is used. Default is None.</span>
-<span class="sd">        space_group: int</span>
-<span class="sd">            If a compatible space group symmetry is selected, the term will automatically be assigned to all</span>
-<span class="sd">            symmetrically equivalent sites and the assigned vector will be rotated accordingly. Default is None.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        We assign a single-ion anisotropy of strength A = 0.1 along the 001-direction. See the</span>
-<span class="sd">        onsite vector column in the output.</span>
-
-<span class="sd">        .. ipython:: python</span>
-
-<span class="sd">            model.set_onsite_vector(0, [0, 0, 1], 0.1)</span>
-<span class="sd">            model.show_site_properties()</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        :class:`topwave.model.Model.set_onsite_vector`</span>
-
-<span class="sd">        """</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_onsite_vector</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="n">vector</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="n">strength</span><span class="p">,</span> <span class="n">space_group</span><span class="o">=</span><span class="n">space_group</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">res</span></div></div>
 
 
 <div class="viewcode-block" id="TightBindingModel"><a class="viewcode-back" href="../../api.html#topwave.model.TightBindingModel">[docs]</a><span class="k">class</span> <span class="nc">TightBindingModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
@@ -1224,7 +1264,7 @@
 
 <div class="viewcode-block" id="TightBindingModel.set_orbitals"><a class="viewcode-back" href="../../api.html#topwave.model.TightBindingModel.set_orbitals">[docs]</a>    <span class="k">def</span> <span class="nf">set_orbitals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                      <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                     <span class="n">num_orbitals</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+                     <span class="n">num_orbitals</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">"""Sets the number of orbitals on a given site.</span>
 
 <span class="sd">        .. admonition:: Coming soon!</span>

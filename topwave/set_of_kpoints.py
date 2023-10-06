@@ -458,7 +458,7 @@ class Sphere(SetOfKPoints):
         if d_cos_theta:
             span_theta = np.arccos(2 * span_theta / np.pi - 1)[::-1]
 
-        phis, thetas = np.meshgrid(span_phi, span_theta, indexing='ij')
+        phis, thetas = np.meshgrid(span_phi, span_theta)
 
         kxs = radius * np.sin(thetas) * np.cos(phis) + center[0]
         kys = radius * np.sin(thetas) * np.sin(phis) + center[1]

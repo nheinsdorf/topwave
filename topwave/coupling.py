@@ -35,6 +35,7 @@ class Coupling:
     distance: float = field(init=False)
     sublattice_vector: Vector = field(init=False)
     is_set: bool = False
+    matrix: Real3x3 = field(default_factory=lambda: np.zeros((3, 3), dtype=np.float64))
     spin_orbit: Vector = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
     strength: float = 0.
 
@@ -53,9 +54,12 @@ class Coupling:
     def get_exchange_matrix(self) -> Real3x3:
         """Returns the exchange matrix."""
 
-        return np.array([[self.strength, self.spin_orbit[2], -self.spin_orbit[1]],
-                         [-self.spin_orbit[2], self.strength, self.spin_orbit[0]],
-                         [self.spin_orbit[1], -self.spin_orbit[0], self.strength]], dtype=np.float64)
+        heisenberg_exchange = np.diag([self.strength] * 3)
+        antisymmetric_exchange = np.array([[0, self.spin_orbit[2], -self.spin_orbit[1]],
+                                           [-self.spin_orbit[2], 0, self.spin_orbit[0]],
+                                           [self.spin_orbit[1], -self.spin_orbit[0], 0]], dtype=np.float64)
+        general_exchange = self.matrix
+        return heisenberg_exchange + antisymmetric_exchange + general_exchange
 
     def get_fourier_coefficients(
             self,
@@ -148,6 +152,14 @@ class Coupling:
         # spin_orbit_term = 1j * c_k * pauli(self.spin_orbit, normalize=False)
         spin_orbit_term = 1j * pauli(self.spin_orbit, normalize=False)
         return spin_orbit_term
+
+    def set_matrix(self, matrix: Real3x3):
+        """Sets an interaction matrix.
+
+        """
+
+        self.matrix = np.array(matrix, dtype=np.float).reshape((3, 3))
+        self.is_set = True
 
     # NOTE: should I make this a property? Check how it works with dataclasses.
     def set_coupling(self, strength: float) -> None:
