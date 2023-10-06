@@ -93,7 +93,7 @@ Topwave in Research
 
 N. Heinsdorf, DG. Joshi, H. Katsura, AP. Schnyder - arXiv:
 
-https://doi.org/10.1103/PhysRevB.107.125111
+https://arxiv.org/abs/2309.15113
 
 .. image:: ./_static/papers_that_use_topwave/triplon_paper2000.jpg
    :align: center
