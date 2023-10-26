@@ -259,7 +259,7 @@ class Model(ABC):
 
         coupling = self.couplings[index]
         site1, site2 = coupling.site1, coupling.site2
-        orbital1, orbital2 = coupling.site1.properties['orbitals'], coupling.site2.properties['orbitals']
+        orbital1, orbital2 = coupling.orbital1, coupling.orbital2
         lattice_vector = coupling.lattice_vector
         symmetry_id, symmetry_op = coupling.symmetry_id, coupling.symmetry_op
         inverted_coupling = Coupling(index, -lattice_vector, site2, orbital2, site1, orbital1, symmetry_id, symmetry_op)

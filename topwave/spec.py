@@ -278,7 +278,7 @@ class Spec:
 
             for site_index, site in enumerate(model.structure):
                 # for orbital_index, onsite_vector in enumerate(np.array(site.properties['onsite_vector']).reshape((-1, 3))):
-                for orbital_index in range(site.properties['orbital']):
+                for orbital_index in range(site.properties['orbitals']):
                     i = combined_index_nodes[site_index] + orbital_index
                     # add zeeman term
                     matrix[:, 2 * i: 2 * i + 2, 2 * i: 2 * i + 2] += MU_BOHR * G_LANDE * pauli(model.zeeman,

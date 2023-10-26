@@ -1,8 +1,4 @@
 Magnon Weyl Nodes
 =================
 
-yoooo check this out
-
-.. ipython:: python
-
-    print('lol')
+Something will be here soon. Check out the other examples or the API!

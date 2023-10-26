@@ -1,8 +1,4 @@
 Tight-Binding Models
 ====================
 
-SOMETHING ELSE HERE :)
-
-.. ipython:: python
-
-    print('rofl')
+SOMETHING WILL BE HERE SOON. Check out the API or the examples!

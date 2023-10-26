@@ -1,8 +1,4 @@
 Spin-Wave Models
 ================
 
-SOMETHING HERE :)
-
-.. ipython:: python
-
-    print('lol')
+SOMETHING WILL BE HERE SOON. Check out the API or the examples!
