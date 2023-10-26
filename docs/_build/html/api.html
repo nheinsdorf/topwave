@@ -2229,7 +2229,7 @@ do not touch <cite>x_min</cite>, <cite>x_max</cite>, <cite>y_min</cite> and <cit
 <span class="gp">In [12]: </span><span class="n">p</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
 
 <span class="gp">In [13]: </span><span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-<span class="gh">Out[13]: </span><span class="go">&lt;matplotlib.collections.PatchCollection at 0x13cce22d0&gt;</span>
+<span class="gh">Out[13]: </span><span class="go">&lt;matplotlib.collections.PatchCollection at 0x168deab10&gt;</span>
 
 <span class="gp">In [14]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="gh">Out[14]: </span><span class="go">(-0.5, 0.5)</span>
@@ -2395,7 +2395,7 @@ Default is True.</p></li>
 <span class="gp">In [3]: </span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">'3d'</span><span class="p">)</span>
 
 <span class="gp">In [4]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">circle</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[4]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x13cbb5c50&gt;</span>
+<span class="gh">Out[4]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x168f53790&gt;</span>
 
 <span class="gp">In [5]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_x$'</span><span class="p">)</span>
 <span class="gh">Out[5]: </span><span class="go">Text(0.5, 0, '$k_x$')</span>
@@ -2492,10 +2492,10 @@ double counting the points on the boundaries of the plane and make sure that <ci
 <span class="gp">In [6]: </span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">'3d'</span><span class="p">)</span>
 
 <span class="gp">In [7]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">grid1</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[7]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x13cd0d390&gt;</span>
+<span class="gh">Out[7]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x168e68590&gt;</span>
 
 <span class="gp">In [8]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">grid2</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[8]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x13cd0fe10&gt;</span>
+<span class="gh">Out[8]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x169823910&gt;</span>
 
 <span class="gp">In [9]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_x$'</span><span class="p">);</span>
 
@@ -2579,10 +2579,10 @@ double counting the points on the boundaries of the plane and make sure that <ci
 <span class="gp">In [2]: </span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 
 <span class="gp">In [3]: </span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="o">.</span><span class="n">kpoints</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[3]: </span><span class="go">[&lt;matplotlib.lines.Line2D at 0x13ccfad10&gt;]</span>
+<span class="gh">Out[3]: </span><span class="go">[&lt;matplotlib.lines.Line2D at 0x169958a90&gt;]</span>
 
 <span class="gp">In [4]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="o">.</span><span class="n">nodes</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[4]: </span><span class="go">&lt;matplotlib.collections.PathCollection at 0x13cd09690&gt;</span>
+<span class="gh">Out[4]: </span><span class="go">&lt;matplotlib.collections.PathCollection at 0x16988bc50&gt;</span>
 
 <span class="gp">In [5]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$k_x$'</span><span class="p">)</span>
 <span class="gh">Out[5]: </span><span class="go">Text(0.5, 0, '$k_x$')</span>
@@ -2831,10 +2831,10 @@ be False, the points close to the poles of the sphere are much closer together t
 <span class="gp">In [6]: </span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">'3d'</span><span class="p">)</span>
 
 <span class="gp">In [7]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">sphere1</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[7]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x13cfa7390&gt;</span>
+<span class="gh">Out[7]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x168c11690&gt;</span>
 
 <span class="gp">In [8]: </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">sphere2</span><span class="o">.</span><span class="n">kpoints</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-<span class="gh">Out[8]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x13d002750&gt;</span>
+<span class="gh">Out[8]: </span><span class="go">&lt;mpl_toolkits.mplot3d.art3d.Path3DCollection at 0x169955150&gt;</span>
 
 <span class="gp">In [9]: </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="gh">Out[9]: </span><span class="go">(-0.5, 0.5)</span>
