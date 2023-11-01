@@ -39,7 +39,13 @@ def coupling_selector(attribute: str,
             case 'distance':
                 indices = [coupling.index for coupling in model.couplings if np.isclose(coupling.distance, value, atol=1e-5)]
         return indices
-    return []
+    elif isinstance(value, Iterable):
+        match attribute:
+            case 'lattice_vector':
+                indices = [coupling.index for coupling in model.couplings if (coupling.lattice_vector == value).all()]
+        return indices
+    else:
+        return []
 
 def fermi_distribution(energies: float | npt.ArrayLike,
                        temperature: float) -> npt.NDArray[np.float64]:
