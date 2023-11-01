@@ -268,7 +268,8 @@ class Model(ABC):
     def set_coupling(self,
                      attribute_value: int | float,
                      strength: float,
-                     attribute: str = 'index') -> None:
+                     attribute: str = 'index',
+                     overwrite: bool = True) -> None:
         """Assigns (scalar) hopping/exchange to a selection of couplings.
 
         Parameters
@@ -279,6 +280,8 @@ class Model(ABC):
             Strength of the hopping/exchange.
         attribute: str
             The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.
+        overwrite: bool
+            If true, any existing term is overwritten. If false, the term is added. Default is true.
 
         Examples
         --------
@@ -293,7 +296,9 @@ class Model(ABC):
         """
 
         couplings = self.get_couplings(attribute=attribute, value=attribute_value)
+
         for coupling in couplings:
+            strength = strength if overwrite else strength + coupling.strength
             coupling.set_coupling(strength)
 
     def set_label(self,
