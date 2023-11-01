@@ -146,7 +146,8 @@ class Model(ABC):
         Parameters
         ----------
         attribute: str
-            The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.
+            The attribute by which the couplings are selected. Options are 'is_set', 'index',
+             'symmetry_id', 'distance' or 'lattice_vector'.
         value: int | float
             The value of the selected attribute.
 
@@ -279,7 +280,8 @@ class Model(ABC):
         strength: float
             Strength of the hopping/exchange.
         attribute: str
-            The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.
+            The attribute by which the couplings are selected. Options are 'is_set', 'index',
+             'symmetry_id', 'distance' or 'lattice_vector'.
         overwrite: bool
             If true, any existing term is overwritten. If false, the term is added. Default is true.
 
@@ -298,8 +300,8 @@ class Model(ABC):
         couplings = self.get_couplings(attribute=attribute, value=attribute_value)
 
         for coupling in couplings:
-            strength = strength if overwrite else strength + coupling.strength
-            coupling.set_coupling(strength)
+            new_strength = strength if overwrite else strength + coupling.strength
+            coupling.set_coupling(new_strength)
 
     def set_label(self,
                   index: int,
@@ -536,7 +538,8 @@ class Model(ABC):
         strength: float
             Strength of the term. If None, the length of the orientation is used. Default is None.
         attribute: str
-            The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.
+            The attribute by which the couplings are selected. Options are 'is_set', 'index',
+             'symmetry_id', 'distance' or 'lattice_vector'.
 
         Examples
         --------
@@ -673,7 +676,8 @@ class Model(ABC):
         Parameters
         ----------
         attribute: str
-            The attribute by which the couplings are selected. Options are 'is_set', 'index', 'symmetry_id' or 'distance'.
+            The attribute by which the couplings are selected. Options are 'is_set', 'index',
+             'symmetry_id', 'distance' or 'lattice_vector'.
         value: int | float
             The value of the selected attribute.
 
