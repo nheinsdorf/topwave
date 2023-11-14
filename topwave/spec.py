@@ -333,7 +333,7 @@ class Spec:
 
         # allocate memory for the output
         E = np.zeros(self.hamiltonian.shape[0:2])  # complex for white alg.
-        psi = np.zeros(self.hamiltonian.shape, dtype=complex)
+        psi = np.zeros(self.hamiltonian.shape, dtype=np.complex128)
 
         # diagonalize the Hamiltonian at each k-point
         for _, k in enumerate(self.kpoints.kpoints):
@@ -344,8 +344,9 @@ class Spec:
                     ', %.3f). Adding small epsilon and trying again.' % tuple(k)
                 print(s)
                 try:
-                    epsilon = np.sort(np.real(eigvals(self.hamiltonian[_]))) + 0.0000001
-                    # epsilon = 0.1
+                    epsilon = np.abs(np.sort(np.real(eigvals(self.hamiltonian[_])))[0])
+                    # tolerance factor
+                    epsilon *= np.sqrt(self.hamiltonian.shape[1]) * 4
                     H_shftd = self.hamiltonian[_] + np.eye(self.hamiltonian.shape[1]) * epsilon
                     E[_], psi[_] = solver(H_shftd)
                 except:

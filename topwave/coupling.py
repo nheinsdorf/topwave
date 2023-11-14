@@ -37,7 +37,7 @@ class Coupling:
     is_set: bool = False
     matrix: Real3x3 = field(default_factory=lambda: np.zeros((3, 3), dtype=np.float64))
     spin_orbit: Vector = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
-    strength: float = 0.
+    strength: complex = 0j
 
     def __post_init__(self) -> None:
         self.distance = self.site1.distance(self.site2, self.lattice_vector)
@@ -137,7 +137,7 @@ class Coupling:
 
         return A, Abar, CI, CJ, B, Bbar
 
-    def get_tightbinding_matrix_elements(self) -> float:
+    def get_tightbinding_matrix_elements(self) -> complex:
         """Constructs the matrix elements for the TightBinding Hamiltonian at a given k-point."""
 
         # c_k, inner = self.get_fourier_coefficients(k_point)
