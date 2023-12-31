@@ -12,7 +12,7 @@ from topwave.constants import G_LANDE, MU_BOHR
 from topwave.fourier_coefficients import get_periodic_fourier_coefficient, get_periodic_fourier_derivative
 from topwave.set_of_kpoints import SetOfKPoints
 from topwave.model import Model, SpinWaveModel, TightBindingModel
-from topwave.topology import get_berry_phase, get_fermionic_wilson_loop
+from topwave.topology import get_berry_phase, get_bosonic_wilson_loop, get_fermionic_wilson_loop, get_nonabelian_berry_phase
 from topwave.types import IntVector, RealList, SquareMatrix, VectorList
 from topwave.util import format_input_vector, format_kpoints, pauli
 
@@ -31,13 +31,9 @@ class Spec:
     kpoints: VectorList | SetOfKPoints
     energies: npt.NDArray[np.float64] = field(init=False)
     hamiltonian: npt.NDArray[np.float64] = field(init=False)
-    kpoints_xyz: npt.NDArray[np.float64] = field(init=False)
     psi: npt.NDArray[np.float64] = field(init=False)
 
-    # TODO: refactor kpoints to kpoints
     def __post_init__(self) -> None:
-        # compute this only when you need it e.g. neutron
-        # self.kpoints_xyz = 2 * np.pi * np.einsum('ka, ab -> kb', self.kpoints, inv(self.model.structure.lattice.matrix))
 
         if not isinstance(self.kpoints, SetOfKPoints):
             self.kpoints = SetOfKPoints(self.kpoints)
@@ -52,6 +48,34 @@ class Spec:
 
         self.energies, self.psi = self.solve(solver)
 
+    def get_inverse_band_distance(self,
+                                  band_index1: int,
+                                  band_index2: int,
+                                  broadening: float = 0.02) -> RealList:
+        """Computes a measure of how degenerate two bands are at each k-point.
+
+        Parameters
+        ----------
+        band_index1: int
+            Index of the first band.
+        band_index2: int
+            Index of the second band.
+        broadening: float
+            Broadening. Default is 0.02.
+
+        Returns
+        -------
+        RealList
+            The inverted band distance at each k-point of the spectrum.
+
+        Examples
+        --------
+        Compute the inverted band distance of something.
+
+
+        """
+
+        return -np.imag(np.reciprocal(self.energies[:, band_index1] - self.energies[:, band_index2] + 1j * broadening))
 
     def get_density_of_states(self,
                               energies: RealList,
@@ -145,6 +169,67 @@ class Spec:
             H_Zeeman = MU_BOHR * G_LANDE * np.dot(model.zeeman, v)
             matrix[:, _, _] += H_Zeeman
             matrix[:, _ + dim, _ + dim] += H_Zeeman
+
+        return matrix
+
+    @staticmethod
+    def get_spinwave_derivative(
+            model: SpinWaveModel,
+            kpoints: VectorList | SetOfKPoints,
+            derivative: str) -> npt.NDArray[np.complex128]:
+        """Constructs the spin wave Hamiltonian for a set of given k-points."""
+
+        kpoints = format_kpoints(kpoints)
+
+        k_dependence = partial(get_periodic_fourier_derivative, direction=derivative)
+
+        dim = len(model.structure)
+        matrix = np.zeros((len(kpoints), 2 * dim, 2 * dim), dtype=complex)
+
+        # construct matrix elements at each k-point
+        for coupling in model.get_set_couplings():
+            i, j = coupling.site1.properties['index'], coupling.site2.properties['index']
+            fourier_coefficients = k_dependence(coupling, kpoints)
+            # get the matrix elements from the couplings
+            (A, Abar, CI, CJ, B, Bbar) = coupling.get_spinwave_matrix_elements()
+
+            matrix[:, i, j] += fourier_coefficients * A
+            matrix[:, j, i] += np.conj(fourier_coefficients * A)
+            matrix[:, i + dim, j + dim] += np.conj(np.conj(fourier_coefficients) * Abar)
+            matrix[:, j + dim, i + dim] += np.conj(fourier_coefficients) * Abar
+
+            # matrix[:, i, i] -= CI
+            # matrix[:, j, j] -= CJ
+            # matrix[:, i + dim, i + dim] -= np.conj(CI)
+            # matrix[:, j + dim, j + dim] -= np.conj(CJ)
+
+            matrix[:, i, j + dim] += fourier_coefficients * B
+            matrix[:, j, i + dim] += np.conj(fourier_coefficients) * Bbar
+            matrix[:, j + dim, i] += np.conj(fourier_coefficients * B)
+            matrix[:, i + dim, j] += np.conj(np.conj(fourier_coefficients) * Bbar)
+
+        # add single ion anisotropies
+        # for _ in range(dim):
+        #     u = model.structure[_].properties['Rot'][:, 0] + 1j * model.structure[_].properties['Rot'][:, 1]
+        #     v = model.structure[_]
+            # K = np.diag(model.structure[_].properties['onsite_vector'])
+            # this constructs an interaction matrix with a principal axis along the onsite vector
+            # K = np.linalg.norm(model.structure[_].properties['onsite_vector'])
+            # easy_axis = format_input_vector(model.structure[_].properties['onsite_vector'], 1)
+            # onsite_exchange_matrix = -K * np.outer(easy_axis, easy_axis) \
+            #                          + model.structure[_].properties['onsite_matrix']
+
+            # matrix[:, _, _] += u @ onsite_exchange_matrix @ np.conj(u)
+            # matrix[:, _ + dim, _ + dim] += np.conj(u @ onsite_exchange_matrix @ np.conj(u))
+            # matrix[:, _, _ + dim] += u @ onsite_exchange_matrix @ u
+            # matrix[:, _ + dim, _] += np.conj(u @ onsite_exchange_matrix @ u)
+
+        # add the external magnetic field
+        # for _ in range(dim):
+        #     v = model.structure[_].properties['Rot'][:, 2]
+        #     H_Zeeman = MU_BOHR * G_LANDE * np.dot(model.zeeman, v)
+        #     matrix[:, _, _] += H_Zeeman
+        #     matrix[:, _ + dim, _ + dim] += H_Zeeman
 
         return matrix
 
@@ -301,32 +386,6 @@ class Spec:
             if model._is_spin_polarized:
                 return matrix[:, ::2, ::2]
         return matrix
-        matrix = np.zeros((len(kpoints), len(model.structure), len(model.structure)), dtype=complex)
-
-        # construct matrix elements at each k-point
-        # for _, kpoint in enumerate(kpoints):
-        for coupling in model.get_set_couplings():
-            i, j = coupling.site1.properties['index'], coupling.site2.properties['index']
-
-            # get the matrix elements from the couplings
-            # A, inner = coupling.get_tightbinding_matrix_elements(kpoint)
-            A = k_dependence(coupling, kpoints) * coupling.get_tightbinding_matrix_elements()
-            matrix[:, i, j] += A
-            matrix[:, j, i] += np.conj(A)
-
-        # add spin degrees of freedom
-        if model.check_if_spinful():
-            matrix = np.kron(matrix, np.eye(2))
-
-            for coupling in model.get_set_couplings():
-                i, j = coupling.site1.properties['index'], coupling.site2.properties['index']
-                spin_orbit_term = np.einsum('c, nm -> cnm', k_dependence(coupling, kpoints), coupling.get_spin_orbit_matrix_elements())
-                matrix[:, 2 * i:2 * i + 2, 2 * j:2 * j + 2] += spin_orbit_term
-                matrix[:, 2 * j:2 * j + 2, 2 * i:2 * i + 2] += np.conj(spin_orbit_term.swapaxes(1, 2))
-
-            if model._is_spin_polarized:
-                return matrix[:, ::2, ::2]
-        return matrix
 
     def solve(self, solver: Callable[[npt.NDArray[np.complex128]], tuple[npt.NDArray[np.complex128], npt.NDArray[np.complex128]]]) -> tuple[npt.NDArray[np.complex128], npt.NDArray[np.complex128]]:
         """Diagonalizes the Hamiltonian using the provided solver."""
@@ -358,7 +417,8 @@ class Spec:
 
     def get_berry_phase(self,
                         band_indices: IntVector = None,
-                        energy: float = None) -> float:
+                        energy: float = None,
+                        nonabelian: bool = False) -> float:
         """Computes the Berry phase.
 
         See Also
@@ -367,7 +427,13 @@ class Spec:
 
         """
 
-        loop_operator = get_fermionic_wilson_loop(self, band_indices, energy)
+        match self.model.get_type():
+            case 'spinwave':
+                loop_operator = get_bosonic_wilson_loop(self, band_indices)
+            case 'tightbinding':
+                loop_operator = get_fermionic_wilson_loop(self, band_indices, energy)
+        if nonabelian:
+            return get_nonabelian_berry_phase(loop_operator)
         return get_berry_phase(loop_operator)
 
     def get_particle_density(self,
