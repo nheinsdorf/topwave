@@ -9,6 +9,7 @@ import numpy.typing as npt # change this
 from topwave.constants import K_BOLTZMANN, PAULI_VEC
 from topwave.types import VectorList
 if TYPE_CHECKING:
+    from topwave.coupling import Coupling
     from topwave.model import Model
     from topwave.set_of_kpoints import SetOfKPoints
 
@@ -25,24 +26,32 @@ def bose_distribution(energies: float | npt.ArrayLike,
 
 def coupling_selector(attribute: str,
                       value: int | float,
-                      model: Model) -> list[int]:
+                      couplings: list[Coupling]) -> list[int]:
     """Selects couplings based on a given attribute."""
 
     if not isinstance(value, Iterable):
         match attribute:
             case 'is_set':
-                indices = [coupling.index for coupling in model.couplings if coupling.is_set == value]
+                indices = [coupling.index for coupling in couplings if coupling.is_set == value]
             case 'index':
-                indices = [coupling.index for coupling in model.couplings if coupling.index == value]
+                indices = [coupling.index for coupling in couplings if coupling.index == value]
             case 'symmetry_id':
-                indices = [coupling.index for coupling in model.couplings if coupling.symmetry_id == value]
+                indices = [coupling.index for coupling in couplings if coupling.symmetry_id == value]
             case 'distance':
-                indices = [coupling.index for coupling in model.couplings if np.isclose(coupling.distance, value, atol=1e-5)]
+                indices = [coupling.index for coupling in couplings if np.isclose(coupling.distance, value, atol=1e-5)]
+            case 'site1':
+                indices = [coupling.index for coupling in couplings if coupling.site1.properties['index'] == value]
+            case 'site2':
+                indices = [coupling.index for coupling in couplings if coupling.site2.properties['index'] == value]
+            case 'orbital1':
+                indices = [coupling.index for coupling in couplings if coupling.orbital1 == value]
+            case 'orbital2':
+                indices = [coupling.index for coupling in couplings if coupling.orbital2 == value]
         return indices
     elif isinstance(value, Iterable):
         match attribute:
             case 'lattice_vector':
-                indices = [coupling.index for coupling in model.couplings if (coupling.lattice_vector == value).all()]
+                indices = [coupling.index for coupling in couplings if (coupling.lattice_vector == value).all()]
         return indices
     else:
         return []

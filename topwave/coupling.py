@@ -162,10 +162,11 @@ class Coupling:
         self.is_set = True
 
     # NOTE: should I make this a property? Check how it works with dataclasses.
-    def set_coupling(self, strength: float) -> None:
+    def set_coupling(self, strength: float, overwrite: bool = True) -> None:
         """Sets the couplings."""
 
-        self.strength = strength
+        new_strength = strength if overwrite else strength + self.strength
+        self.strength = new_strength
         self.is_set = True
 
     def set_spin_orbit(self, input_vector: Vector, strength: float = None) -> None:

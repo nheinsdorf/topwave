@@ -232,3 +232,5 @@ def get_nonabelian_berry_phase(loop_operator: Matrix) -> float:
     """
 
     return -1 * np.angle(np.linalg.eigvals(loop_operator))
+
+

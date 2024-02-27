@@ -176,7 +176,7 @@ class Model(ABC):
 
         """
 
-        indices = util.coupling_selector(attribute=attribute, value=value, model=self)
+        indices = util.coupling_selector(attribute=attribute, value=value, couplings=self.couplings)
         return [self.couplings[index] for index in indices]
 
     # NOTE: should I get rid of this and just replace it with get_couplings in spec?
@@ -194,7 +194,7 @@ class Model(ABC):
 
         """
 
-        indices = util.coupling_selector(attribute='is_set', value=True, model=self)
+        indices = util.coupling_selector(attribute='is_set', value=True, couplings=self.couplings)
         return [self.couplings[index] for index in indices]
 
     def get_sites(self,
@@ -693,7 +693,7 @@ class Model(ABC):
 
         """
 
-        indices = util.coupling_selector(attribute=attribute, value=attribute_value, model=self)
+        indices = util.coupling_selector(attribute=attribute, value=attribute_value, couplings=self.couplings)
         for _ in indices:
             self.couplings[_].unset()
 
@@ -749,7 +749,7 @@ class Model(ABC):
 
         if self.type == 'tightbinding':
             for site in self.structure:
-                site.properties['magmom'] = site.properties['onsite_vector']
+                #site.properties['magmom'] = site.properties['onsite_vector']
                 CifWriter(self.structure, write_magmoms=write_magmoms).write_file(path)
                 # self.unset_moments()
         else:
