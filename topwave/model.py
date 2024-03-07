@@ -680,7 +680,7 @@ class Model(ABC):
                   'site1', 'orbital1', 'site2', 'orbital2', 'strength', 'spin-orbit vector', 'matrix']
         table = []
         for coupling in self.couplings[:len(self.couplings) - num_onsite_terms]:
-            table.append([coupling.index, coupling.symmetry_id, coupling.symmetry_op.as_xyz_string(), coupling.distance,
+            table.append([coupling.index, coupling.symmetry_id, coupling.symmetry_op.as_xyz_str(), coupling.distance,
                           coupling.lattice_vector, coupling.sublattice_vector, coupling.site1.properties['index'],
                           coupling.orbital1, coupling.site2.properties['index'], coupling.orbital2, coupling.strength,
                           coupling.spin_orbit, coupling.matrix.tolist()])
