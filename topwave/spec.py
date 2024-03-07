@@ -5,7 +5,7 @@ from typing import Callable
 
 import numpy as np
 import numpy.typing as npt
-from numpy.linalg import eigh, eigvals, inv, multi_dot
+from numpy.linalg import eigh, eigvals, inv, multi_dot, norm
 
 from topwave import solvers
 from topwave.constants import G_LANDE, MU_BOHR
@@ -150,18 +150,19 @@ class Spec:
         # add single ion anisotropies
         for _ in range(dim):
             u = model.structure[_].properties['Rot'][:, 0] + 1j * model.structure[_].properties['Rot'][:, 1]
-            v = model.structure[_]
+            v = model.structure[_].properties['Rot'][:, 2]
             # K = np.diag(model.structure[_].properties['onsite_vector'])
             # this constructs an interaction matrix with a principal axis along the onsite vector
             K = np.linalg.norm(model.structure[_].properties['onsite_vector'])
             easy_axis = format_input_vector(model.structure[_].properties['onsite_vector'], 1)
             onsite_exchange_matrix = -K * np.outer(easy_axis, easy_axis) \
                                      + model.structure[_].properties['onsite_matrix']
-
-            matrix[:, _, _] += u @ onsite_exchange_matrix @ np.conj(u)
-            matrix[:, _ + dim, _ + dim] += np.conj(u @ onsite_exchange_matrix @ np.conj(u))
-            matrix[:, _, _ + dim] += u @ onsite_exchange_matrix @ u
-            matrix[:, _ + dim, _] += np.conj(u @ onsite_exchange_matrix @ u)
+            # print(u, v@onsite_exchange_matrix@ np.conj(v))
+            spin_magnitude = -2 * norm(model.structure[_].properties['magmom'])
+            matrix[:, _, _] += spin_magnitude * (v @ onsite_exchange_matrix @ np.conj(v))
+            matrix[:, _ + dim, _ + dim] += spin_magnitude * np.conj(v @ onsite_exchange_matrix @ np.conj(v))
+            # matrix[:, _, _ + dim] += u @ onsite_exchange_matrix @ u
+            # matrix[:, _ + dim, _] += np.conj(u @ onsite_exchange_matrix @ u)
 
         # add the external magnetic field
         for _ in range(dim):

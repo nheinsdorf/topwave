@@ -34,6 +34,7 @@ class Coupling:
     symmetry_op: SymmOp
     distance: float = field(init=False)
     sublattice_vector: Vector = field(init=False)
+    is_onsite: bool = False
     is_set: bool = False
     matrix: Real3x3 = field(default_factory=lambda: np.zeros((3, 3), dtype=np.float64))
     spin_orbit: Vector = field(default_factory=lambda: np.zeros(3, dtype=np.float64))
@@ -41,6 +42,7 @@ class Coupling:
 
     def __post_init__(self) -> None:
         self.distance = self.site1.distance(self.site2, self.lattice_vector)
+        self.is_onsite = True if (self.site1 == self.site2 and (self.lattice_vector == 0).all()) else False
         self.sublattice_vector = self.site2.frac_coords - self.site1.frac_coords
 
     def get_energy(self) -> float:

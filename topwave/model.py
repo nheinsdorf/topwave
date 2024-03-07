@@ -179,6 +179,23 @@ class Model(ABC):
         indices = util.coupling_selector(attribute=attribute, value=value, couplings=self.couplings)
         return [self.couplings[index] for index in indices]
 
+    def get_onsite_couplings(self) -> list[Coupling]:
+        """Returns couplings that connect different orbitals of the same site.
+
+        Returns
+        -------
+        list[Coupling]
+            A list that contains the couplings that are onsite (inter-orbital).
+
+        See Also
+        --------
+        :class:`topwave.model.Model.get_couplings`
+
+        """
+
+        indices = util.coupling_selector(attribute='is_onsite', value=True, couplings=self.couplings)
+        return [self.couplings[index] for index in indices]
+
     # NOTE: should I get rid of this and just replace it with get_couplings in spec?
     def get_set_couplings(self) -> list[Coupling]:
         """Returns couplings that have been assigned some exchange.
@@ -265,6 +282,33 @@ class Model(ABC):
         symmetry_id, symmetry_op = coupling.symmetry_id, coupling.symmetry_op
         inverted_coupling = Coupling(index, -lattice_vector, site2, orbital2, site1, orbital1, symmetry_id, symmetry_op)
         self.couplings[index] = inverted_coupling
+
+    def remove_coupling(self,
+                        attribute_value: int | float,
+                        attribute: str = 'index') -> None:
+        """Removes a selection of couplings and reassigns their indices.
+
+        Parameters
+        ----------
+        attribute_value: int | float
+            The value of the selected attribute.
+        attribute: str
+            The attribute by which the couplings are selected. Options are 'is_set', 'index',
+             'symmetry_id', 'distance' or 'lattice_vector'.
+
+        Examples
+        --------
+
+        We delete something
+
+        """
+
+        indices = util.coupling_selector(attribute=attribute, value=attribute_value, couplings=self.couplings)
+        for index in sorted(indices, reverse=True):
+            del self.couplings[index]
+
+        for new_index, coupling in enumerate(self.couplings):
+            coupling.index = new_index
 
     def set_coupling(self,
                      attribute_value: int | float,
@@ -627,8 +671,10 @@ class Model(ABC):
     def show_couplings(self) -> None:
         """Prints the couplings."""
 
-        nums_orbitals = [site.properties['orbitals'] for site in self.structure]
-        num_onsite_terms = np.sum([np.sum(np.arange(1, num_orbital)) for num_orbital in nums_orbitals])
+
+        # nums_orbitals = [site.properties['orbitals'] for site in self.structure]
+        # num_onsite_terms = np.sum([np.sum(np.arange(1, num_orbital)) for num_orbital in nums_orbitals])
+        num_onsite_terms = len(self.get_onsite_couplings())
 
         header = ['index', 'symmetry index', 'symmetry operation', 'distance', 'lattice_vector', 'sublattice_vector',
                   'site1', 'orbital1', 'site2', 'orbital2', 'strength', 'spin-orbit vector', 'matrix']

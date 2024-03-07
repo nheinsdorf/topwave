@@ -43,10 +43,14 @@ def coupling_selector(attribute: str,
                 indices = [coupling.index for coupling in couplings if coupling.site1.properties['index'] == value]
             case 'site2':
                 indices = [coupling.index for coupling in couplings if coupling.site2.properties['index'] == value]
+            case 'orbital':
+                indices = [coupling.index for coupling in couplings if (coupling.orbital1 == value or coupling.orbital2 == value)]
             case 'orbital1':
                 indices = [coupling.index for coupling in couplings if coupling.orbital1 == value]
             case 'orbital2':
                 indices = [coupling.index for coupling in couplings if coupling.orbital2 == value]
+            case 'is_onsite':
+                indices = [coupling.index for coupling in couplings if coupling.is_onsite == value]
         return indices
     elif isinstance(value, Iterable):
         match attribute:

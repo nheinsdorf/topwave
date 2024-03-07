@@ -35,11 +35,9 @@ def parse_from_wannier_hr_dat(filename: str) -> np.ndarray[np.float64]:
 
     hoppings = "".join(lines[num_header_lines:])
     hoppings = np.loadtxt(StringIO(hoppings))
-    hoppings = hoppings.reshape(num_wigner_seitz_cells, num_orbitals, num_orbitals, 7)
-    # lattice_vectors = hoppings[:, 0, 0, :3].astype(int)
-    # strengths = hoppings[..., 5] + 1j * hoppings[..., 6] / degeneracies[:, None, None]
-    hoppings[..., 5] /= degeneracies[:, None, None]
-    hoppings[..., 6] /= degeneracies[:, None, None]
+    # hoppings = hoppings.reshape(num_wigner_seitz_cells, num_orbitals, num_orbitals, 7)
+    # hoppings[..., 5] /= degeneracies[:, None, None]
+    # hoppings[..., 6] /= degeneracies[:, None, None]
     return hoppings
 
 def set_couplings_from_wannier_hr_dat(model: TightBindingModel, filename: str, strength_cutoff=0.05) -> None:
@@ -56,20 +54,53 @@ def set_couplings_from_wannier_hr_dat(model: TightBindingModel, filename: str, s
     """
 
     hoppings = parse_from_wannier_hr_dat(filename)
+    strengths = np.abs(hoppings[..., 5] + 1j * hoppings[..., 6])
+    # cutoff_mask = np.all((strengths < strength_cutoff), axis=1)
+    cutoff_mask = strengths > strength_cutoff
+    # hoppings = hoppings[~cutoff_mask]
+    hoppings = hoppings[cutoff_mask]
 
-    strengths = np.abs((hoppings[..., 5] + 1j * hoppings[..., 6]).reshape((hoppings.shape[0], -1)))
-    cutoff_mask = np.all((strengths < strength_cutoff), axis=1)
-    hoppings = hoppings[~cutoff_mask]
-
-    cutoff_distance = 1.005 * np.linalg.norm(np.einsum('ij, nj -> ni', model.structure.lattice.matrix.T, hoppings[:, 0, 0, :3]), axis=1).max()
+    # cutoff_distance = 1.005 * np.linalg.norm(np.einsum('ij, nj -> ni', model.structure.lattice.matrix.T, hoppings[:, 0, 0, :3]), axis=1).max()
+    cutoff_distance = 1.005 * np.linalg.norm(np.einsum('ij, nj -> ni', model.structure.lattice.matrix.T, hoppings[:, :3]), axis=1).max()
+    # cutoff_distance = 1.005 * np.linalg.norm(hoppings[:, :3], axis=1).max()
     model.generate_couplings(cutoff_distance, 1)
 
     nums_orbitals = [site.properties['orbitals'] for site in model.structure]
     dimension = sum(nums_orbitals)
     combined_index_nodes = np.concatenate(([0], np.cumsum(nums_orbitals)[:-1]), dtype=np.int64)
 
+    count_onsite = 0
+    count_coupling = 0
     for hopping in hoppings:
-        for index1, index2 in product(range(hoppings.shape[1]), range(hoppings.shape[1])):
-            site1_index, site2_index = np.digitize(index1, combined_index_nodes) - 1, np.digitize(index2, combined_index_nodes) - 1
+        index1, index2 = int(hopping[3] - 1), int(hopping[4] - 1)
+        site1_index, site2_index = np.digitize(index1, combined_index_nodes) - 1, np.digitize(index2, combined_index_nodes) - 1
+        orbital1_index, orbital2_index = index1 - combined_index_nodes[site1_index], index2 - combined_index_nodes[site2_index]
+        if index1 == index2 and (hopping[:3] == 0).all():
+            onsite_scalars = np.zeros(nums_orbitals[site1_index], dtype=np.float64)
+            onsite_scalars[orbital1_index] = hopping[5]
+            model.set_onsite_scalar(site1_index, onsite_scalars, overwrite=False)
+            count_onsite += 1
+        couplings = model.get_couplings('lattice_vector', hopping[:3].astype(np.int64))
+        selected_couplings = [coupling for coupling in couplings if (coupling.site1.properties['index'] == site1_index and coupling.site2.properties['index'] == site2_index)]
+        selected_couplings = [coupling for coupling in selected_couplings if (coupling.orbital1 == orbital1_index and coupling.orbital2 == orbital2_index)]
+        if selected_couplings:
+            strength = hopping[5] + 1j * hopping[6]
+            selected_couplings[0].set_coupling(strength, overwrite=False)
+            count_coupling += 1
+
+    print(len(hoppings), len(model.get_set_couplings()), count_onsite, count_coupling)
+
+        # for index1, index2 in product(range(hoppings.shape[1]), range(hoppings.shape[1])):
+        #     # print(index1, index2, hopping[index1, index2, 3] - 1, hopping[index1, index2, 4] - 1)
+        #     # print(index1, index2, hopping[index1, index2])
+        #     site1_index, site2_index = np.digitize(index1, combined_index_nodes) - 1, np.digitize(index2, combined_index_nodes) - 1
+        #     orbital1_index, orbital2_index = index1 - combined_index_nodes[site1_index], index2 - combined_index_nodes[site2_index]
+        #     lattice_vector = hopping[0, 0, :3].astype(np.int64)
+        #     couplings = model.get_couplings('lattice_vector', lattice_vector)
+        #     selected_couplings = [coupling for coupling in couplings if (coupling.site1.properties['index'] == site1_index and coupling.site2.properties['index'] == site2_index)]
+        #     selected_couplings = [coupling for coupling in selected_couplings if (coupling.orbital1 == orbital1_index and coupling.orbital2 == orbital2_index)]
+        #     if selected_couplings:
+        #         strength = hopping[index1, index2, 5] + 1j * hopping[index1, index2, 6]
+        #         selected_couplings[0].set_coupling(strength, overwrite=True)
 
 
